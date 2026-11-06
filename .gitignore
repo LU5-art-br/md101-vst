@@ -1,0 +1,112 @@
+# ==========================================
+# Md-101 (JUCE / C++ / CMake) .gitignore
+# ==========================================
+
+# Diretórios de compilação e saída CMake
+build/
+build-*/
+build_*/
+cmake-build-*/
+out/
+bin/
+dist/
+_deps/
+
+# Arquivos temporários e de cache do CMake (caso executado na raiz)
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_CPack_Packages/
+CPackConfig.cmake
+CPackSourceConfig.cmake
+
+# Presets de usuário do CMake
+CMakeUserPresets.json
+
+# Ninja build files
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Dependência local offline do JUCE (quem clona baixa via FetchContent no CMake)
+external/JUCE/
+.juce/
+
+# Binários e objetos compilados
+*.obj
+*.o
+*.lib
+*.a
+*.dll
+*.so
+*.dylib
+*.exe
+*.exp
+*.ilk
+*.pdb
+*.idb
+
+# Bundles de plugins de áudio gerados
+*.vst3/
+*.vst3
+*.component/
+*.component
+*.clap/
+*.clap
+*.app/
+
+# IDE: Visual Studio
+.vs/
+*.user
+*.suo
+*.userosv
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+*.opendb
+ipch/
+
+# IDE: Visual Studio Code
+.vscode/
+
+# IDE: CLion / JetBrains
+.idea/
+*.iws
+*.iml
+
+# IDE: Xcode
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+*.xcworkspace/
+*.xcuserdata/
+
+# Logs e crash dumps
+*.log
+*.dmp
+*.crash
+
+# Arquivos de sistema operacional
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.*.swp
+.*.swo

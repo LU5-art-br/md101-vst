@@ -1,0 +1,120 @@
+name: Build and Release Md-101
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows (VST3 & Standalone)
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -A x64 -DMD101_BUILD_TESTS=ON
+
+      - name: Build Md-101 (Release)
+        run: cmake --build build --config Release --parallel
+
+      - name: Run Automated Verification Tests
+        run: .\build\Md101Verify.exe
+
+      - name: Package Windows Artifacts
+        shell: pwsh
+        run: |
+          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "latest" }
+          $pkgDir = "Md-101-$version-Windows-x64"
+          New-Item -ItemType Directory -Path "dist/$pkgDir" -Force
+          Copy-Item -Recurse -Force "build/Md101_artefacts/Release/VST3/Md-101.vst3" "dist/$pkgDir/"
+          Copy-Item -Force "build/Md101_artefacts/Release/Standalone/Md-101.exe" "dist/$pkgDir/"
+          Copy-Item -Force "README.md" "dist/$pkgDir/"
+          Copy-Item -Force "LICENSE" "dist/$pkgDir/"
+          Compress-Archive -Path "dist/$pkgDir/*" -DestinationPath "dist/$pkgDir.zip" -Force
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-binaries
+          path: dist/*.zip
+          retention-days: 7
+
+  build-linux:
+    name: Build Linux (VST3 & Standalone)
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux Audio & GUI Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build pkg-config \
+            libasound2-dev libfreetype6-dev libx11-dev libxinerama-dev \
+            libxrandr-dev libxcursor-dev libxcomposite-dev mesa-common-dev
+
+      - name: Configure CMake
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DMD101_BUILD_TESTS=ON
+
+      - name: Build Md-101 (Release)
+        run: cmake --build build --parallel $(nproc)
+
+      - name: Run Automated Verification Tests
+        run: ./build/Md101Verify
+
+      - name: Package Linux Artifacts
+        run: |
+          VERSION="${GITHUB_REF_NAME:-latest}"
+          PKG_DIR="Md-101-${VERSION}-Linux-x64"
+          mkdir -p "dist/${PKG_DIR}"
+          cp -r build/Md101_artefacts/Release/VST3/Md-101.vst3 "dist/${PKG_DIR}/"
+          cp build/Md101_artefacts/Release/Standalone/Md-101 "dist/${PKG_DIR}/"
+          cp README.md LICENSE "dist/${PKG_DIR}/"
+          tar -czvf "dist/${PKG_DIR}.tar.gz" -C dist "${PKG_DIR}"
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-binaries
+          path: dist/*.tar.gz
+          retention-days: 7
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-binaries
+          path: release-assets
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-binaries
+          path: release-assets
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Md-101 ${{ github.ref_name }} — Sintetizador da Tabela Periódica
+          files: release-assets/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
