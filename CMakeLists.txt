@@ -1,9 +1,18 @@
 cmake_minimum_required(VERSION 3.22)
 
+if (POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
+
 if (POLICY CMP0141)
     cmake_policy(SET CMP0141 NEW)
     set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<$<CONFIG:Debug,RelWithDebInfo>:Embedded>")
 endif()
+
+# Link MSVC C/C++ runtime statically (/MT in Release, /MTd in Debug) so the
+# VST3/Standalone binaries have zero dependency on MSVCP140/VCRUNTIME140 DLLs
+# (prevents LoadLibraryW ordinal mismatch error 182 on CI and end-user DAWs).
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 project(Md101 VERSION 1.0.0 LANGUAGES C CXX)
 

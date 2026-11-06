@@ -9,10 +9,13 @@ on:
 permissions:
   contents: write
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   build-windows:
     name: Build Windows (VST3 & Standalone)
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
       - name: Checkout repository
@@ -25,7 +28,13 @@ jobs:
         run: cmake --build build --config Release --parallel
 
       - name: Run Automated Verification Tests
-        run: .\build\Md101Verify.exe
+        shell: pwsh
+        run: |
+          if (Test-Path "build/Release/Md101Verify.exe") {
+            ./build/Release/Md101Verify.exe
+          } else {
+            ./build/Md101Verify.exe
+          }
 
       - name: Package Windows Artifacts
         shell: pwsh
