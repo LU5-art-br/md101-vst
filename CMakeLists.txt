@@ -20,12 +20,6 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-if (MSVC)
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
-    set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /MANIFEST:NO")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /MANIFEST:NO")
-endif()
-
 option(MD101_COPY_AFTER_BUILD "Copy built VST3 plugin to system VST3 folder" OFF)
 option(MD101_BUILD_TESTS "Build automated DSP & UI verification runner" ON)
 
@@ -103,7 +97,6 @@ if (MD101_BUILD_TESTS)
 
     target_compile_features(Md101Verify PRIVATE cxx_std_17)
     target_compile_options(Md101Verify PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
-    target_link_options(Md101Verify PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/MANIFEST:NO>)
 
     target_link_libraries(Md101Verify
         PRIVATE

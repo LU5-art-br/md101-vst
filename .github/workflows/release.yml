@@ -27,6 +27,17 @@ jobs:
       - name: Build Md-101 (Release)
         run: cmake --build build --config Release --parallel
 
+      - name: Diagnose DLL Imports on Failure
+        if: failure()
+        shell: pwsh
+        run: |
+          $dumpbin = Get-ChildItem "C:/Program Files/Microsoft Visual Studio" -Recurse -Filter "dumpbin.exe" -ErrorAction SilentlyContinue | Where-Object { $_.FullName -like "*Hostx64\x64*" } | Select-Object -First 1 -ExpandProperty FullName
+          $vst3 = "build/Md101_artefacts/Release/VST3/Md-101.vst3/Contents/x86_64-win/Md-101.vst3"
+          if ($dumpbin -and (Test-Path $vst3)) {
+            & $dumpbin /dependents $vst3
+            & $dumpbin /imports $vst3 | Select-String -Pattern "\.dll|Ordinal" -Context 0,1
+          }
+
       - name: Run Automated Verification Tests
         shell: pwsh
         run: |
