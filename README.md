@@ -4,6 +4,8 @@
 
 Cada um dos **118 elementos químicos** da Tabela Periódica atua como um preset único de sintetizador, cujo timbre é calculado fisicamente a partir da **família química**, do **número atômico ($Z$)**, da **massa atômica ($A$)** e do **estado físico**.
 
+![Interface do sintetizador Md-101](assets/screenshot.jpg)
+
 ---
 
 ## Por que o nome **Md-101**?
