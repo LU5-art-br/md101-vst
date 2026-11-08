@@ -8,6 +8,14 @@ Cada um dos **118 elementos químicos** da Tabela Periódica atua como um preset
 
 ---
 
+## Documentação do Projeto
+
+- 📘 **[Manual do Usuário (Markdown)](docs/MANUAL.md)**: Guia passo a passo de instalação, performance com teclado do computador e mouse, uso nas principais DAWs (Reaper, Waveform, Ableton, FL Studio, Cubase, etc.) e guia tímbrico das 10 famílias.
+- 🌐 **[Manual do Usuário em HTML](docs/manual.html)**: Versão visual para navegador com guia da interface, atalhos de performance, tabela de DAWs recomendadas (Reaper, Waveform, etc.), características das 10 famílias químicas e FAQ.
+- ⚙️ **[Arquitetura de Software e Engenharia DSP](docs/ARCHITECTURE.md)**: Documentação técnica com diagramas de classes, modelo de threads e concorrência, formulações matemáticas do filtro TPT SVF 24 dB/oct, algoritmos PolyBLEP anti-aliasing, alocação de 16 vozes e suíte de testes.
+
+---
+
 ## Por que o nome **Md-101**?
 
 O nome **Md-101** une dois universos fundamentais deste projeto — a **Química Periódica** e a **História dos Sintetizadores Clássicos**:
@@ -114,5 +122,5 @@ Desenvolvido por **LU5** — conheça mais projetos de arte, música e tecnologi
 
 ## Licença
 
-Este projeto é disponibilizado sob a licença **MIT** (consulte o arquivo [LICENSE](file:///D:/User/Projects/vst-periodic-table/LICENSE) para mais detalhes).
+Este projeto é disponibilizado sob a licença **MIT** (consulte o arquivo [LICENSE](LICENSE) para mais detalhes).
 Note que, ao compilar e distribuir binários combinados com a versão de código aberto do framework JUCE, os termos da **GPLv3** do JUCE se aplicam à obra binária distribuída.
