@@ -90,6 +90,29 @@
       text-shadow: 0 0 12px var(--accent-glow);
     }
 
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .lang-badge {
+      background: rgba(61, 158, 229, 0.15);
+      border: 1px solid rgba(61, 158, 229, 0.35);
+      color: #38bdf8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .lang-badge:hover {
+      background: rgba(61, 158, 229, 0.28);
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
     .author-badge {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
@@ -417,7 +440,10 @@
       <li><a href="#familias">Famílias Químicas</a></li>
       <li><a href="#faq">FAQ</a></li>
     </ul>
-    <a href="https://lu5.art.br" target="_blank" rel="noopener" class="author-badge">by LU5 • lu5.art.br</a>
+    <div class="header-actions">
+      <a href="manual-en.html" class="lang-badge" title="English Version">🇺🇸 EN</a>
+      <a href="https://lu5.art.br" target="_blank" rel="noopener" class="author-badge">by LU5 • lu5.art.br</a>
+    </div>
   </header>
 
   <!-- Main -->

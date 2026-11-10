@@ -16,6 +16,27 @@ void PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::drawButtonBackgro
     bool isDown)
 {
     const auto bounds = button.getLocalBounds().toFloat().reduced (0.8f);
+
+    if (button.getComponentID() == "langSwitch")
+    {
+        g.setColour (juce::Colour (0xff131a27));
+        g.fillRoundedRectangle (bounds, 6.0f);
+
+        const float halfW = bounds.getWidth() * 0.5f;
+        const auto activeHalf = (language == PeriodicSynth::Language::English)
+                                    ? bounds.withWidth (halfW).reduced (2.0f, 2.0f)
+                                    : bounds.withTrimmedLeft (halfW).reduced (2.0f, 2.0f);
+
+        g.setColour (accent.withAlpha (isDown ? 0.48f : 0.32f));
+        g.fillRoundedRectangle (activeHalf, 4.5f);
+        g.setColour (accent.brighter (0.25f).withAlpha (0.85f));
+        g.drawRoundedRectangle (activeHalf, 4.5f, 1.1f);
+
+        g.setColour (isHighlighted ? accent.withAlpha (0.80f) : juce::Colour (0xff263247));
+        g.drawRoundedRectangle (bounds, 6.0f, 1.0f);
+        return;
+    }
+
     const bool toggled = button.getToggleState();
 
     juce::Colour bg = toggled ? accent.withAlpha (0.28f) : juce::Colour (0xff151c29);
@@ -30,6 +51,32 @@ void PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::drawButtonBackgro
     g.setColour (toggled ? accent.brighter (0.25f)
                          : (isHighlighted ? accent.withAlpha (0.75f) : juce::Colour (0xff283348)));
     g.drawRoundedRectangle (bounds, 5.0f, toggled ? 1.5f : 1.0f);
+}
+
+void PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::drawButtonText (
+    juce::Graphics& g,
+    juce::TextButton& button,
+    bool isHighlighted,
+    bool isDown)
+{
+    if (button.getComponentID() == "langSwitch")
+    {
+        const auto bounds = button.getLocalBounds().toFloat();
+        const float halfW = bounds.getWidth() * 0.5f;
+        const auto leftHalf  = bounds.withWidth (halfW);
+        const auto rightHalf = bounds.withTrimmedLeft (halfW);
+        const bool isEn = (language == PeriodicSynth::Language::English);
+
+        g.setFont (juce::FontOptions (10.5f, juce::Font::bold));
+        g.setColour (isEn ? juce::Colours::white : juce::Colour (0xff7c8ba3));
+        g.drawText ("EN", leftHalf, juce::Justification::centred, false);
+
+        g.setColour (! isEn ? juce::Colours::white : juce::Colour (0xff7c8ba3));
+        g.drawText ("PT", rightHalf, juce::Justification::centred, false);
+        return;
+    }
+
+    juce::LookAndFeel_V4::drawButtonText (g, button, isHighlighted, isDown);
 }
 
 void PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::drawLinearSlider (
@@ -114,6 +161,18 @@ PeriodicSynthAudioProcessorEditor::PeriodicSynthAudioProcessorEditor (PeriodicSy
     addAndMakeVisible (holdBtn);
     addAndMakeVisible (panicBtn);
 
+    // Language selector button in top header bar (EN | PT)
+    langBtn.setComponentID ("langSwitch");
+    langBtn.setMouseCursor (juce::MouseCursor::PointingHandCursor);
+    addAndMakeVisible (langBtn);
+    langBtn.onClick = [this]
+    {
+        const auto nextLang = (currentLanguage == PeriodicSynth::Language::English)
+                                  ? PeriodicSynth::Language::Portuguese
+                                  : PeriodicSynth::Language::English;
+        setLanguage (nextLang);
+    };
+
     authorLinkBtn.setFont (juce::FontOptions (10.5f, juce::Font::bold), false, juce::Justification::centredLeft);
     authorLinkBtn.setColour (juce::HyperlinkButton::textColourId, juce::Colour (0xff8fa3c4));
     addAndMakeVisible (authorLinkBtn);
@@ -145,6 +204,7 @@ PeriodicSynthAudioProcessorEditor::PeriodicSynthAudioProcessorEditor (PeriodicSy
         audioProcessor.getSynthEngine().panic();
     };
 
+    setLanguage (audioProcessor.getLanguage());
     syncAccentTheme (audioProcessor.getSelectedElementIndex());
     updatePianoRangeLabel();
 
@@ -159,6 +219,20 @@ PeriodicSynthAudioProcessorEditor::~PeriodicSynthAudioProcessorEditor()
 {
     stopTimer();
     setLookAndFeel (nullptr);
+}
+
+void PeriodicSynthAudioProcessorEditor::setLanguage (PeriodicSynth::Language lang)
+{
+    currentLanguage = lang;
+    audioProcessor.setLanguage (lang);
+    studioLaf.setLanguage (lang);
+    periodicTable.setLanguage (lang);
+
+    const bool isPt = (lang == PeriodicSynth::Language::Portuguese);
+    octDownBtn.setButtonText (isPt ? "- Oitava" : "- Octave");
+    octUpBtn.setButtonText   (isPt ? "Oitava +" : "Octave +");
+    langBtn.repaint();
+    repaint();
 }
 
 void PeriodicSynthAudioProcessorEditor::syncAccentTheme (int elementIndex)
@@ -216,13 +290,16 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillEllipse (iconC.x - 2.5f, iconC.y - 2.5f, 5.0f, 5.0f);
 
     // Brand Title & Subtitle
+    const bool isPt = (currentLanguage == PeriodicSynth::Language::Portuguese);
+
     g.setColour (juce::Colours::white);
     g.setFont (juce::FontOptions (16.0f, juce::Font::bold));
     g.drawText ("Md-101", 42, 3, 68, 19, juce::Justification::centredLeft, false);
 
     g.setColour (juce::Colour (0xff7c8ba3));
     g.setFont (juce::FontOptions (10.2f, juce::Font::plain));
-    g.drawText (juce::String::fromUTF8 (u8"Sintetizador Periódico • 118 Elementos"),
+    g.drawText (juce::String::fromUTF8 (isPt ? u8"Sintetizador Periódico • 118 Elementos"
+                                             : u8"Periodic Synthesizer • 118 Elements"),
                 42, 21, 235, 15, juce::Justification::centredLeft, false);
 
     // Active Preset Pill between Prev & Next buttons
@@ -239,7 +316,7 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
         g.setColour (juce::Colours::white);
         g.setFont (juce::FontOptions (12.0f, juce::Font::bold));
         const juce::String pText = "#" + juce::String (activeEl.atomicNumber).paddedLeft ('0', 3)
-                                 + "  " + activeEl.symbol + " - " + juce::String::fromUTF8 (activeEl.namePt);
+                                 + "  " + activeEl.symbol + " - " + PeriodicSynth::getElementName (activeEl, currentLanguage);
         g.drawText (pText, presetPill.reduced (8.0f, 0.0f), juce::Justification::centred, true);
     }
 
@@ -249,9 +326,10 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawText ("VOLUME", gainSlider.getX() - 54, 10, 50, 20, juce::Justification::centredRight, false);
     g.drawText ("REVERB", spaceSlider.getX() - 52, 10, 48, 20, juce::Justification::centredRight, false);
 
-    // MIDI / Polyphony Voice Status Pill (top-right)
+    // MIDI / Polyphony Voice Status Pill (left of language selector button)
     const int voices = audioProcessor.getSynthEngine().getActiveVoiceCount();
-    const juce::Rectangle<float> voicePill (bounds.getWidth() - 112.0f, 8.0f, 96.0f, 24.0f);
+    const float voicePillX = static_cast<float> (langBtn.getX() - 98);
+    const juce::Rectangle<float> voicePill (voicePillX, 8.0f, 90.0f, 24.0f);
     g.setColour (juce::Colour (0xff141b28));
     g.fillRoundedRectangle (voicePill, 12.0f);
     g.setColour (voices > 0 ? accent.withAlpha (0.80f) : juce::Colour (0xff253044));
@@ -275,14 +353,16 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0xffcfd8ea));
     g.setFont (juce::FontOptions (11.0f, juce::Font::bold));
-    g.drawText ("PIANO MIDI (" + pianoRangeText + ")",
+    g.drawText ((isPt ? "PIANO MIDI (" : "MIDI PIANO (") + pianoRangeText + ")",
                 static_cast<int> (footerPanel.getX() + 12.0f),
                 static_cast<int> (footerTop + 5.0f),
                 170, 20, juce::Justification::centredLeft, false);
 
     g.setColour (juce::Colour (0xff6e7d96));
     g.setFont (juce::FontOptions (10.0f, juce::Font::plain));
-    g.drawText (juce::String::fromUTF8 (u8"Clique/arraste nas teclas, use o teclado PC (A-L / Z-X oitava) ou envie notas de uma track MIDI da DAW"),
+    g.drawText (juce::String::fromUTF8 (isPt
+                    ? u8"Clique/arraste nas teclas, use o teclado PC (A-L / Z-X oitava) ou envie notas de uma track MIDI da DAW"
+                    : u8"Click/drag keys, use PC keyboard (A-L / Z-X octave) or send notes from a DAW MIDI track"),
                 static_cast<int> (footerPanel.getX() + 178.0f),
                 static_cast<int> (footerTop + 5.0f),
                 540, 20, juce::Justification::centredLeft, true);
@@ -295,14 +375,22 @@ void PeriodicSynthAudioProcessorEditor::resized()
     // 1. Header controls (top 40px)
     auto header = area.removeFromTop (40);
     authorLinkBtn.setBounds (112, 4, 150, 18);
-    const int centerPresetW = 250;
-    const int centerStart = std::max (280, (header.getWidth() - centerPresetW) / 2 - 45);
-    prevPresetBtn.setBounds (centerStart, 7, 28, 26);
-    nextPresetBtn.setBounds (centerStart + 28 + centerPresetW - 46, 7, 28, 26);
 
-    const int rightAnchor = header.getWidth() - 124;
-    spaceSlider.setBounds (rightAnchor - 92, 10, 88, 20);
-    gainSlider.setBounds  (spaceSlider.getX() - 150, 10, 90, 20);
+    langBtn.setBounds (header.getWidth() - 76, 8, 64, 24);
+    const int voicePillLeft = langBtn.getX() - 98;
+
+    const int sliderW = header.getWidth() < 1040 ? 76 : 86;
+    const int labelGap = 52;
+    spaceSlider.setBounds (voicePillLeft - 10 - sliderW, 10, sliderW, 20);
+    gainSlider.setBounds  (spaceSlider.getX() - labelGap - 10 - sliderW, 10, sliderW, 20);
+
+    const int leftLimit   = 274;
+    const int rightLimit  = gainSlider.getX() - labelGap - 8;
+    const int availCenter = std::max (180, rightLimit - leftLimit);
+    const int centerPresetW = juce::jlimit (180, 250, availCenter - 12);
+    const int centerStart = leftLimit + (availCenter - centerPresetW) / 2;
+    prevPresetBtn.setBounds (centerStart, 7, 28, 26);
+    nextPresetBtn.setBounds (centerStart + centerPresetW - 28, 7, 28, 26);
 
     // 2. Footer Piano + Toolbar (bottom ~21% of height, clamped 142..185px)
     const int footerTotalH = juce::jlimit (142, 185, static_cast<int> (getHeight() * 0.215f));
@@ -326,6 +414,9 @@ void PeriodicSynthAudioProcessorEditor::resized()
 
 void PeriodicSynthAudioProcessorEditor::timerCallback()
 {
+    if (audioProcessor.getLanguage() != currentLanguage)
+        setLanguage (audioProcessor.getLanguage());
+
     const int procIdx = audioProcessor.getSelectedElementIndex();
     if (procIdx != lastSyncedElement)
         syncAccentTheme (procIdx);

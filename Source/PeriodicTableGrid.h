@@ -16,6 +16,9 @@ public:
     void setSelectedElement (int elementIndex);
     int getSelectedElement() const noexcept { return selectedElementIndex; }
 
+    void setLanguage (Language lang) noexcept;
+    Language getLanguage() const noexcept { return currentLanguage; }
+
     void updateAudioVisuals (const std::array<float, SynthEngine::kScopeSize>& scopeSamples,
                              float outputRms,
                              int activeVoices);
@@ -55,9 +58,10 @@ private:
     void drawInspectorHud (juce::Graphics& g, const LayoutMetrics& m) const;
     void drawLegend (juce::Graphics& g, const LayoutMetrics& m) const;
 
-    int selectedElementIndex = 0; // Default: 1 H (Hidrogênio)
+    int selectedElementIndex = 0; // Default: 1 H (Hydrogen)
     int hoveredElementIndex = -1;
     int hoveredCategoryIndex = -1;
+    Language currentLanguage = Language::English;
 
     std::array<float, SynthEngine::kScopeSize> scopeData {};
     float currentRms = 0.0f;

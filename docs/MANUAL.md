@@ -1,5 +1,7 @@
 # Md-101 — Manual do Usuário
 
+🌐 **Idioma / Language:** **Português** | [English (MANUAL-en.md)](MANUAL-en.md) | [Manual Visual HTML (manual.html)](manual.html)
+
 Instrumento Virtual Polifônico VST3 e Standalone Baseado na Tabela Periódica dos Elementos Químicos.  
 Desenvolvido por **LU5** ([lu5.art.br](https://lu5.art.br)).
 
@@ -81,8 +83,10 @@ A interface do Md-101 foi desenhada para oferecer uma experiência imersiva e de
 
 ### 3.3. Barra Superior de Controle
 - **Botões de Navegação `<` e `>`**: Permitem avançar ou retroceder sequencialmente pelos elementos da tabela periódica.
+- **Seletor de Idioma (`EN | PT`)**: Alterna instantaneamente a interface inteira entre **Inglês** e **Português**, salvando sua preferência junto com a sessão da DAW.
 - **Volume Master**: Controla o ganho geral de saída com interpolação suave (evita estalos ou cliques digitais).
 - **Ambiência / Reverb**: Ajusta a intensidade espacial da reverberação e da espacialização estéreo.
+- **Monitor de Vozes (`MIDI 0/16`)**: Indicador numérico e LED em tempo real da contagem de vozes polifônicas ativas.
 
 ### 3.4. Teclado Virtual & Controles de Performance
 - **Sensibilidade à Velocidade Vertical**: Ao clicar em uma tecla, a posição vertical do cursor define a dinâmica:

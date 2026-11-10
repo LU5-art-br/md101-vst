@@ -39,6 +39,9 @@ public:
     void selectElementIndex (int zeroBasedIndex);
     int getSelectedElementIndex() const noexcept;
 
+    void setLanguage (PeriodicSynth::Language lang) noexcept;
+    PeriodicSynth::Language getLanguage() const noexcept;
+
     juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState; }
     PeriodicSynth::SynthEngine& getSynthEngine() noexcept { return synthEngine; }
     juce::AudioProcessorValueTreeState& getApvts() noexcept { return apvts; }
@@ -53,6 +56,7 @@ private:
     std::atomic<float>* elementParam = nullptr;
     std::atomic<float>* gainParam    = nullptr;
     std::atomic<float>* spaceParam   = nullptr;
+    std::atomic<int> currentLanguage { static_cast<int> (PeriodicSynth::Language::English) };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PeriodicSynthAudioProcessor)
 };

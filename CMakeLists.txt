@@ -14,7 +14,7 @@ endif()
 # (prevents LoadLibraryW ordinal mismatch error 182 on CI and end-user DAWs).
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project(Md101 VERSION 1.0.0 LANGUAGES C CXX)
+project(Md101 VERSION 1.1.0 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -40,6 +40,7 @@ endif()
 juce_add_plugin(Md101
     COMPANY_NAME "LU5"
     COMPANY_WEBSITE "https://lu5.art.br"
+    VERSION "1.1.0"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE

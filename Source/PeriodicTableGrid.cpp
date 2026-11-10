@@ -19,6 +19,15 @@ void PeriodicTableGrid::setSelectedElement (int elementIndex)
     }
 }
 
+void PeriodicTableGrid::setLanguage (Language lang) noexcept
+{
+    if (currentLanguage != lang)
+    {
+        currentLanguage = lang;
+        repaint();
+    }
+}
+
 void PeriodicTableGrid::updateAudioVisuals (const std::array<float, SynthEngine::kScopeSize>& scopeSamples,
                                             float outputRms,
                                             int activeVoices)
@@ -330,7 +339,7 @@ void PeriodicTableGrid::drawElementCell (juce::Graphics& g, const LayoutMetrics&
     {
         g.setColour (inkSub);
         g.setFont (juce::FontOptions (massFontH, juce::Font::plain));
-        g.drawText (juce::String (el.massDisplay),
+        g.drawText (getElementMassDisplay (el, currentLanguage),
                     rect.withTop (rect.getBottom() - massFontH - 2.5f).reduced (1.5f, 0.0f),
                     juce::Justification::centred, false);
     }
@@ -377,7 +386,7 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
 
     g.setColour (juce::Colour (0xffb8c4d9));
     g.setFont (juce::FontOptions (9.5f, juce::Font::bold));
-    g.drawText (getPhaseNamePt (activeEl.phase).toUpperCase(),
+    g.drawText (getPhaseName (activeEl.phase, currentLanguage).toUpperCase(),
                 cardRect.reduced (7.0f, 5.0f).withHeight (15.0f),
                 juce::Justification::centredRight, false);
 
@@ -388,17 +397,17 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
                 cardRect.withY (cardRect.getY() + 20.0f).withHeight (cardRect.getHeight() * 0.42f),
                 juce::Justification::centred, false);
 
-    // Full Portuguese Name
+    // Full Element Name
     g.setColour (accent.brighter (0.30f));
     g.setFont (juce::FontOptions (13.0f, juce::Font::bold));
-    g.drawText (juce::String::fromUTF8 (activeEl.namePt),
+    g.drawText (getElementName (activeEl, currentLanguage),
                 cardRect.withTop (cardRect.getBottom() - 36.0f).withHeight (17.0f).reduced (4.0f, 0.0f),
                 juce::Justification::centred, true);
 
     // Full Atomic Mass
     g.setColour (juce::Colour (0xff9aa7bd));
     g.setFont (juce::FontOptions (10.5f, juce::Font::plain));
-    g.drawText (juce::String (activeEl.massDisplay) + " u",
+    g.drawText (getElementMassDisplay (activeEl, currentLanguage) + " u",
                 cardRect.withTop (cardRect.getBottom() - 18.0f).withHeight (14.0f),
                 juce::Justification::centred, false);
 
@@ -421,8 +430,9 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
 
     g.setColour (juce::Colour (0xff7e8ca6));
     g.setFont (juce::FontOptions (9.5f, juce::Font::bold));
-    g.drawText (currentVoices > 0 ? juce::String::fromUTF8 (u8"OSCILOSCÓPIO • AO VIVO")
-                                  : juce::String::fromUTF8 (u8"ASSINATURA HARMÔNICA"),
+    const bool isPt = (currentLanguage == Language::Portuguese);
+    g.drawText (currentVoices > 0 ? juce::String::fromUTF8 (isPt ? u8"OSCILOSCÓPIO • AO VIVO" : u8"OSCILLOSCOPE • LIVE")
+                                  : juce::String::fromUTF8 (isPt ? u8"ASSINATURA HARMÔNICA"   : u8"HARMONIC SIGNATURE"),
                 scopeRect.reduced (6.0f, 4.0f).withHeight (12.0f),
                 juce::Justification::centredLeft, false);
 
@@ -471,12 +481,12 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
     // Category badge + Engine description
     g.setColour (accent);
     g.setFont (juce::FontOptions (12.5f, juce::Font::bold));
-    g.drawText (getCategoryNamePt (activeEl.category).toUpperCase(),
+    g.drawText (getCategoryName (activeEl.category, currentLanguage).toUpperCase(),
                 mid.removeFromTop (16.0f), juce::Justification::centredLeft, true);
 
     g.setColour (juce::Colour (0xffc5d0e3));
     g.setFont (juce::FontOptions (10.5f, juce::Font::plain));
-    g.drawText (juce::String::fromUTF8 (profile.engineDescriptionPt),
+    g.drawText (getEngineDescription (profile, currentLanguage),
                 mid.removeFromTop (15.0f), juce::Justification::centredLeft, true);
 
     mid.removeFromTop (4.0f);
@@ -484,10 +494,10 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
     // 4 physical-to-sonic parameter meters
     struct MeterRow { const char* label; float normVal; };
     const std::array<MeterRow, 4> meters {{
-        { u8"Nº Atômico -> Harmônicos", profile.harmonicRichness },
-        { u8"Massa -> Corpo & Inércia", profile.bodyWeight },
-        { u8"Brilho Espectral (Filtro)", profile.brightness },
-        { u8"Ressonância & Release",     profile.sustainTail }
+        { isPt ? u8"Nº Atômico -> Harmônicos"   : u8"Atomic No. -> Harmonics",      profile.harmonicRichness },
+        { isPt ? u8"Massa -> Corpo & Inércia"   : u8"Mass -> Body & Inertia",       profile.bodyWeight },
+        { isPt ? u8"Brilho Espectral (Filtro)"  : u8"Spectral Brightness (Filter)", profile.brightness },
+        { isPt ? u8"Ressonância & Release"      : u8"Resonance & Release",          profile.sustainTail }
     }};
 
     const float rowH = std::min (16.5f, (mid.getHeight() - 18.0f) / 4.0f);
@@ -518,15 +528,17 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
         g.setColour (hovCol.brighter (0.3f));
         g.setFont (juce::FontOptions (10.0f, juce::Font::bold));
         const juce::String msg = "Hover: [" + juce::String (hov.atomicNumber) + " " + hov.symbol + "] "
-                               + juce::String::fromUTF8 (hov.namePt) + " (" + hov.massDisplay + " u) - "
-                               + getCategoryNamePt (hov.category);
+                               + getElementName (hov, currentLanguage)
+                               + " (" + getElementMassDisplay (hov, currentLanguage) + " u) - "
+                               + getCategoryName (hov.category, currentLanguage);
         g.drawText (msg, footerLine, juce::Justification::centredLeft, true);
     }
     else
     {
         g.setColour (juce::Colour (0xff5f6d85));
         g.setFont (juce::FontOptions (9.6f, juce::Font::plain));
-        g.drawText (juce::String::fromUTF8 (u8"Clique em qualquer elemento para carregar seu preset sonoro"),
+        g.drawText (juce::String::fromUTF8 (isPt ? u8"Clique em qualquer elemento para carregar seu preset sonoro"
+                                                 : u8"Click any element to load its sound preset"),
                     footerLine, juce::Justification::centredLeft, true);
     }
 }
@@ -557,7 +569,7 @@ void PeriodicTableGrid::drawLegend (juce::Graphics& g, const LayoutMetrics& m) c
 
         g.setColour (isHov ? juce::Colours::white : juce::Colour (0xffb8c4d8));
         g.setFont (juce::FontOptions (11.0f, isHov ? juce::Font::bold : juce::Font::plain));
-        g.drawText (getCategoryNamePt (cat),
+        g.drawText (getCategoryName (cat, currentLanguage),
                     itemRect.withTrimmedLeft (swSize + 10.0f),
                     juce::Justification::centredLeft, true);
     }

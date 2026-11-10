@@ -29,11 +29,18 @@ enum class PhysicalPhase : int
     Gas
 };
 
+enum class Language : int
+{
+    English = 0,
+    Portuguese = 1
+};
+
 struct ElementInfo
 {
     int atomicNumber;               // Z = 1..118
     const char* symbol;             // "H" .. "Og"
     const char* namePt;             // UTF-8 Portuguese name matching reference table
+    const char* nameEn;             // English IUPAC element name
     float atomicMass;               // Numerical atomic mass (u)
     const char* massDisplay;        // Exact display string from reference table ("1,008", "[294]", etc.)
     ElementCategory category;       // Chemical family (10 categories from reference legend)
@@ -96,6 +103,7 @@ struct ElementSynthProfile
     float reverbDamping = 0.45f;
 
     const char* engineDescriptionPt = "";
+    const char* engineDescriptionEn = "";
 };
 
 // Database accessors (1-based Z = 1..118, or 0-based index 0..117)
@@ -106,8 +114,14 @@ const ElementInfo& getElementByIndex (int zeroBasedIndex) noexcept;
 const ElementInfo& getElementByAtomicNumber (int atomicNumber) noexcept;
 int findElementAtGrid (int gridRow, int gridCol) noexcept; // returns 0..117 or -1
 
-// Category metadata matching the attached Toda Matéria Periodic Table
+// Category & localized metadata (English default, Portuguese toggleable)
 juce::Colour getCategoryColour (ElementCategory category) noexcept;
+juce::String getElementName (const ElementInfo& element, Language lang = Language::English);
+juce::String getElementMassDisplay (const ElementInfo& element, Language lang = Language::English);
+juce::String getCategoryName (ElementCategory category, Language lang = Language::English);
+juce::String getPhaseName (PhysicalPhase phase, Language lang = Language::English);
+juce::String getEngineDescription (const ElementSynthProfile& profile, Language lang = Language::English);
+
 juce::String getCategoryNamePt (ElementCategory category);
 juce::String getPhaseNamePt (PhysicalPhase phase);
 

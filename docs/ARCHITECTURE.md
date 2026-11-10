@@ -1,5 +1,7 @@
 # Md-101 — Arquitetura de Software e Engenharia DSP
 
+🌐 **Idioma / Language:** **Português** | [English (ARCHITECTURE-en.md)](ARCHITECTURE-en.md)
+
 O **Md-101** é um instrumento virtual MIDI polifônico (16 vozes) desenvolvido em **C++17** utilizando o framework **JUCE 8**, disponível nos formatos **VST3** e **Standalone** para plataformas **Windows** e **Linux**.
 
 O conceito central do projeto é a **sonificação determinística da física e química atômica**: cada um dos 118 elementos químicos conhecidos atua como um preset de síntese acústica cujos coeficientes de oscilação, filtragem, modulação FM, envelope e saturação derivam das propriedades periódicas do elemento.

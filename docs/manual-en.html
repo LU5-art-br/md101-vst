@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Md-101 — VST3 & Standalone User Manual</title>
+  <style>
+    :root {
+      --bg-dark: #0f1115;
+      --bg-card: #161920;
+      --bg-card-hover: #1e222c;
+      --bg-surface: #12141a;
+      --border-subtle: #262b37;
+      --border-bright: #3b4255;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent: #3d9ee5;
+      --accent-glow: rgba(61, 158, 229, 0.35);
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(15, 17, 21, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #3d9ee5, #dcadd7);
+      color: #000;
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+    }
+
+    .logo-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text-main);
+      text-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .lang-badge {
+      background: rgba(61, 158, 229, 0.15);
+      border: 1px solid rgba(61, 158, 229, 0.35);
+      color: #38bdf8;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .lang-badge:hover {
+      background: rgba(61, 158, 229, 0.28);
+      border-color: #38bdf8;
+      color: #fff;
+    }
+
+    .author-badge {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .author-badge:hover {
+      border-color: var(--accent);
+      color: var(--text-main);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem 3.5rem;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 3.5rem;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      background: rgba(61, 158, 229, 0.12);
+      border: 1px solid rgba(61, 158, 229, 0.3);
+      padding: 0.3rem 0.9rem;
+      border-radius: 50px;
+      margin-bottom: 1.25rem;
+      font-weight: 600;
+    }
+
+    .hero h1 {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+      background: linear-gradient(180deg, #ffffff 40%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      max-width: 780px;
+      margin: 0 auto 2rem;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .badge-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0f1115;
+      box-shadow: 0 4px 18px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px var(--accent-glow);
+      filter: brightness(1.1);
+    }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+    }
+    .btn-secondary:hover {
+      border-color: var(--border-bright);
+      background: var(--bg-card-hover);
+    }
+
+    /* Section Headers */
+    .section-container {
+      margin-bottom: 4rem;
+    }
+
+    .section-header {
+      margin-bottom: 2rem;
+    }
+
+    .section-header h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    /* Screenshot Banner */
+    .screenshot-banner {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .screenshot-banner img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Content Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .content-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 1.75rem;
+      transition: border-color 0.2s;
+    }
+    .content-card:hover {
+      border-color: var(--border-bright);
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(61, 158, 229, 0.12);
+      border: 1px solid rgba(61, 158, 229, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--accent);
+    }
+
+    .content-card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .content-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .content-card ul {
+      list-style-position: inside;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+    }
+    .content-card li {
+      margin-bottom: 0.4rem;
+    }
+
+    /* Tables */
+    .table-wrapper {
+      overflow-x: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      margin: 1.5rem 0 2.5rem;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    .spec-table th, .spec-table td {
+      padding: 0.95rem 1.2rem;
+      border-bottom: 1px solid var(--border-subtle);
+      text-align: left;
+    }
+
+    .spec-table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+    }
+
+    .spec-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .spec-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .top-daw-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
+    /* Code blocks */
+    pre, code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    pre {
+      background: #08090c;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      margin: 0.75rem 0 1rem;
+    }
+
+    code.inline-code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 0.2rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.86em;
+      color: #38bdf8;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 3rem 2rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <a href="#intro" class="logo-container">
+      <span class="logo-badge">Md-101</span>
+      <span class="logo-title">VST3 Synthesizer</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#interface">Interface</a></li>
+      <li><a href="#keyboard">Keyboard & Performance</a></li>
+      <li><a href="#installation">Installation & DAWs</a></li>
+      <li><a href="#families">Chemical Families</a></li>
+      <li><a href="#faq">FAQ</a></li>
+    </ul>
+    <div class="header-actions">
+      <a href="manual.html" class="lang-badge" title="Versão em Português">🇧🇷 PT</a>
+      <a href="https://lu5.art.br" target="_blank" rel="noopener" class="author-badge">by LU5 • lu5.art.br</a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main>
+
+    <!-- Hero Section -->
+    <section class="hero" id="intro">
+      <span class="hero-tag">User Manual • VST3 & Standalone</span>
+      <h1>Md-101 — The Periodic Table in Sound</h1>
+      <p>
+        A 16-voice polyphonic virtual instrument where each of the 118 chemical elements acts as an acoustic preset, deterministically calculated from atomic and physical properties.
+      </p>
+
+      <div class="hero-badges">
+        <span class="badge-pill">⚡ 16 Polyphonic Voices</span>
+        <span class="badge-pill">🧪 118 Atomic Presets</span>
+        <span class="badge-pill">🎛️ 24 dB/oct Cytomic TPT SVF</span>
+        <span class="badge-pill">🎹 PolyBLEP + FM + Wavefolding</span>
+        <span class="badge-pill">🌐 Bilingual UI (EN | PT)</span>
+        <span class="badge-pill">💻 Windows & Linux 64-bit</span>
+        <span class="badge-pill">🚀 C++17 & JUCE 8</span>
+      </div>
+
+      <div class="hero-actions">
+        <a href="#installation" class="btn btn-primary">🎛️ Installation & DAW Setup</a>
+        <a href="#interface" class="btn btn-secondary">🖼️ Interface Tour</a>
+        <a href="#keyboard" class="btn btn-secondary">🎹 Performance Controls</a>
+      </div>
+    </section>
+
+    <!-- Interface Section -->
+    <section class="section-container" id="interface">
+      <div class="section-header">
+        <h2>🖼️ Graphical Interface & Controls</h2>
+        <p>Built with a Dark Studio aesthetic, luminescent neon accents, and high-contrast typography.</p>
+      </div>
+
+      <div class="screenshot-banner">
+        <img src="../assets/screenshot.jpg" alt="Official Md-101 synthesizer interface screenshot" />
+      </div>
+
+      <div class="cards-grid">
+        <div class="content-card">
+          <div class="card-icon">🧪</div>
+          <h3>118-Preset Periodic Table</h3>
+          <p>
+            The upper half features the full periodic table with authentic chemical family color coding:
+          </p>
+          <ul>
+            <li><strong>One-Click Preset Loading</strong>: Click any cell to load its synthesized sonic preset immediately.</li>
+            <li><strong>Hover & Preview</strong>: Hovering over any element previews its properties in the center HUD.</li>
+            <li><strong>Active Frame & LED</strong>: Selected element is framed with a glowing border, active dot, and audio-reactive aura.</li>
+            <li><strong>Interactive Legend</strong>: Hovering over any of the 10 categories at the top highlights all corresponding elements.</li>
+          </ul>
+        </div>
+
+        <div class="content-card">
+          <div class="card-icon">📊</div>
+          <h3>Center HUD & Real-Time Scope</h3>
+          <p>
+            The central display provides physical atomic telemetry and live waveform analysis:
+          </p>
+          <ul>
+            <li><strong>Atomic Card</strong>: Displays Atomic Number (Z), Symbol, localized name, Atomic Mass, and STP phase.</li>
+            <li><strong>Telemetry Meters</strong>: Shows Harmonic Richness, Spectral Brightness, Body & Inertia, and Resonance & Release.</li>
+            <li><strong>Live Stereo Oscilloscope</strong>: Renders the precise waveform generated by active polyphonic voices.</li>
+            <li><strong>Sequential Navigation</strong>: Quick <code class="inline-code">&lt;</code> and <code class="inline-code">&gt;</code> buttons to browse presets sequentially.</li>
+          </ul>
+        </div>
+
+        <div class="content-card">
+          <div class="card-icon">🌐</div>
+          <h3>Top Bar & Language Selector</h3>
+          <p>
+            Global controls and studio utilities with de-zippered anti-click smoothing:
+          </p>
+          <ul>
+            <li><strong>Language Switcher (<code class="inline-code">EN | PT</code>)</strong>: Instant toggle between English and Portuguese, saved with your DAW session.</li>
+            <li><strong>Master Volume</strong>: Smooth linear output gain control preventing digital clicks and overs.</li>
+            <li><strong>Ambience / Reverb</strong>: Regulates spatial reverb depth and stereo chorus spreading.</li>
+            <li><strong>Voice Monitor (<code class="inline-code">MIDI 0/16</code>)</strong>: Real-time active voice count and activity LED.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Performance & Keyboard Section -->
+    <section class="section-container" id="keyboard">
+      <div class="section-header">
+        <h2>🎹 Virtual MIDI Keyboard & Performance Controls</h2>
+        <p>Engineered for maximum playability, dynamic nuance, and live studio expression.</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="content-card">
+          <div class="card-icon">⚡</div>
+          <h3>Vertical Velocity Sensitivity</h3>
+          <p>
+            The 61-key virtual keyboard detects the exact vertical position of your mouse click:
+          </p>
+          <ul>
+            <li><strong>Bottom tip of key</strong>: Maximum velocity (127 - Forte / punchy attack transient).</li>
+            <li><strong>Top area of key</strong>: Soft, intimate velocity (Piano / delicate touch).</li>
+            <li><strong>Continuous Glissando</strong>: Click and drag across the keys horizontally for smooth sweeps.</li>
+          </ul>
+        </div>
+
+        <div class="content-card">
+          <div class="card-icon">⌨️</div>
+          <h3>Computer QWERTY Keyboard Playback</h3>
+          <p>
+            Play melodies directly using your PC or laptop keyboard without requiring an external MIDI controller:
+          </p>
+          <ul>
+            <li><strong>White Keys</strong>: <code class="inline-code">A</code> <code class="inline-code">S</code> <code class="inline-code">D</code> <code class="inline-code">F</code> <code class="inline-code">G</code> <code class="inline-code">H</code> <code class="inline-code">J</code> <code class="inline-code">K</code> <code class="inline-code">L</code> <code class="inline-code">;</code></li>
+            <li><strong>Black Keys</strong>: <code class="inline-code">W</code> <code class="inline-code">E</code> <code class="inline-code">T</code> <code class="inline-code">Y</code> <code class="inline-code">U</code> <code class="inline-code">O</code> <code class="inline-code">P</code></li>
+            <li><strong>Octave Transpose</strong>: <code class="inline-code">Z</code> (down 1 octave) and <code class="inline-code">X</code> (up 1 octave).</li>
+          </ul>
+        </div>
+
+        <div class="content-card">
+          <div class="card-icon">🛡️</div>
+          <h3>Performance Controls</h3>
+          <p>
+            Dedicated utility buttons designed for studio and live workflow:
+          </p>
+          <ul>
+            <li><strong>Hold Button (Virtual Sustain)</strong>: Latches triggered notes to sustain indefinitely for infinite pads and drones.</li>
+            <li><strong>Panic Button</strong>: Dispatches an instant <em>All Notes Off</em> command and silences any hung voices.</li>
+            <li><strong>- Octave and Octave +</strong>: Shifts the keyboard register across &plusmn;2 octaves (spanning C0 to C9).</li>
+            <li><strong>DAW MIDI Feedback</strong>: Virtual keys light up in real time when notes are received from a DAW MIDI track.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Installation & DAWs Section -->
+    <section class="section-container" id="installation">
+      <div class="section-header">
+        <h2>🎛️ Installation Guide & DAW Setup</h2>
+        <p>Compatible with all major professional digital audio workstations on Windows and Linux.</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="content-card">
+          <div class="card-icon">🪟</div>
+          <h3>Windows Installation</h3>
+          <p>Copy the built <code class="inline-code">Md-101.vst3</code> bundle into your standard VST3 plugins folder:</p>
+          <pre>C:\Program Files\Common Files\VST3\Md-101.vst3</pre>
+          <p>Or launch the Standalone desktop executable directly:</p>
+          <pre>build\Md101_artefacts\Release\Standalone\Md-101.exe</pre>
+        </div>
+
+        <div class="content-card">
+          <div class="card-icon">🐧</div>
+          <h3>Linux Installation</h3>
+          <p>Copy the compiled <code class="inline-code">Md-101.vst3</code> directory into your user's personal VST3 folder:</p>
+          <pre>mkdir -p ~/.vst3
+cp -r build/Md101_artefacts/Release/VST3/Md-101.vst3 ~/.vst3/</pre>
+          <p>Then rescan VST3 plugins within your DAW of choice.</p>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top: 2rem;">
+        <h3 style="font-size: 1.4rem;">Recommended DAW Configurations</h3>
+        <p>Step-by-step setup notes for each host environment:</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>DAW / Host</th>
+              <th>Track Type</th>
+              <th>Recommended Configuration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <strong>Cockos Reaper</strong>
+                <span class="top-daw-badge">Recommended</span>
+              </td>
+              <td>Virtual Instrument on New Track</td>
+              <td>Insert via <em>"Insert &gt; Virtual instrument on new track"</em>. Reaper automatically maps 16 polyphonic voices, assigns MIDI Channel 1, and populates the 118 presets in its native program selector.</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>Tracktion Waveform</strong>
+                <span class="top-daw-badge">Recommended</span>
+              </td>
+              <td>MIDI / Plugin Track (VST3)</td>
+              <td>Add <strong>Md-101</strong> directly into the MIDI track's plugin rack. Full envelope automation support for <code class="inline-code">element</code>, <code class="inline-code">masterGain</code>, and <code class="inline-code">space</code> with native stereo routing.</td>
+            </tr>
+            <tr>
+              <td><strong>Ableton Live</strong></td>
+              <td>MIDI Track</td>
+              <td>Drag Md-101 onto a MIDI track; trigger via MIDI clips or hardware controllers. The <code class="inline-code">element</code> parameter is fully automatable via Clip Envelopes.</td>
+            </tr>
+            <tr>
+              <td><strong>FL Studio</strong></td>
+              <td>Channel Rack (Plugin Instrument)</td>
+              <td>Add via Plugin Manager; use the Piano Roll to compose expressive melodies with per-note vertical velocity.</td>
+            </tr>
+            <tr>
+              <td><strong>Steinberg Cubase / Nuendo</strong></td>
+              <td>Instrument Track (VST3)</td>
+              <td>Native recognition of 118 presets in the track inspector's VST3 program drop-down, with zero latency and 64-bit stereo audio processing.</td>
+            </tr>
+            <tr>
+              <td><strong>PreSonus Studio One</strong></td>
+              <td>Instrument Track</td>
+              <td>Drag from the <em>Instruments</em> browser tab; seamless reverb tail handling and continuous parameter automation.</td>
+            </tr>
+            <tr>
+              <td><strong>Bitwig Studio</strong></td>
+              <td>Instrument Track</td>
+              <td>Full modular integration; map custom LFO modulators and envelopes to volume, space, or element selection.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Chemical Families & Sound Section -->
+    <section class="section-container" id="families">
+      <div class="section-header">
+        <h2>🧪 The 10 Chemical Families & Sound Architecture</h2>
+        <p>How each group of the Periodic Table dictates timbre, filter slope, and acoustic response:</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="spec-table">
+          <thead>
+            <tr>
+              <th>Chemical Family</th>
+              <th>Official Color</th>
+              <th>Synthesis Architecture</th>
+              <th>Musical Role & Example Presets</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Noble gases</strong></td>
+              <td><span style="color: #3D9EE5;">● #3D9EE5</span></td>
+              <td>Atmospheric pads + filtered gaseous breath + vast spatial reverb</td>
+              <td>Ethereal harmonic beds, cinematic soundscapes, ambient music (e.g., <strong>#2 He</strong> Helium, <strong>#10 Ne</strong> Neon, <strong>#118 Og</strong> Oganesson).</td>
+            </tr>
+            <tr>
+              <td><strong>Nonmetals</strong></td>
+              <td><span style="color: #A3D246;">● #A3D246</span></td>
+              <td>Organic analog poly/wind; diatomic gases add breath turbulence</td>
+              <td>Warm melodic leads, expressive chords, gentle keys (e.g., <strong>#1 H</strong> Hydrogen, <strong>#6 C</strong> Carbon, <strong>#8 O</strong> Oxygen).</td>
+            </tr>
+            <tr>
+              <td><strong>Halogens</strong></td>
+              <td><span style="color: #72CBEB;">● #72CBEB</span></td>
+              <td>Asymmetric narrow pulse + high-resonance TPT filter</td>
+              <td>Reactive acid leads, aggressive arpeggios, cutting synth basses (e.g., <strong>#9 F</strong> Fluorine, <strong>#17 Cl</strong> Chlorine, <strong>#53 I</strong> Iodine).</td>
+            </tr>
+            <tr>
+              <td><strong>Alkali metals</strong></td>
+              <td><span style="color: #F3B202;">● #F3B202</span></td>
+              <td>Electric percussive plucks + fast attack pitch spark transient</td>
+              <td>Fast arpeggios, tonal percussion, modern punchy plucks (e.g., <strong>#3 Li</strong> Lithium, <strong>#11 Na</strong> Sodium, <strong>#19 K</strong> Potassium).</td>
+            </tr>
+            <tr>
+              <td><strong>Alkaline earth metals</strong></td>
+              <td><span style="color: #EDD805;">● #EDD805</span></td>
+              <td>Full-bodied brass-poly + sub-harmonic oscillator (-1 octave)</td>
+              <td>Synthetic symphonic brass, vigorous synth chords, dense foundations (e.g., <strong>#4 Be</strong> Beryllium, <strong>#12 Mg</strong> Magnesium, <strong>#20 Ca</strong> Calcium).</td>
+            </tr>
+            <tr>
+              <td><strong>Transition metals</strong></td>
+              <td><span style="color: #EF8E8D;">● #EF8E8D</span></td>
+              <td>2-operator FM bells and resonators modulated by column position</td>
+              <td>Harmonic bells, chimes, metallic marimbas, inharmonic gongs (e.g., <strong>#26 Fe</strong> Iron, <strong>#29 Cu</strong> Copper, <strong>#79 Au</strong> Gold).</td>
+            </tr>
+            <tr>
+              <td><strong>Semimetals</strong></td>
+              <td><span style="color: #4DB6AC;">● #4DB6AC</span></td>
+              <td>Non-linear sinusoidal wavefolding + glassy overtones</td>
+              <td>Bright digital pianos, futuristic semiconductor textures (e.g., <strong>#5 B</strong> Boron, <strong>#14 Si</strong> Silicon, <strong>#32 Ge</strong> Germanium).</td>
+            </tr>
+            <tr>
+              <td><strong>Other metals</strong></td>
+              <td><span style="color: #A3C7D7;">● #A3C7D7</span></td>
+              <td>Warm electric tines + ductile tube saturation</td>
+              <td>Vintage electric pianos (Rhodes / Wurlitzer style), neo-soul chords (e.g., <strong>#13 Al</strong> Aluminium, <strong>#50 Sn</strong> Tin, <strong>#82 Pb</strong> Lead).</td>
+            </tr>
+            <tr>
+              <td><strong>Lanthanides</strong></td>
+              <td><span style="color: #92E3E4;">● #92E3E4</span></td>
+              <td>Detuned super-harmonics (+1 and +2 octaves) + ensemble detuning</td>
+              <td>Luminescent rare-earth ensemble textures, laser-like shimmer (e.g., <strong>#57 La</strong> Lanthanum, <strong>#60 Nd</strong> Neodymium).</td>
+            </tr>
+            <tr>
+              <td><strong>Actinides</strong></td>
+              <td><span style="color: #DCADD7;">● #DCADD7</span></td>
+              <td>Heavy nuclear drones + stochastic Geiger scintillation</td>
+              <td>Massive sub-bass drones, industrial rumbles, dark sci-fi atmospheres (e.g., <strong>#92 U</strong> Uranium, <strong>#94 Pu</strong> Plutonium, <strong>#101 Md</strong> Mendelevium).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="section-container" id="faq">
+      <div class="section-header">
+        <h2>❓ Frequently Asked Questions (FAQ)</h2>
+      </div>
+
+      <div class="cards-grid">
+        <div class="content-card">
+          <h3>How do I automate element changes in my DAW?</h3>
+          <p>
+            In your DAW's MIDI track automation lane, enable automation for the <strong>`element`</strong> parameter (values 1 to 118). You can schedule presets to switch between song sections smoothly and without glitches!
+          </p>
+        </div>
+
+        <div class="content-card">
+          <h3>A note is stuck sounding. How do I silence it?</h3>
+          <p>
+            Click the <strong>Panic</strong> button on the bottom toolbar. This issues an immediate <em>All Notes Off</em> command and clears all 16 voices. Also check that the <strong>Hold</strong> button was not left active.
+          </p>
+        </div>
+
+        <div class="content-card">
+          <h3>Does the synth consume heavy CPU resources?</h3>
+          <p>
+            No. The Md-101 synthesis engine is implemented in high-performance C++17 with analytic <em>PolyBLEP</em> oscillators and zero-delay feedback <em>TPT SVF</em> filters. CPU footprint is exceptionally low, allowing dozens of instances per session.
+          </p>
+        </div>
+
+        <div class="content-card">
+          <h3>How does the language toggle work?</h3>
+          <p>
+            Click the <strong>EN | PT</strong> button in the top header. All element names, chemical families, telemetry labels, and status messages switch instantly between English and Portuguese, and your selection is persisted with the project.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>
+      <strong>Md-101</strong> — Periodic Table Polyphonic VST3 Synthesizer • Developed by <a href="https://lu5.art.br" target="_blank" rel="noopener"><strong>LU5</strong></a>.
+    </p>
+    <p style="margin-top: 0.5rem; font-size: 0.8rem; opacity: 0.7;">
+      Released under the MIT License • Technical documentation available in <a href="ARCHITECTURE-en.md">ARCHITECTURE-en.md</a> and <a href="MANUAL-en.md">MANUAL-en.md</a>.
+    </p>
+  </footer>
+
+</body>
+</html>

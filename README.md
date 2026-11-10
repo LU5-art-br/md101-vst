@@ -1,5 +1,7 @@
 # Md-101 — Sintetizador VST3 Baseado na Tabela Periódica
 
+🌐 **Idioma / Language:** **Português** | [English (README-en.md)](README-en.md)
+
 **Md-101** é um instrumento virtual MIDI polifônico (16 vozes) desenvolvido por **LU5** ([lu5.art.br](https://lu5.art.br)) em **C++17 / JUCE 8**, compatível com **Windows** e **Linux** nos formatos **VST3** (para qualquer DAW com suporte a MIDI) e **Standalone** (aplicativo independente).
 
 Cada um dos **118 elementos químicos** da Tabela Periódica atua como um preset único de sintetizador, cujo timbre é calculado fisicamente a partir da **família química**, do **número atômico ($Z$)**, da **massa atômica ($A$)** e do **estado físico**.
@@ -10,9 +12,9 @@ Cada um dos **118 elementos químicos** da Tabela Periódica atua como um preset
 
 ## Documentação do Projeto
 
-- 📘 **[Manual do Usuário (Markdown)](docs/MANUAL.md)**: Guia passo a passo de instalação, performance com teclado do computador e mouse, uso nas principais DAWs (Reaper, Waveform, Ableton, FL Studio, Cubase, etc.) e guia tímbrico das 10 famílias.
-- 🌐 **[Manual do Usuário em HTML](docs/manual.html)**: Versão visual para navegador com guia da interface, atalhos de performance, tabela de DAWs recomendadas (Reaper, Waveform, etc.), características das 10 famílias químicas e FAQ.
-- ⚙️ **[Arquitetura de Software e Engenharia DSP](docs/ARCHITECTURE.md)**: Documentação técnica com diagramas de classes, modelo de threads e concorrência, formulações matemáticas do filtro TPT SVF 24 dB/oct, algoritmos PolyBLEP anti-aliasing, alocação de 16 vozes e suíte de testes.
+- 📘 **[Manual do Usuário (Markdown)](docs/MANUAL.md)** ([English Version](docs/MANUAL-en.md)): Guia passo a passo de instalação, performance com teclado do computador e mouse, uso nas principais DAWs (Reaper, Waveform, Ableton, FL Studio, Cubase, etc.) e guia tímbrico das 10 famílias.
+- 🌐 **[Manual do Usuário em HTML](docs/manual.html)** ([English Version](docs/manual-en.html)): Versão visual para navegador com guia da interface, atalhos de performance, tabela de DAWs recomendadas (Reaper, Waveform, etc.), características das 10 famílias químicas e FAQ.
+- ⚙️ **[Arquitetura de Software e Engenharia DSP](docs/ARCHITECTURE.md)** ([English Version](docs/ARCHITECTURE-en.md)): Documentação técnica com diagramas de classes, modelo de threads e concorrência, formulações matemáticas do filtro TPT SVF 24 dB/oct, algoritmos PolyBLEP anti-aliasing, alocação de 16 vozes e suíte de testes.
 
 ---
 
@@ -66,6 +68,8 @@ Elementos de um mesmo grupo compartilham a mesma arquitetura de síntese, soando
 
 ## Interface Escura & Controles
 
+- **Barra Superior com Seletor de Idioma (`EN | PT`)**:
+  - Navegação de presets (`<` / `>`), controles de **Volume** e **Reverb**, indicador de vozes MIDI (`MIDI 0/16`) e botão **`EN | PT`** para alternar toda a interface instantaneamente entre **Inglês** e **Português**.
 - **Tabela Periódica Interativa (118 Presets)**:
   - Cores fiéis à tabela de referência com aura luminosa (*glow*) sobre fundo escuro.
   - **Indicador de Hover**: halo brilhante, expansão suave da célula, borda clara e prévia instantânea no painel central.

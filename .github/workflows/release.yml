@@ -56,6 +56,7 @@ jobs:
           Copy-Item -Recurse -Force "build/Md101_artefacts/Release/VST3/Md-101.vst3" "dist/$pkgDir/"
           Copy-Item -Force "build/Md101_artefacts/Release/Standalone/Md-101.exe" "dist/$pkgDir/"
           Copy-Item -Force "README.md" "dist/$pkgDir/"
+          Copy-Item -Force "README-en.md" "dist/$pkgDir/"
           Copy-Item -Force "LICENSE" "dist/$pkgDir/"
           Compress-Archive -Path "dist/$pkgDir/*" -DestinationPath "dist/$pkgDir.zip" -Force
 
@@ -98,7 +99,7 @@ jobs:
           mkdir -p "dist/${PKG_DIR}"
           cp -r build/Md101_artefacts/Release/VST3/Md-101.vst3 "dist/${PKG_DIR}/"
           cp build/Md101_artefacts/Release/Standalone/Md-101 "dist/${PKG_DIR}/"
-          cp README.md LICENSE "dist/${PKG_DIR}/"
+          cp README.md README-en.md LICENSE "dist/${PKG_DIR}/"
           tar -czvf "dist/${PKG_DIR}.tar.gz" -C dist "${PKG_DIR}"
 
       - name: Upload Linux Artifact

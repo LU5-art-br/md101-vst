@@ -48,6 +48,18 @@ int main (int argc, char* argv[])
             std::cerr << "FAIL: Element Z=" << el.atomicNumber << " has invalid mass" << std::endl;
             return 1;
         }
+        if (el.nameEn == nullptr || el.nameEn[0] == '\0' || el.namePt == nullptr || el.namePt[0] == '\0')
+        {
+            std::cerr << "FAIL: Element Z=" << el.atomicNumber << " is missing English or Portuguese name" << std::endl;
+            return 1;
+        }
+        const auto prof = PeriodicSynth::computeSynthProfile (el);
+        if (prof.engineDescriptionEn == nullptr || prof.engineDescriptionEn[0] == '\0'
+            || prof.engineDescriptionPt == nullptr || prof.engineDescriptionPt[0] == '\0')
+        {
+            std::cerr << "FAIL: Element Z=" << el.atomicNumber << " is missing bilingual engine description" << std::endl;
+            return 1;
+        }
         const auto pos = std::make_pair (el.gridRow, el.gridCol);
         if (! occupiedCells.insert (pos).second)
         {
@@ -91,19 +103,22 @@ int main (int argc, char* argv[])
         return 1;
     }
 
-    proc.setCurrentProgram (78); // 79 - Au (Ouro)
+    proc.setCurrentProgram (78); // 79 - Au (Gold)
+    proc.setLanguage (PeriodicSynth::Language::Portuguese);
     juce::MemoryBlock stateBlob;
     proc.getStateInformation (stateBlob);
 
-    proc.setCurrentProgram (1);  // 2 - He (Hélio)
+    proc.setCurrentProgram (1);  // 2 - He (Helium)
+    proc.setLanguage (PeriodicSynth::Language::English);
     proc.setStateInformation (stateBlob.getData(), static_cast<int> (stateBlob.getSize()));
-    if (proc.getCurrentProgram() != 78)
+    if (proc.getCurrentProgram() != 78 || proc.getLanguage() != PeriodicSynth::Language::Portuguese)
     {
-        std::cerr << "FAIL: State save/restore did not preserve selected element (expected 78, got "
+        std::cerr << "FAIL: State save/restore did not preserve selected element or language (expected 78/PT, got "
                   << proc.getCurrentProgram() << ")" << std::endl;
         return 1;
     }
-    std::cout << "[PASS] DAW Preset Programs (118) & XML State Persistence verified." << std::endl;
+    proc.setLanguage (PeriodicSynth::Language::English);
+    std::cout << "[PASS] DAW Preset Programs (118), Bilingual EN/PT Names & XML State Persistence verified." << std::endl;
 
     // 3. Render MIDI audio through ALL 118 elements & verify signal integrity + physical trends
     juce::AudioBuffer<float> audioBuf (2, 512);
@@ -222,10 +237,10 @@ int main (int argc, char* argv[])
                 std::cout << "[PASS] Saved UI snapshot 1: " << snap1.getFullPathName() << std::endl;
             }
 
-            // Snapshot 2: Mendelevium (101 - Md, Actinídio — homônimo do Md-101!)
+            // Snapshot 2: Mendelevium (101 - Md, Actinide — namesake of Md-101!)
             proc.getKeyboardState().allNotesOff (0);
             proc.getSynthEngine().reset();
-            proc.selectElementIndex (100); // 101 - Md (Mendelévio)
+            proc.selectElementIndex (100); // 101 - Md (Mendelevium)
             proc.getKeyboardState().noteOn (1, 48, 0.92f);
             proc.getKeyboardState().noteOn (1, 55, 0.88f);
             proc.getKeyboardState().noteOn (1, 60, 0.90f);
@@ -245,7 +260,41 @@ int main (int argc, char* argv[])
             {
                 juce::PNGImageFormat png;
                 png.writeImageToStream (img2, *stream);
-                std::cout << "[PASS] Saved UI snapshot 2: " << snap2.getFullPathName() << std::endl;
+                std::cout << "[PASS] Saved UI snapshot 2 (EN): " << snap2.getFullPathName() << std::endl;
+            }
+
+            // Verify top-bar language button switches EN -> PT and back
+            if (ed->getLanguage() != PeriodicSynth::Language::English)
+            {
+                std::cerr << "FAIL: Default editor language should be English" << std::endl;
+                return 1;
+            }
+            if (ed->getLanguageButton().onClick)
+                ed->getLanguageButton().onClick();
+            if (ed->getLanguage() != PeriodicSynth::Language::Portuguese
+                || proc.getLanguage() != PeriodicSynth::Language::Portuguese
+                || ed->getPeriodicTableGrid().getLanguage() != PeriodicSynth::Language::Portuguese)
+            {
+                std::cerr << "FAIL: Language button did not switch editor/processor/grid to Portuguese" << std::endl;
+                return 1;
+            }
+
+            auto img3 = ed->createComponentSnapshot (ed->getLocalBounds());
+            juce::File snap3 = outDir.getChildFile ("snapshot_md101_pt.png");
+            snap3.deleteFile();
+            if (auto stream = snap3.createOutputStream())
+            {
+                juce::PNGImageFormat png;
+                png.writeImageToStream (img3, *stream);
+                std::cout << "[PASS] Saved UI snapshot 3 (PT): " << snap3.getFullPathName() << std::endl;
+            }
+
+            if (ed->getLanguageButton().onClick)
+                ed->getLanguageButton().onClick();
+            if (ed->getLanguage() != PeriodicSynth::Language::English)
+            {
+                std::cerr << "FAIL: Language button did not toggle back to English" << std::endl;
+                return 1;
             }
         }
     }

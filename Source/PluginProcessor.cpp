@@ -21,12 +21,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout PeriodicSynthAudioProcessor:
         .withStringFromValueFunction ([] (int value, int)
         {
             const auto& el = PeriodicSynth::getElementByAtomicNumber (value);
-            return juce::String (el.atomicNumber) + " - " + el.symbol + " (" + juce::String::fromUTF8 (el.namePt) + ")";
+            return juce::String (el.atomicNumber) + " - " + el.symbol + " (" + juce::String::fromUTF8 (el.nameEn) + ")";
         });
 
     params.push_back (std::make_unique<juce::AudioParameterInt> (
         juce::ParameterID { "element", 1 },
-        "Elemento Quimico (Preset)",
+        "Chemical Element (Preset)",
         1,
         PeriodicSynth::kNumElements,
         1,
@@ -34,13 +34,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout PeriodicSynthAudioProcessor:
 
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "masterGain", 1 },
-        "Volume Master",
+        "Master Volume",
         juce::NormalisableRange<float> (0.0f, 1.5f, 0.01f),
         0.82f));
 
     params.push_back (std::make_unique<juce::AudioParameterFloat> (
         juce::ParameterID { "space", 1 },
-        "Ambiencia / Reverb",
+        "Ambience / Reverb",
         juce::NormalisableRange<float> (0.0f, 2.0f, 0.01f),
         1.00f));
 
@@ -108,6 +108,19 @@ void PeriodicSynthAudioProcessor::selectElementIndex (int zeroBasedIndex)
     synthEngine.setElementPreset (atomicNum - 1);
 }
 
+void PeriodicSynthAudioProcessor::setLanguage (PeriodicSynth::Language lang) noexcept
+{
+    currentLanguage.store (static_cast<int> (lang), std::memory_order_relaxed);
+}
+
+PeriodicSynth::Language PeriodicSynthAudioProcessor::getLanguage() const noexcept
+{
+    const int raw = currentLanguage.load (std::memory_order_relaxed);
+    return (raw == static_cast<int> (PeriodicSynth::Language::Portuguese))
+               ? PeriodicSynth::Language::Portuguese
+               : PeriodicSynth::Language::English;
+}
+
 int PeriodicSynthAudioProcessor::getCurrentProgram()
 {
     return getSelectedElementIndex();
@@ -122,7 +135,7 @@ const juce::String PeriodicSynthAudioProcessor::getProgramName (int index)
 {
     const auto& el = PeriodicSynth::getElementByIndex (index);
     return juce::String (el.atomicNumber).paddedLeft ('0', 3) + " - " + el.symbol
-         + " (" + juce::String::fromUTF8 (el.namePt) + ")";
+         + " (" + PeriodicSynth::getElementName (el, getLanguage()) + ")";
 }
 
 void PeriodicSynthAudioProcessor::changeProgramName (int, const juce::String&)
@@ -133,7 +146,10 @@ void PeriodicSynthAudioProcessor::getStateInformation (juce::MemoryBlock& destDa
 {
     const auto state = apvts.copyState();
     if (auto xml = state.createXml())
+    {
+        xml->setAttribute ("uiLanguage", static_cast<int> (getLanguage()));
         copyXmlToBinary (*xml, destData);
+    }
 }
 
 void PeriodicSynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
@@ -142,6 +158,13 @@ void PeriodicSynthAudioProcessor::setStateInformation (const void* data, int siz
     {
         if (xml->hasTagName (apvts.state.getType()))
         {
+            if (xml->hasAttribute ("uiLanguage"))
+            {
+                const int langVal = xml->getIntAttribute ("uiLanguage", 0);
+                setLanguage (langVal == static_cast<int> (PeriodicSynth::Language::Portuguese)
+                                 ? PeriodicSynth::Language::Portuguese
+                                 : PeriodicSynth::Language::English);
+            }
             apvts.replaceState (juce::ValueTree::fromXml (*xml));
             synthEngine.setElementPreset (getSelectedElementIndex());
         }
