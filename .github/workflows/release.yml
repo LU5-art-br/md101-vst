@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-windows:
-    name: Build Windows (VST3 & Standalone)
+    name: Build Windows (VST3, Standalone & Installer)
     runs-on: windows-2022
 
     steps:
@@ -47,28 +47,41 @@ jobs:
             ./build/Md101Verify.exe
           }
 
-      - name: Package Windows Artifacts
+      - name: Build Windows Installer (.exe) & Portable Package (.zip)
+        shell: powershell
+        run: |
+          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.1" }
+          .\build_installer_windows.ps1 -BuildType Release -Version $version
+
+      - name: Verify Silent Windows Installer & Uninstaller
         shell: pwsh
         run: |
-          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "latest" }
-          $pkgDir = "Md-101-$version-Windows-x64"
-          New-Item -ItemType Directory -Path "dist/$pkgDir" -Force
-          Copy-Item -Recurse -Force "build/Md101_artefacts/Release/VST3/Md-101.vst3" "dist/$pkgDir/"
-          Copy-Item -Force "build/Md101_artefacts/Release/Standalone/Md-101.exe" "dist/$pkgDir/"
-          Copy-Item -Force "README.md" "dist/$pkgDir/"
-          Copy-Item -Force "README-en.md" "dist/$pkgDir/"
-          Copy-Item -Force "LICENSE" "dist/$pkgDir/"
-          Compress-Archive -Path "dist/$pkgDir/*" -DestinationPath "dist/$pkgDir.zip" -Force
+          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.1" }
+          $setupExe = "$PWD/dist/Md-101-$version-Windows-x64-Setup.exe"
+          $testAppDir = "$env:RUNNER_TEMP\md101-app"
+          $testVstDir = "$env:RUNNER_TEMP\md101-vst3"
+          $p1 = Start-Process -FilePath $setupExe -ArgumentList @("/S", "/DIR=$testAppDir", "/VST3DIR=$testVstDir") -Wait -PassThru
+          if ($p1.ExitCode -ne 0) { throw "Setup.exe exited with code $($p1.ExitCode)" }
+          if (-not (Test-Path "$testVstDir\Md-101.vst3\Contents\x86_64-win\Md-101.vst3")) {
+            throw "VST3 plugin was not installed by Setup.exe"
+          }
+          if (-not (Test-Path "$testAppDir\Md-101.exe")) {
+            throw "Standalone Md-101.exe was not installed by Setup.exe"
+          }
+          $p2 = Start-Process -FilePath "$testAppDir\Uninstall-Md-101.exe" -ArgumentList @("/S", "/DIR=$testAppDir", "/VST3DIR=$testVstDir") -Wait -PassThru
+          if ($p2.ExitCode -ne 0) { throw "Uninstall-Md-101.exe exited with code $($p2.ExitCode)" }
 
-      - name: Upload Windows Artifact
+      - name: Upload Windows Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: windows-binaries
-          path: dist/*.zip
+          path: |
+            dist/*.exe
+            dist/*.zip
           retention-days: 7
 
   build-linux:
-    name: Build Linux (VST3 & Standalone)
+    name: Build Linux (VST3, Standalone, .deb & .run Installer)
     runs-on: ubuntu-22.04
 
     steps:
@@ -79,7 +92,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build pkg-config \
+            build-essential cmake ninja-build pkg-config dpkg-dev \
             libasound2-dev libfreetype6-dev libx11-dev libxinerama-dev \
             libxrandr-dev libxcursor-dev libxcomposite-dev mesa-common-dev
 
@@ -92,21 +105,29 @@ jobs:
       - name: Run Automated Verification Tests
         run: ./build/Md101Verify
 
-      - name: Package Linux Artifacts
+      - name: Build Linux Installers (.run, .deb, .tar.gz)
         run: |
-          VERSION="${GITHUB_REF_NAME:-latest}"
-          PKG_DIR="Md-101-${VERSION}-Linux-x64"
-          mkdir -p "dist/${PKG_DIR}"
-          cp -r build/Md101_artefacts/Release/VST3/Md-101.vst3 "dist/${PKG_DIR}/"
-          cp build/Md101_artefacts/Release/Standalone/Md-101 "dist/${PKG_DIR}/"
-          cp README.md README-en.md LICENSE "dist/${PKG_DIR}/"
-          tar -czvf "dist/${PKG_DIR}.tar.gz" -C dist "${PKG_DIR}"
+          VERSION="${GITHUB_REF_NAME:-v1.1.1}"
+          chmod +x build_installer_linux.sh installer/linux/*.sh
+          ./build_installer_linux.sh Release "${VERSION}"
 
-      - name: Upload Linux Artifact
+      - name: Verify Linux .run Installer & .deb Package
+        run: |
+          VERSION="${GITHUB_REF_NAME:-v1.1.1}"
+          ./dist/Md-101-${VERSION}-Linux-x64-Installer.run --user --yes
+          test -d "${HOME}/.vst3/Md-101.vst3"
+          test -x "${HOME}/.local/bin/Md-101"
+          "${HOME}/.local/bin/md-101-uninstall" --user --yes
+          test ! -d "${HOME}/.vst3/Md-101.vst3"
+
+      - name: Upload Linux Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: linux-binaries
-          path: dist/*.tar.gz
+          path: |
+            dist/*.run
+            dist/*.deb
+            dist/*.tar.gz
           retention-days: 7
 
   release:

@@ -1,5 +1,18 @@
 #include "PluginEditor.h"
+#include <juce_audio_devices/juce_audio_devices.h>
+#include <juce_audio_utils/juce_audio_utils.h>
 
+extern juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter();
+#include <juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h>
+
+namespace
+{
+    constexpr const char* kMd101Version = "v1.1.1";
+}
+
+// ==============================================================================
+// DarkStudioLookAndFeel
+// ==============================================================================
 PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::DarkStudioLookAndFeel()
 {
     setColour (juce::TextButton::buttonColourId,   juce::Colour (0xff161d2b));
@@ -107,12 +120,181 @@ void PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::drawLinearSlider 
     g.fillEllipse (sliderPos - thumbR * 0.75f, cy - thumbR * 0.75f, thumbR * 1.5f, thumbR * 1.5f);
 }
 
+// ==============================================================================
+// AboutOverlayComponent
+// ==============================================================================
+PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::AboutOverlayComponent()
+{
+    authorLinkBtn.setFont (juce::FontOptions (13.5f, juce::Font::bold), false, juce::Justification::centred);
+    authorLinkBtn.setColour (juce::HyperlinkButton::textColourId, juce::Colour (0xff72cbeb));
+    addAndMakeVisible (authorLinkBtn);
+
+    addAndMakeVisible (closeBtn);
+    closeBtn.onClick = [this]
+    {
+        if (onClose)
+            onClose();
+    };
+}
+
+void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::setAccent (juce::Colour c)
+{
+    accent = c;
+    authorLinkBtn.setColour (juce::HyperlinkButton::textColourId, c.brighter (0.35f));
+    repaint();
+}
+
+void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::setLanguage (PeriodicSynth::Language l)
+{
+    language = l;
+    const bool isPt = (language == PeriodicSynth::Language::Portuguese);
+    closeBtn.setButtonText (isPt ? "Fechar" : "Close");
+    repaint();
+}
+
+juce::Rectangle<float> PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::getCardBounds() const noexcept
+{
+    const float w = 480.0f;
+    const float h = 320.0f;
+    return getLocalBounds().toFloat().withSizeKeepingCentre (w, h);
+}
+
+void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::resized()
+{
+    const auto card = getCardBounds().toNearestInt();
+    authorLinkBtn.setBounds (card.getX() + 110, card.getY() + 122, card.getWidth() - 220, 26);
+    closeBtn.setBounds (card.getCentreX() - 56, card.getBottom() - 48, 112, 30);
+}
+
+void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::mouseDown (const juce::MouseEvent& e)
+{
+    if (! getCardBounds().contains (e.position))
+    {
+        if (onClose)
+            onClose();
+    }
+}
+
+void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::paint (juce::Graphics& g)
+{
+    const bool isPt = (language == PeriodicSynth::Language::Portuguese);
+
+    // Dimmed studio backdrop
+    g.fillAll (juce::Colour (0xd8060910));
+
+    const auto card = getCardBounds();
+
+    // Outer ambient glow
+    g.setColour (accent.withAlpha (0.16f));
+    g.fillRoundedRectangle (card.expanded (4.0f), 14.0f);
+
+    // Card background
+    juce::ColourGradient cardGrad (juce::Colour (0xff151c2b), card.getCentreX(), card.getY(),
+                                   juce::Colour (0xff0d121c), card.getCentreX(), card.getBottom(), false);
+    g.setGradientFill (cardGrad);
+    g.fillRoundedRectangle (card, 11.0f);
+
+    // Double border
+    g.setColour (accent.withAlpha (0.85f));
+    g.drawRoundedRectangle (card, 11.0f, 1.6f);
+    g.setColour (accent.withAlpha (0.22f));
+    g.drawRoundedRectangle (card.reduced (4.0f), 8.5f, 1.0f);
+
+    // Periodic Table Element Badge [101 Md]
+    const juce::Rectangle<float> tile (card.getX() + 26.0f, card.getY() + 24.0f, 64.0f, 64.0f);
+    g.setColour (juce::Colour (0xff0c1018));
+    g.fillRoundedRectangle (tile, 7.0f);
+    g.setColour (accent.brighter (0.2f));
+    g.drawRoundedRectangle (tile, 7.0f, 1.8f);
+
+    g.setColour (juce::Colour (0xff72cbeb));
+    g.setFont (juce::FontOptions (11.0f, juce::Font::bold));
+    g.drawText ("101", tile.withTrimmedLeft (6.0f).withTrimmedTop (4.0f).withHeight (14.0f),
+                juce::Justification::centredLeft, false);
+
+    g.setColour (juce::Colour (0xffa3d246));
+    g.fillEllipse (tile.getRight() - 13.0f, tile.getY() + 6.0f, 6.5f, 6.5f);
+
+    g.setColour (juce::Colours::white);
+    g.setFont (juce::FontOptions (26.0f, juce::Font::bold));
+    g.drawText ("Md", tile.withTrimmedTop (14.0f), juce::Justification::centred, false);
+
+    // Title & Version Badge
+    g.setColour (juce::Colours::white);
+    g.setFont (juce::FontOptions (22.0f, juce::Font::bold));
+    g.drawText ("Md-101", static_cast<int> (tile.getRight() + 16.0f), static_cast<int> (tile.getY() + 2.0f),
+                110, 26, juce::Justification::centredLeft, false);
+
+    const juce::Rectangle<float> verPill (tile.getRight() + 108.0f, tile.getY() + 5.0f, 58.0f, 21.0f);
+    g.setColour (accent.withAlpha (0.24f));
+    g.fillRoundedRectangle (verPill, 5.0f);
+    g.setColour (accent.brighter (0.25f));
+    g.drawRoundedRectangle (verPill, 5.0f, 1.1f);
+    g.setColour (juce::Colours::white);
+    g.setFont (juce::FontOptions (11.5f, juce::Font::bold));
+    g.drawText (kMd101Version, verPill, juce::Justification::centred, false);
+
+    // Subtitle
+    g.setColour (juce::Colour (0xffa8b8d0));
+    g.setFont (juce::FontOptions (12.0f, juce::Font::plain));
+    g.drawText (juce::String::fromUTF8 (isPt
+                    ? u8"Sintetizador Polifônico de 16 Vozes da Tabela Periódica"
+                    : u8"16-Voice Polyphonic Periodic Table Synthesizer"),
+                static_cast<int> (tile.getRight() + 16.0f), static_cast<int> (tile.getY() + 31.0f),
+                345, 18, juce::Justification::centredLeft, false);
+
+    g.setColour (juce::Colour (0xff6e7f99));
+    g.setFont (juce::FontOptions (11.0f, juce::Font::plain));
+    g.drawText (juce::String::fromUTF8 (u8"VST3 (64-bit) & Standalone  •  118 Presets  •  C++17 / JUCE 8"),
+                static_cast<int> (tile.getRight() + 16.0f), static_cast<int> (tile.getY() + 50.0f),
+                345, 16, juce::Justification::centredLeft, false);
+
+    // Divider line
+    g.setColour (juce::Colour (0xff222d42));
+    g.drawHorizontalLine (static_cast<int> (card.getY() + 104.0f), card.getX() + 24.0f, card.getRight() - 24.0f);
+
+    // Author pill frame behind authorLinkBtn
+    const auto linkBounds = authorLinkBtn.getBounds().toFloat().expanded (8.0f, 2.0f);
+    g.setColour (juce::Colour (0xff121926));
+    g.fillRoundedRectangle (linkBounds, 6.0f);
+    g.setColour (accent.withAlpha (0.45f));
+    g.drawRoundedRectangle (linkBounds, 6.0f, 1.0f);
+
+    // License & Copyright Panel
+    const juce::Rectangle<float> licBox (card.getX() + 26.0f, card.getY() + 160.0f, card.getWidth() - 52.0f, 96.0f);
+    g.setColour (juce::Colour (0xff0e131e));
+    g.fillRoundedRectangle (licBox, 7.0f);
+    g.setColour (juce::Colour (0xff1f2a3d));
+    g.drawRoundedRectangle (licBox, 7.0f, 1.0f);
+
+    g.setColour (juce::Colours::white);
+    g.setFont (juce::FontOptions (12.0f, juce::Font::bold));
+    g.drawText (juce::String::fromUTF8 (isPt
+                    ? u8"Licença: MIT License  •  Copyright © 2026 LU5"
+                    : u8"License: MIT License  •  Copyright © 2026 LU5"),
+                licBox.withTrimmedTop (10.0f).withHeight (20.0f),
+                juce::Justification::centred, false);
+
+    g.setColour (juce::Colour (0xff8fa0b8));
+    g.setFont (juce::FontOptions (11.0f, juce::Font::plain));
+    const juce::String licDesc = juce::String::fromUTF8 (isPt
+        ? u8"Este software é disponibilizado sob a licença MIT (código-fonte).\nBinários compilados com a versão aberta do framework JUCE 8 seguem os termos da GPLv3."
+        : u8"This software is released under the MIT License (source code).\nBinaries compiled with the open-source JUCE 8 framework are subject to GPLv3 terms.");
+    g.drawFittedText (licDesc,
+                      licBox.reduced (14.0f, 8.0f).withTrimmedTop (24.0f).toNearestInt(),
+                      juce::Justification::centred, 3);
+}
+
+// ==============================================================================
+// PeriodicSynthAudioProcessorEditor
+// ==============================================================================
 PeriodicSynthAudioProcessorEditor::PeriodicSynthAudioProcessorEditor (PeriodicSynthAudioProcessor& p)
     : AudioProcessorEditor (&p),
       audioProcessor (p),
       pianoKeyboard (p.getKeyboardState())
 {
     setLookAndFeel (&studioLaf);
+    setWantsKeyboardFocus (true);
 
     addAndMakeVisible (periodicTable);
     addAndMakeVisible (pianoKeyboard);
@@ -173,9 +355,12 @@ PeriodicSynthAudioProcessorEditor::PeriodicSynthAudioProcessorEditor (PeriodicSy
         setLanguage (nextLang);
     };
 
-    authorLinkBtn.setFont (juce::FontOptions (10.5f, juce::Font::bold), false, juce::Justification::centredLeft);
-    authorLinkBtn.setColour (juce::HyperlinkButton::textColourId, juce::Colour (0xff8fa3c4));
-    addAndMakeVisible (authorLinkBtn);
+    // About modal overlay (initially hidden; opened via Options -> About/Sobre or clicking brand header)
+    addChildComponent (aboutOverlay);
+    aboutOverlay.onClose = [this] { showAboutDialog (false); };
+
+    customStandaloneOptionsBtn.setTriggeredOnMouseDown (true);
+    customStandaloneOptionsBtn.onClick = [this] { openStandaloneOptionsMenu(); };
 
     octDownBtn.onClick = [this]
     {
@@ -218,7 +403,119 @@ PeriodicSynthAudioProcessorEditor::PeriodicSynthAudioProcessorEditor (PeriodicSy
 PeriodicSynthAudioProcessorEditor::~PeriodicSynthAudioProcessorEditor()
 {
     stopTimer();
+    if (customStandaloneOptionsBtn.getParentComponent() != nullptr)
+        customStandaloneOptionsBtn.getParentComponent()->removeChildComponent (&customStandaloneOptionsBtn);
+    if (origStandaloneOptionsBtn != nullptr)
+        origStandaloneOptionsBtn->setVisible (true);
     setLookAndFeel (nullptr);
+}
+
+void PeriodicSynthAudioProcessorEditor::parentHierarchyChanged()
+{
+    AudioProcessorEditor::parentHierarchyChanged();
+    attachStandaloneOptionsMenu();
+}
+
+void PeriodicSynthAudioProcessorEditor::attachStandaloneOptionsMenu()
+{
+    auto* standaloneWin = findParentComponentOfClass<juce::StandaloneFilterWindow>();
+    if (standaloneWin == nullptr)
+        return;
+
+    if (hookedStandaloneWindow == standaloneWin && origStandaloneOptionsBtn != nullptr)
+    {
+        customStandaloneOptionsBtn.setBounds (origStandaloneOptionsBtn->getBounds());
+        return;
+    }
+
+    for (int i = 0; i < standaloneWin->getNumChildComponents(); ++i)
+    {
+        if (auto* tb = dynamic_cast<juce::TextButton*> (standaloneWin->getChildComponent (i)))
+        {
+            if (tb != &customStandaloneOptionsBtn)
+            {
+                origStandaloneOptionsBtn = tb;
+                hookedStandaloneWindow = standaloneWin;
+
+                tb->setVisible (false);
+                standaloneWin->addAndMakeVisible (customStandaloneOptionsBtn);
+                customStandaloneOptionsBtn.setBounds (tb->getBounds());
+                break;
+            }
+        }
+    }
+}
+
+void PeriodicSynthAudioProcessorEditor::openStandaloneOptionsMenu()
+{
+    auto* standaloneWin = dynamic_cast<juce::StandaloneFilterWindow*> (hookedStandaloneWindow.getComponent());
+    if (standaloneWin == nullptr)
+        standaloneWin = findParentComponentOfClass<juce::StandaloneFilterWindow>();
+
+    const bool isPt = (currentLanguage == PeriodicSynth::Language::Portuguese);
+
+    juce::PopupMenu m;
+    m.addItem (1, juce::String::fromUTF8 (isPt ? u8"Configurações de Áudio/MIDI..." : u8"Audio/MIDI Settings..."));
+    m.addSeparator();
+    m.addItem (2, juce::String::fromUTF8 (isPt ? u8"Salvar estado atual..." : u8"Save current state..."));
+    m.addItem (3, juce::String::fromUTF8 (isPt ? u8"Carregar estado salvo..." : u8"Load a saved state..."));
+    m.addSeparator();
+    m.addItem (4, juce::String::fromUTF8 (isPt ? u8"Restaurar estado padrão" : u8"Reset to default state"));
+    m.addSeparator();
+    m.addItem (5, juce::String::fromUTF8 (isPt ? u8"Sobre o Md-101..." : u8"About Md-101..."));
+
+    juce::Component::SafePointer<PeriodicSynthAudioProcessorEditor> safeThis (this);
+    juce::Component::SafePointer<juce::StandaloneFilterWindow> safeWin (standaloneWin);
+
+    m.showMenuAsync (juce::PopupMenu::Options().withTargetComponent (&customStandaloneOptionsBtn),
+                     [safeThis, safeWin] (int result)
+                     {
+                         if (result == 5)
+                         {
+                             if (safeThis != nullptr)
+                                 safeThis->showAboutDialog (true);
+                         }
+                         else if (result >= 1 && result <= 4)
+                         {
+                             if (safeWin != nullptr)
+                                 safeWin->handleMenuResult (result);
+                         }
+                     });
+}
+
+void PeriodicSynthAudioProcessorEditor::showAboutDialog (bool visible)
+{
+    aboutOverlay.setVisible (visible);
+    if (visible)
+    {
+        aboutOverlay.toFront (true);
+    }
+    else
+    {
+        pianoKeyboard.grabKeyboardFocus();
+    }
+    repaint();
+}
+
+void PeriodicSynthAudioProcessorEditor::mouseDown (const juce::MouseEvent& e)
+{
+    // Clicking the Md-101 orbital logo/title in the top-left header bar also toggles the About screen
+    if (e.y < 40 && e.x < 245)
+    {
+        showAboutDialog (! isAboutDialogVisible());
+        return;
+    }
+    AudioProcessorEditor::mouseDown (e);
+}
+
+bool PeriodicSynthAudioProcessorEditor::keyPressed (const juce::KeyPress& key)
+{
+    if (aboutOverlay.isVisible() && key == juce::KeyPress::escapeKey)
+    {
+        showAboutDialog (false);
+        return true;
+    }
+    return AudioProcessorEditor::keyPressed (key);
 }
 
 void PeriodicSynthAudioProcessorEditor::setLanguage (PeriodicSynth::Language lang)
@@ -227,6 +524,7 @@ void PeriodicSynthAudioProcessorEditor::setLanguage (PeriodicSynth::Language lan
     audioProcessor.setLanguage (lang);
     studioLaf.setLanguage (lang);
     periodicTable.setLanguage (lang);
+    aboutOverlay.setLanguage (lang);
 
     const bool isPt = (lang == PeriodicSynth::Language::Portuguese);
     octDownBtn.setButtonText (isPt ? "- Oitava" : "- Octave");
@@ -245,7 +543,7 @@ void PeriodicSynthAudioProcessorEditor::syncAccentTheme (int elementIndex)
     const auto col = PeriodicSynth::getCategoryColour (el.category);
     studioLaf.setAccent (col);
     pianoKeyboard.setAccentColour (col);
-    authorLinkBtn.setColour (juce::HyperlinkButton::textColourId, col.brighter (0.25f));
+    aboutOverlay.setAccent (col);
     repaint();
 }
 
@@ -370,11 +668,12 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
 
 void PeriodicSynthAudioProcessorEditor::resized()
 {
+    aboutOverlay.setBounds (getLocalBounds());
+
     auto area = getLocalBounds();
 
     // 1. Header controls (top 40px)
     auto header = area.removeFromTop (40);
-    authorLinkBtn.setBounds (112, 4, 150, 18);
 
     langBtn.setBounds (header.getWidth() - 76, 8, 64, 24);
     const int voicePillLeft = langBtn.getX() - 98;
@@ -414,6 +713,8 @@ void PeriodicSynthAudioProcessorEditor::resized()
 
 void PeriodicSynthAudioProcessorEditor::timerCallback()
 {
+    attachStandaloneOptionsMenu();
+
     if (audioProcessor.getLanguage() != currentLanguage)
         setLanguage (audioProcessor.getLanguage());
 

@@ -26,25 +26,30 @@ Developed by **LU5** ([lu5.art.br](https://lu5.art.br)).
 - **Compatible DAWs**: Any Digital Audio Workstation supporting 64-bit VST3 virtual instruments (Cockos Reaper, Tracktion Waveform, Ableton Live, FL Studio, Steinberg Cubase, PreSonus Studio One, Bitwig Studio, Ardour, Carla, etc.).
 
 ### Installation on Windows
-1. Download or compile the `Md-101.vst3` bundle.
-2. Copy the entire `Md-101.vst3` folder into the standard Windows 64-bit VST3 directory:
-   ```text
-   C:\Program Files\Common Files\VST3\Md-101.vst3
-   ```
-3. To use as a standalone desktop application (no DAW required), run `Md-101.exe` directly.
+- **Option 1 — Graphical Setup Wizard (`Md-101-v1.1.1-Windows-x64-Setup.exe`)**:
+  1. Run `Md-101-v1.1.1-Windows-x64-Setup.exe`.
+  2. The bilingual (`EN | PT`) Setup Wizard automatically installs the VST3 plugin to `C:\Program Files\Common Files\VST3\Md-101.vst3`, the Standalone application to `C:\Program Files\LU5\Md-101\Md-101.exe`, Start Menu/Desktop shortcuts, and the Windows uninstaller.
+- **Option 2 — Portable Archive (`Md-101-v1.1.1-Windows-x64.zip`)**:
+  1. Extract the `.zip` archive and double-click `Install-Md-101.bat`, or manually copy the `Md-101.vst3` bundle into:
+     ```text
+     C:\Program Files\Common Files\VST3\Md-101.vst3
+     ```
+  2. To use as a standalone desktop application (no DAW required), run `Md-101.exe` directly.
 
 ### Installation on Linux
-1. Copy the compiled `Md-101.vst3` directory to your user's personal VST3 folder:
-   ```bash
-   mkdir -p ~/.vst3
-   cp -r Md-101.vst3 ~/.vst3/
-   ```
-2. Open your DAW and perform a plugin rescan (*Rescan VST3 Plugins*).
-3. For the Standalone version, ensure execute permissions and run:
-   ```bash
-   chmod +x Md-101
-   ./Md-101
-   ```
+- **Option 1 — Universal Self-Extracting Installer (`.run` — Any Distribution)**:
+  ```bash
+  chmod +x Md-101-v1.1.1-Linux-x64-Installer.run
+  ./Md-101-v1.1.1-Linux-x64-Installer.run
+  ```
+  Automatically installs to `~/.vst3/Md-101.vst3` and `~/.local/bin/Md-101` (or system-wide `/usr/lib/vst3` and `/usr/local/bin` with `--system`), creating the desktop application entry (`md-101.desktop`) and `md-101-uninstall`.
+- **Option 2 — Debian / Ubuntu Package (`.deb`)**:
+  ```bash
+  sudo apt install ./md-101_1.1.1_amd64.deb
+  ```
+- **Option 3 — Manual / Tarball Installation (`.tar.gz`)**:
+  1. Run `./install.sh` included in the archive or copy `Md-101.vst3` to `~/.vst3/`.
+  2. Open your DAW and perform a plugin rescan (*Rescan VST3 Plugins*).
 
 ### Recommended DAW Configurations
 

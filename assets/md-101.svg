@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141A24"/>
+      <stop offset="100%" stop-color="#0A0E14"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DCADD7"/>
+      <stop offset="50%" stop-color="#72CBEB"/>
+      <stop offset="100%" stop-color="#3D9EE5"/>
+    </linearGradient>
+    <filter id="glow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Outer Dark Studio Tile -->
+  <rect x="12" y="12" width="232" height="232" rx="32" ry="32" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="6"/>
+  <rect x="22" y="22" width="212" height="212" rx="24" ry="24" fill="none" stroke="#DCADD7" stroke-opacity="0.25" stroke-width="2"/>
+
+  <!-- Atomic Number 101 -->
+  <text x="38" y="62" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#72CBEB">101</text>
+
+  <!-- Active LED dot -->
+  <circle cx="208" cy="48" r="8" fill="#A3D246" filter="url(#glow)"/>
+
+  <!-- Element Symbol Md -->
+  <text x="128" y="148" text-anchor="middle" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="92" font-weight="800" fill="#FFFFFF" letter-spacing="-2">Md</text>
+
+  <!-- Audio Waveform Accent -->
+  <path d="M 44 182 Q 65 182, 76 166 T 104 182 T 128 154 T 152 182 T 180 168 Q 191 182, 212 182" fill="none" stroke="#DCADD7" stroke-width="4" stroke-linecap="round"/>
+
+  <!-- Atomic Mass / Synth Label -->
+  <text x="128" y="216" text-anchor="middle" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#92E3E4" letter-spacing="3">SYNTH [258]</text>
+</svg>

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Md-101
+GenericName=Periodic Table Synthesizer
+GenericName[pt]=Sintetizador da Tabela Periódica
+Comment=16-Voice Polyphonic Periodic Table Synthesizer by LU5
+Comment[pt]=Sintetizador Polifônico de 16 Vozes Baseado na Tabela Periódica por LU5
+Exec=Md-101
+Icon=md-101
+Terminal=false
+Categories=AudioVideo;Audio;Music;Midi;Synthesizer;
+Keywords=VST3;Synth;Synthesizer;MIDI;Periodic Table;Mendelevium;LU5;
+StartupNotify=true

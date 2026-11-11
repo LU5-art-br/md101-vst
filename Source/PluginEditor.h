@@ -13,6 +13,9 @@ public:
 
     void paint (juce::Graphics&) override;
     void resized() override;
+    void parentHierarchyChanged() override;
+    void mouseDown (const juce::MouseEvent&) override;
+    bool keyPressed (const juce::KeyPress&) override;
 
     // Expose child components & refresh helper for automated verification tests
     void refreshFromProcessor() { timerCallback(); }
@@ -21,6 +24,9 @@ public:
     juce::TextButton& getLanguageButton() noexcept { return langBtn; }
     PeriodicSynth::PeriodicTableGrid& getPeriodicTableGrid() noexcept { return periodicTable; }
     PeriodicSynth::PianoKeyboard& getPianoKeyboard() noexcept { return pianoKeyboard; }
+
+    void showAboutDialog (bool visible);
+    bool isAboutDialogVisible() const noexcept { return aboutOverlay.isVisible(); }
 
 private:
     class DarkStudioLookAndFeel : public juce::LookAndFeel_V4
@@ -52,9 +58,34 @@ private:
         PeriodicSynth::Language language = PeriodicSynth::Language::English;
     };
 
+    class AboutOverlayComponent : public juce::Component
+    {
+    public:
+        AboutOverlayComponent();
+
+        void setAccent (juce::Colour c);
+        void setLanguage (PeriodicSynth::Language l);
+
+        void paint (juce::Graphics& g) override;
+        void resized() override;
+        void mouseDown (const juce::MouseEvent& e) override;
+
+        std::function<void()> onClose;
+
+    private:
+        juce::Rectangle<float> getCardBounds() const noexcept;
+
+        juce::Colour accent { 0xffdcadd7 };
+        PeriodicSynth::Language language = PeriodicSynth::Language::English;
+        juce::HyperlinkButton authorLinkBtn { "by LU5 | lu5.art.br", juce::URL ("https://lu5.art.br") };
+        juce::TextButton closeBtn { "Close" };
+    };
+
     void timerCallback() override;
     void syncAccentTheme (int elementIndex);
     void updatePianoRangeLabel();
+    void attachStandaloneOptionsMenu();
+    void openStandaloneOptionsMenu();
 
     PeriodicSynthAudioProcessor& audioProcessor;
     DarkStudioLookAndFeel studioLaf;
@@ -75,7 +106,12 @@ private:
     juce::TextButton holdBtn    { "Hold" };
     juce::TextButton panicBtn   { "Panic" };
     juce::TextButton langBtn    { "EN | PT" };
-    juce::HyperlinkButton authorLinkBtn { "by LU5 | lu5.art.br", juce::URL ("https://lu5.art.br") };
+
+    AboutOverlayComponent aboutOverlay;
+
+    juce::Component::SafePointer<juce::Component> hookedStandaloneWindow;
+    juce::Component::SafePointer<juce::Button> origStandaloneOptionsBtn;
+    juce::TextButton customStandaloneOptionsBtn { "Options" };
 
     juce::String pianoRangeText { "C2 - C7" };
     int lastSyncedElement = -1;

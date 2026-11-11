@@ -296,6 +296,29 @@ int main (int argc, char* argv[])
                 std::cerr << "FAIL: Language button did not toggle back to English" << std::endl;
                 return 1;
             }
+
+            // Verify About/Sobre modal dialog opens and closes cleanly
+            ed->showAboutDialog (true);
+            if (! ed->isAboutDialogVisible())
+            {
+                std::cerr << "FAIL: About dialog did not become visible" << std::endl;
+                return 1;
+            }
+            auto imgAbout = ed->createComponentSnapshot (ed->getLocalBounds());
+            juce::File snapAbout = outDir.getChildFile ("snapshot_md101_about.png");
+            snapAbout.deleteFile();
+            if (auto stream = snapAbout.createOutputStream())
+            {
+                juce::PNGImageFormat png;
+                png.writeImageToStream (imgAbout, *stream);
+                std::cout << "[PASS] Saved UI snapshot 4 (About/Sobre): " << snapAbout.getFullPathName() << std::endl;
+            }
+            ed->showAboutDialog (false);
+            if (ed->isAboutDialogVisible())
+            {
+                std::cerr << "FAIL: About dialog did not close" << std::endl;
+                return 1;
+            }
         }
     }
 

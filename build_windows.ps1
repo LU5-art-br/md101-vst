@@ -43,6 +43,11 @@ $env:RC  = Join-Path $sdkBin  "rc.exe"
 $env:MT  = Join-Path $sdkBin  "mt.exe"
 $env:_CL_ = "/Z7"
 
+$localTmp = Join-Path $PSScriptRoot "build\tmp"
+New-Item -ItemType Directory -Path $localTmp -Force | Out-Null
+$env:TEMP = $localTmp
+$env:TMP  = $localTmp
+
 if (Test-Path "external\JUCE\CMakeLists.txt") {
     Write-Host "==> Pre-configuring JUCE helper tools (juceaide)..." -ForegroundColor Cyan
     & $cmakeExe -S external\JUCE -B build\external\JUCE\tools -G Ninja `
@@ -65,6 +70,11 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "==> Building Md-101 VST3, Standalone, and Verification Suite..." -ForegroundColor Cyan
 & $cmakeExe --build build --parallel
+for ($retry = 1; $retry -le 3 -and $LASTEXITCODE -ne 0; $retry++) {
+    Write-Host "==> Retrying final link steps sequentially (-j 1, attempt $retry/3)..." -ForegroundColor Yellow
+    Start-Sleep -Seconds 2
+    & $cmakeExe --build build -j 1
+}
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host "==> Build succeeded! (Md-101 by LU5 - https://lu5.art.br)" -ForegroundColor Green

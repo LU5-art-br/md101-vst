@@ -82,37 +82,71 @@ Elements belonging to the same chemical group share the same core synthesis arch
 
 ---
 
-## How to Build
+## Quick Installation (Official Installers)
+
+### Windows (64-bit)
+- **Graphical Setup Wizard (`Md-101-v1.1.1-Windows-x64-Setup.exe`)**:
+  1. Run `Md-101-v1.1.1-Windows-x64-Setup.exe` (features a bilingual **EN | PT** Dark Studio interface).
+  2. The installer automatically sets up:
+     - **VST3 Plugin**: `C:\Program Files\Common Files\VST3\Md-101.vst3`
+     - **Standalone App & Manuals**: `C:\Program Files\LU5\Md-101\Md-101.exe`
+     - **Start Menu / Desktop Shortcuts** and **Windows Uninstaller registration**.
+  3. Also supports silent CLI installation: `Md-101-v1.1.1-Windows-x64-Setup.exe /S`.
+- **Portable Archive (`Md-101-v1.1.1-Windows-x64.zip`)**:
+  - Extract the `.zip` and double-click `Install-Md-101.bat` (or copy `Md-101.vst3` manually).
+
+### Linux (64-bit — Ubuntu, Debian, Fedora, Arch, etc.)
+- **Universal Self-Extracting Installer (`.run` — Any Distribution)**:
+  ```bash
+  chmod +x Md-101-v1.1.1-Linux-x64-Installer.run
+  ./Md-101-v1.1.1-Linux-x64-Installer.run
+  ```
+  - User mode (default, no `sudo` needed): installs to `~/.vst3/Md-101.vst3`, `~/.local/bin/Md-101`, and creates an application menu launcher (`~/.local/share/applications/md-101.desktop`).
+  - System-wide mode: `./Md-101-v1.1.1-Linux-x64-Installer.run --system` (installs to `/usr/lib/vst3/Md-101.vst3` and `/usr/local/bin/Md-101`).
+  - To uninstall: `~/.local/bin/md-101-uninstall` (or `sudo /usr/local/bin/md-101-uninstall`).
+- **Debian / Ubuntu Package (`md-101_1.1.1_amd64.deb`)**:
+  ```bash
+  sudo apt install ./md-101_1.1.1_amd64.deb
+  ```
+
+---
+
+## How to Build & Generate Installers
 
 ### Windows (Visual Studio 2022 + CMake/Ninja)
 Run from the project root:
 ```powershell
+# 1. Build VST3, Standalone, and Verification Suite
 powershell -NoProfile -ExecutionPolicy Bypass -File .\build_windows.ps1
+
+# 2. Generate the graphical Setup Wizard (.exe) and Portable Archive (.zip) in dist\
+powershell -NoProfile -ExecutionPolicy Bypass -File .\build_installer_windows.ps1
 ```
 
 Generated artifacts:
+- **Windows Setup Wizard**: `dist\Md-101-v1.1.1-Windows-x64-Setup.exe`
+- **Portable ZIP with Scripts**: `dist\Md-101-v1.1.1-Windows-x64.zip`
 - **VST3 Plugin**: `build\Md101_artefacts\Release\VST3\Md-101.vst3`
 - **Standalone**: `build\Md101_artefacts\Release\Standalone\Md-101.exe`
-
-To install in any Windows DAW (Reaper, Ableton Live, FL Studio, Cubase, Studio One, Bitwig, etc.), copy the entire `.vst3` bundle to:
-```text
-C:\Program Files\Common Files\VST3\Md-101.vst3
-```
 
 ### Linux (GCC/Clang + CMake)
 1. Install JUCE development dependencies (Ubuntu / Debian):
 ```bash
 sudo apt update
-sudo apt install -y build-essential cmake pkg-config \
+sudo apt install -y build-essential cmake pkg-config dpkg-dev \
     libasound2-dev libfreetype6-dev libx11-dev libxinerama-dev \
     libxrandr-dev libxcursor-dev libxcomposite-dev mesa-common-dev
 ```
-2. Build and install the VST3 plugin:
+2. Build and install (or generate `.run`, `.deb`, and `.tar.gz` packages in `dist/`):
 ```bash
-chmod +x build_linux.sh
+chmod +x build_linux.sh build_installer_linux.sh installer/linux/*.sh
 ./build_linux.sh Release
-mkdir -p ~/.vst3
-cp -r build/Md101_artefacts/Release/VST3/Md-101.vst3 ~/.vst3/
+
+# Install directly for current user or system-wide:
+./installer/linux/install_linux.sh
+
+# Or build all release installer packages (.run, .deb, and .tar.gz) in dist/:
+./build_installer_linux.sh Release v1.1.1
 ```
 Then rescan VST3 plugins in your DAW (Reaper, Bitwig, Ardour, Waveform, Carla, etc.) and insert **Md-101** as a virtual instrument on a MIDI track!
 
