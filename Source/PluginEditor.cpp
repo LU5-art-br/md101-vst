@@ -147,8 +147,7 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::setAccent (juce::
 void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::setLanguage (PeriodicSynth::Language l)
 {
     language = l;
-    const bool isPt = (language == PeriodicSynth::Language::Portuguese);
-    closeBtn.setButtonText (isPt ? "Fechar" : "Close");
+    closeBtn.setButtonText (PeriodicSynth::LocalizationManager::getInstance().getUiString ("about.close", language, "Close"));
     repaint();
 }
 
@@ -177,7 +176,7 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::mouseDown (const 
 
 void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::paint (juce::Graphics& g)
 {
-    const bool isPt = (language == PeriodicSynth::Language::Portuguese);
+    auto& loc = PeriodicSynth::LocalizationManager::getInstance();
 
     // Dimmed studio backdrop
     g.fillAll (juce::Colour (0xd8060910));
@@ -237,9 +236,7 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::paint (juce::Grap
     // Subtitle
     g.setColour (juce::Colour (0xffa8b8d0));
     g.setFont (juce::FontOptions (12.0f, juce::Font::plain));
-    g.drawText (juce::String::fromUTF8 (isPt
-                    ? u8"Sintetizador Polifônico de 16 Vozes da Tabela Periódica"
-                    : u8"16-Voice Polyphonic Periodic Table Synthesizer"),
+    g.drawText (loc.getUiString ("about.subtitle", language, "16-Voice Polyphonic Periodic Table Synthesizer"),
                 static_cast<int> (tile.getRight() + 16.0f), static_cast<int> (tile.getY() + 31.0f),
                 345, 18, juce::Justification::centredLeft, false);
 
@@ -269,17 +266,14 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::paint (juce::Grap
 
     g.setColour (juce::Colours::white);
     g.setFont (juce::FontOptions (12.0f, juce::Font::bold));
-    g.drawText (juce::String::fromUTF8 (isPt
-                    ? u8"Licença: MIT License  •  Copyright © 2026 LU5"
-                    : u8"License: MIT License  •  Copyright © 2026 LU5"),
+    g.drawText (loc.getUiString ("about.licenseHeader", language, "License: MIT License  •  Copyright © 2026 LU5"),
                 licBox.withTrimmedTop (10.0f).withHeight (20.0f),
                 juce::Justification::centred, false);
 
     g.setColour (juce::Colour (0xff8fa0b8));
     g.setFont (juce::FontOptions (11.0f, juce::Font::plain));
-    const juce::String licDesc = juce::String::fromUTF8 (isPt
-        ? u8"Este software é disponibilizado sob a licença MIT (código-fonte).\nBinários compilados com a versão aberta do framework JUCE 8 seguem os termos da GPLv3."
-        : u8"This software is released under the MIT License (source code).\nBinaries compiled with the open-source JUCE 8 framework are subject to GPLv3 terms.");
+    const juce::String licDesc = loc.getUiString ("about.licenseBody", language,
+        "This software is released under the MIT License (source code).\nBinaries compiled with the open-source JUCE 8 framework are subject to GPLv3 terms.");
     g.drawFittedText (licDesc,
                       licBox.reduced (14.0f, 8.0f).withTrimmedTop (24.0f).toNearestInt(),
                       juce::Justification::centred, 3);
@@ -452,17 +446,17 @@ void PeriodicSynthAudioProcessorEditor::openStandaloneOptionsMenu()
     if (standaloneWin == nullptr)
         standaloneWin = findParentComponentOfClass<juce::StandaloneFilterWindow>();
 
-    const bool isPt = (currentLanguage == PeriodicSynth::Language::Portuguese);
+    auto& loc = PeriodicSynth::LocalizationManager::getInstance();
 
     juce::PopupMenu m;
-    m.addItem (1, juce::String::fromUTF8 (isPt ? u8"Configurações de Áudio/MIDI..." : u8"Audio/MIDI Settings..."));
+    m.addItem (1, loc.getUiString ("standaloneMenu.settings", currentLanguage, "Audio/MIDI Settings..."));
     m.addSeparator();
-    m.addItem (2, juce::String::fromUTF8 (isPt ? u8"Salvar estado atual..." : u8"Save current state..."));
-    m.addItem (3, juce::String::fromUTF8 (isPt ? u8"Carregar estado salvo..." : u8"Load a saved state..."));
+    m.addItem (2, loc.getUiString ("standaloneMenu.saveState", currentLanguage, "Save current state..."));
+    m.addItem (3, loc.getUiString ("standaloneMenu.loadState", currentLanguage, "Load a saved state..."));
     m.addSeparator();
-    m.addItem (4, juce::String::fromUTF8 (isPt ? u8"Restaurar estado padrão" : u8"Reset to default state"));
+    m.addItem (4, loc.getUiString ("standaloneMenu.resetState", currentLanguage, "Reset to default state"));
     m.addSeparator();
-    m.addItem (5, juce::String::fromUTF8 (isPt ? u8"Sobre o Md-101..." : u8"About Md-101..."));
+    m.addItem (5, loc.getUiString ("standaloneMenu.about", currentLanguage, "About Md-101..."));
 
     juce::Component::SafePointer<PeriodicSynthAudioProcessorEditor> safeThis (this);
     juce::Component::SafePointer<juce::StandaloneFilterWindow> safeWin (standaloneWin);
@@ -526,9 +520,9 @@ void PeriodicSynthAudioProcessorEditor::setLanguage (PeriodicSynth::Language lan
     periodicTable.setLanguage (lang);
     aboutOverlay.setLanguage (lang);
 
-    const bool isPt = (lang == PeriodicSynth::Language::Portuguese);
-    octDownBtn.setButtonText (isPt ? "- Oitava" : "- Octave");
-    octUpBtn.setButtonText   (isPt ? "Oitava +" : "Octave +");
+    auto& loc = PeriodicSynth::LocalizationManager::getInstance();
+    octDownBtn.setButtonText (loc.getUiString ("header.octaveDown", lang, "- Octave"));
+    octUpBtn.setButtonText   (loc.getUiString ("header.octaveUp", lang, "Octave +"));
     langBtn.repaint();
     repaint();
 }
@@ -588,7 +582,7 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.fillEllipse (iconC.x - 2.5f, iconC.y - 2.5f, 5.0f, 5.0f);
 
     // Brand Title & Subtitle
-    const bool isPt = (currentLanguage == PeriodicSynth::Language::Portuguese);
+    auto& loc = PeriodicSynth::LocalizationManager::getInstance();
 
     g.setColour (juce::Colours::white);
     g.setFont (juce::FontOptions (16.0f, juce::Font::bold));
@@ -596,8 +590,7 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0xff7c8ba3));
     g.setFont (juce::FontOptions (10.2f, juce::Font::plain));
-    g.drawText (juce::String::fromUTF8 (isPt ? u8"Sintetizador Periódico • 118 Elementos"
-                                             : u8"Periodic Synthesizer • 118 Elements"),
+    g.drawText (loc.getUiString ("header.subtitle", currentLanguage, "Periodic Synthesizer • 118 Elements"),
                 42, 21, 235, 15, juce::Justification::centredLeft, false);
 
     // Active Preset Pill between Prev & Next buttons
@@ -651,16 +644,15 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
 
     g.setColour (juce::Colour (0xffcfd8ea));
     g.setFont (juce::FontOptions (11.0f, juce::Font::bold));
-    g.drawText ((isPt ? "PIANO MIDI (" : "MIDI PIANO (") + pianoRangeText + ")",
+    g.drawText (loc.getUiString ("piano.title", currentLanguage, "MIDI PIANO") + " (" + pianoRangeText + ")",
                 static_cast<int> (footerPanel.getX() + 12.0f),
                 static_cast<int> (footerTop + 5.0f),
                 170, 20, juce::Justification::centredLeft, false);
 
     g.setColour (juce::Colour (0xff6e7d96));
     g.setFont (juce::FontOptions (10.0f, juce::Font::plain));
-    g.drawText (juce::String::fromUTF8 (isPt
-                    ? u8"Clique/arraste nas teclas, use o teclado PC (A-L / Z-X oitava) ou envie notas de uma track MIDI da DAW"
-                    : u8"Click/drag keys, use PC keyboard (A-L / Z-X octave) or send notes from a DAW MIDI track"),
+    g.drawText (loc.getUiString ("piano.instructionHelp", currentLanguage,
+                    "Click/drag keys, use PC keyboard (A-L / Z-X octave) or send notes from a DAW MIDI track"),
                 static_cast<int> (footerPanel.getX() + 178.0f),
                 static_cast<int> (footerTop + 5.0f),
                 540, 20, juce::Justification::centredLeft, true);

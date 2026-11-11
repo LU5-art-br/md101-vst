@@ -48,16 +48,19 @@ int main (int argc, char* argv[])
             std::cerr << "FAIL: Element Z=" << el.atomicNumber << " has invalid mass" << std::endl;
             return 1;
         }
-        if (el.nameEn == nullptr || el.nameEn[0] == '\0' || el.namePt == nullptr || el.namePt[0] == '\0')
+        const auto nameEn = PeriodicSynth::getElementName (el, PeriodicSynth::Language::English);
+        const auto namePt = PeriodicSynth::getElementName (el, PeriodicSynth::Language::Portuguese);
+        if (nameEn.isEmpty() || namePt.isEmpty())
         {
-            std::cerr << "FAIL: Element Z=" << el.atomicNumber << " is missing English or Portuguese name" << std::endl;
+            std::cerr << "FAIL: Element Z=" << el.atomicNumber << " is missing English or Portuguese name in JSON localization" << std::endl;
             return 1;
         }
         const auto prof = PeriodicSynth::computeSynthProfile (el);
-        if (prof.engineDescriptionEn == nullptr || prof.engineDescriptionEn[0] == '\0'
-            || prof.engineDescriptionPt == nullptr || prof.engineDescriptionPt[0] == '\0')
+        const auto descEn = PeriodicSynth::getEngineDescription (prof, PeriodicSynth::Language::English);
+        const auto descPt = PeriodicSynth::getEngineDescription (prof, PeriodicSynth::Language::Portuguese);
+        if (descEn.isEmpty() || descPt.isEmpty())
         {
-            std::cerr << "FAIL: Element Z=" << el.atomicNumber << " is missing bilingual engine description" << std::endl;
+            std::cerr << "FAIL: Element Z=" << el.atomicNumber << " is missing bilingual engine description in JSON localization" << std::endl;
             return 1;
         }
         const auto pos = std::make_pair (el.gridRow, el.gridCol);

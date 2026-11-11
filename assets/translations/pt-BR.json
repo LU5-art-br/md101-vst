@@ -1,0 +1,430 @@
+{
+  "meta": {
+    "locale": "pt-BR",
+    "name": "Português",
+    "flag": "PT",
+    "decimalSeparator": ","
+  },
+  "elements": {
+    "1": {
+      "name": "Hidrogênio"
+    },
+    "2": {
+      "name": "Hélio"
+    },
+    "3": {
+      "name": "Lítio"
+    },
+    "4": {
+      "name": "Berílio"
+    },
+    "5": {
+      "name": "Boro"
+    },
+    "6": {
+      "name": "Carbono"
+    },
+    "7": {
+      "name": "Nitrogênio"
+    },
+    "8": {
+      "name": "Oxigênio"
+    },
+    "9": {
+      "name": "Flúor"
+    },
+    "10": {
+      "name": "Neônio"
+    },
+    "11": {
+      "name": "Sódio"
+    },
+    "12": {
+      "name": "Magnésio"
+    },
+    "13": {
+      "name": "Alumínio"
+    },
+    "14": {
+      "name": "Silício"
+    },
+    "15": {
+      "name": "Fósforo"
+    },
+    "16": {
+      "name": "Enxofre"
+    },
+    "17": {
+      "name": "Cloro"
+    },
+    "18": {
+      "name": "Argônio"
+    },
+    "19": {
+      "name": "Potássio"
+    },
+    "20": {
+      "name": "Cálcio"
+    },
+    "21": {
+      "name": "Escândio"
+    },
+    "22": {
+      "name": "Titânio"
+    },
+    "23": {
+      "name": "Vanádio"
+    },
+    "24": {
+      "name": "Crômio"
+    },
+    "25": {
+      "name": "Manganês"
+    },
+    "26": {
+      "name": "Ferro"
+    },
+    "27": {
+      "name": "Cobalto"
+    },
+    "28": {
+      "name": "Níquel"
+    },
+    "29": {
+      "name": "Cobre"
+    },
+    "30": {
+      "name": "Zinco"
+    },
+    "31": {
+      "name": "Gálio"
+    },
+    "32": {
+      "name": "Germânio"
+    },
+    "33": {
+      "name": "Arsênio"
+    },
+    "34": {
+      "name": "Selênio"
+    },
+    "35": {
+      "name": "Bromo"
+    },
+    "36": {
+      "name": "Criptônio"
+    },
+    "37": {
+      "name": "Rubídio"
+    },
+    "38": {
+      "name": "Estrôncio"
+    },
+    "39": {
+      "name": "Ítrio"
+    },
+    "40": {
+      "name": "Zircônio"
+    },
+    "41": {
+      "name": "Nióbio"
+    },
+    "42": {
+      "name": "Molibdênio"
+    },
+    "43": {
+      "name": "Tecnécio"
+    },
+    "44": {
+      "name": "Rutênio"
+    },
+    "45": {
+      "name": "Ródio"
+    },
+    "46": {
+      "name": "Paládio"
+    },
+    "47": {
+      "name": "Prata"
+    },
+    "48": {
+      "name": "Cádmio"
+    },
+    "49": {
+      "name": "Índio"
+    },
+    "50": {
+      "name": "Estanho"
+    },
+    "51": {
+      "name": "Antimônio"
+    },
+    "52": {
+      "name": "Telúrio"
+    },
+    "53": {
+      "name": "Iodo"
+    },
+    "54": {
+      "name": "Xenônio"
+    },
+    "55": {
+      "name": "Césio"
+    },
+    "56": {
+      "name": "Bário"
+    },
+    "57": {
+      "name": "Lantânio"
+    },
+    "58": {
+      "name": "Cério"
+    },
+    "59": {
+      "name": "Praseodímio"
+    },
+    "60": {
+      "name": "Neodímio"
+    },
+    "61": {
+      "name": "Promécio"
+    },
+    "62": {
+      "name": "Samário"
+    },
+    "63": {
+      "name": "Európio"
+    },
+    "64": {
+      "name": "Gadolínio"
+    },
+    "65": {
+      "name": "Térbio"
+    },
+    "66": {
+      "name": "Disprósio"
+    },
+    "67": {
+      "name": "Hólmio"
+    },
+    "68": {
+      "name": "Érbio"
+    },
+    "69": {
+      "name": "Túlio"
+    },
+    "70": {
+      "name": "Itérbio"
+    },
+    "71": {
+      "name": "Lutécio"
+    },
+    "72": {
+      "name": "Háfnio"
+    },
+    "73": {
+      "name": "Tântalo"
+    },
+    "74": {
+      "name": "Tungstênio"
+    },
+    "75": {
+      "name": "Rênio"
+    },
+    "76": {
+      "name": "Ósmio"
+    },
+    "77": {
+      "name": "Irídio"
+    },
+    "78": {
+      "name": "Platina"
+    },
+    "79": {
+      "name": "Ouro"
+    },
+    "80": {
+      "name": "Mercúrio"
+    },
+    "81": {
+      "name": "Tálio"
+    },
+    "82": {
+      "name": "Chumbo"
+    },
+    "83": {
+      "name": "Bismuto"
+    },
+    "84": {
+      "name": "Polônio"
+    },
+    "85": {
+      "name": "Astato"
+    },
+    "86": {
+      "name": "Radônio"
+    },
+    "87": {
+      "name": "Frâncio"
+    },
+    "88": {
+      "name": "Rádio"
+    },
+    "89": {
+      "name": "Actínio"
+    },
+    "90": {
+      "name": "Tório"
+    },
+    "91": {
+      "name": "Protactínio"
+    },
+    "92": {
+      "name": "Urânio"
+    },
+    "93": {
+      "name": "Netúnio"
+    },
+    "94": {
+      "name": "Plutônio"
+    },
+    "95": {
+      "name": "Amerício"
+    },
+    "96": {
+      "name": "Cúrio"
+    },
+    "97": {
+      "name": "Berquélio"
+    },
+    "98": {
+      "name": "Califórnio"
+    },
+    "99": {
+      "name": "Einstênio"
+    },
+    "100": {
+      "name": "Férmio"
+    },
+    "101": {
+      "name": "Mendelévio"
+    },
+    "102": {
+      "name": "Nobélio"
+    },
+    "103": {
+      "name": "Laurêncio"
+    },
+    "104": {
+      "name": "Rutherfórdio"
+    },
+    "105": {
+      "name": "Dúbnio"
+    },
+    "106": {
+      "name": "Seabórgio"
+    },
+    "107": {
+      "name": "Bóhrio"
+    },
+    "108": {
+      "name": "Hássio"
+    },
+    "109": {
+      "name": "Meitnério"
+    },
+    "110": {
+      "name": "Darmstádtio"
+    },
+    "111": {
+      "name": "Roentgênio"
+    },
+    "112": {
+      "name": "Copernício"
+    },
+    "113": {
+      "name": "Nihônio"
+    },
+    "114": {
+      "name": "Fleróvio"
+    },
+    "115": {
+      "name": "Moscóvio"
+    },
+    "116": {
+      "name": "Livermório"
+    },
+    "117": {
+      "name": "Tenessino"
+    },
+    "118": {
+      "name": "Oganessônio"
+    }
+  },
+  "categories": {
+    "nonMetal": "Não metais",
+    "alkaliMetal": "Metais alcalinos",
+    "semimetal": "Semimetais",
+    "otherMetal": "Outros metais",
+    "lanthanide": "Lantanídeos",
+    "nobleGas": "Gases nobres",
+    "alkalineEarth": "Metais alcalino-terrosos",
+    "halogen": "Halogênios",
+    "transitionMetal": "Metais de transição",
+    "actinide": "Actinídios"
+  },
+  "phases": {
+    "solid": "Sólido",
+    "liquid": "Líquido",
+    "gas": "Gasoso"
+  },
+  "engineDescriptions": {
+    "nobleGas": "Pad Atmosférico • Sopro Gasoso & Harmônicos Puros",
+    "nonMetalGas": "Synth Sopro Orgânico • Gás Diatômico Leve & Filtro Suave",
+    "nonMetalSolid": "Poly Analógico Orgânico • Timbre Quente Covalente",
+    "halogen": "Lead/Pad Ionizado • Ressonância Ácida & Pulso Reativo",
+    "alkaliMetal": "Pluck Elétrico Reativo • Centelha Alcalina & Ataque Percussivo",
+    "alkalineEarth": "Brass-Poly Terroso • Sub-Harmônico Denso & Filtro Analógico",
+    "transitionMetalLiquid": "FM Metal Líquido • Ressonância Fluida & Harmônicos",
+    "transitionMetalSolid": "FM Metálico Ressonante • Sino Forjado & Brilho",
+    "semimetal": "Cristal Semicondutor • Wavefolder Harmônico & Prisma Digital",
+    "otherMetal": "Metal Maleável Valvulado • Tine Quente & Corpo Denso",
+    "lanthanide": "Ensemble Terras-Raras • Super-Harmônicos & Brilho Laser",
+    "actinide": "Drone Radioativo • Sub-Massa Nuclear & Pulso Instável"
+  },
+  "meters": {
+    "atomicNumber": "Nº Atômico -> Harmônicos",
+    "atomicMass": "Massa -> Corpo & Inércia",
+    "spectralBrightness": "Brilho Espectral (Filtro)",
+    "resonanceRelease": "Ressonância & Release"
+  },
+  "ui": {
+    "header": {
+      "subtitle": "Sintetizador Periódico • 118 Elementos",
+      "octaveDown": "- Oitava",
+      "octaveUp": "Oitava +"
+    },
+    "inspector": {
+      "oscilloscopeLive": "OSCILOSCÓPIO • AO VIVO",
+      "harmonicSignature": "ASSINATURA HARMÔNICA",
+      "emptyHoverHint": "Clique em qualquer elemento para carregar seu preset sonoro"
+    },
+    "piano": {
+      "title": "PIANO MIDI",
+      "instructionHelp": "Clique/arraste nas teclas, use o teclado PC (A-L / Z-X oitava) ou envie notas de uma track MIDI da DAW"
+    },
+    "standaloneMenu": {
+      "settings": "Configurações de Áudio/MIDI...",
+      "saveState": "Salvar estado atual...",
+      "loadState": "Carregar estado salvo...",
+      "resetState": "Restaurar estado padrão",
+      "about": "Sobre o Md-101..."
+    },
+    "about": {
+      "subtitle": "Sintetizador Polifônico de 16 Vozes da Tabela Periódica",
+      "licenseHeader": "Licença: MIT License  •  Copyright © 2026 LU5",
+      "licenseBody": "Este software é disponibilizado sob a licença MIT (código-fonte).\nBinários compilados com a versão aberta do framework JUCE 8 seguem os termos da GPLv3.",
+      "close": "Fechar"
+    }
+  }
+}

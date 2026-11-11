@@ -430,9 +430,11 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
 
     g.setColour (juce::Colour (0xff7e8ca6));
     g.setFont (juce::FontOptions (9.5f, juce::Font::bold));
-    const bool isPt = (currentLanguage == Language::Portuguese);
-    g.drawText (currentVoices > 0 ? juce::String::fromUTF8 (isPt ? u8"OSCILOSCÓPIO • AO VIVO" : u8"OSCILLOSCOPE • LIVE")
-                                  : juce::String::fromUTF8 (isPt ? u8"ASSINATURA HARMÔNICA"   : u8"HARMONIC SIGNATURE"),
+    auto& loc = LocalizationManager::getInstance();
+    const auto scopeTitle = currentVoices > 0
+        ? loc.getUiString ("inspector.oscilloscopeLive", currentLanguage, "OSCILLOSCOPE • LIVE")
+        : loc.getUiString ("inspector.harmonicSignature", currentLanguage, "HARMONIC SIGNATURE");
+    g.drawText (scopeTitle,
                 scopeRect.reduced (6.0f, 4.0f).withHeight (12.0f),
                 juce::Justification::centredLeft, false);
 
@@ -492,12 +494,12 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
     mid.removeFromTop (4.0f);
 
     // 4 physical-to-sonic parameter meters
-    struct MeterRow { const char* label; float normVal; };
+    struct MeterRow { juce::String label; float normVal; };
     const std::array<MeterRow, 4> meters {{
-        { isPt ? u8"Nº Atômico -> Harmônicos"   : u8"Atomic No. -> Harmonics",      profile.harmonicRichness },
-        { isPt ? u8"Massa -> Corpo & Inércia"   : u8"Mass -> Body & Inertia",       profile.bodyWeight },
-        { isPt ? u8"Brilho Espectral (Filtro)"  : u8"Spectral Brightness (Filter)", profile.brightness },
-        { isPt ? u8"Ressonância & Release"      : u8"Resonance & Release",          profile.sustainTail }
+        { loc.getMeterLabel ("atomicNumber", currentLanguage),       profile.harmonicRichness },
+        { loc.getMeterLabel ("atomicMass", currentLanguage),         profile.bodyWeight },
+        { loc.getMeterLabel ("spectralBrightness", currentLanguage),  profile.brightness },
+        { loc.getMeterLabel ("resonanceRelease", currentLanguage),    profile.sustainTail }
     }};
 
     const float rowH = std::min (16.5f, (mid.getHeight() - 18.0f) / 4.0f);
@@ -509,7 +511,7 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
 
         g.setColour (juce::Colour (0xff8c9ab3));
         g.setFont (juce::FontOptions (9.8f, juce::Font::plain));
-        g.drawText (juce::String::fromUTF8 (mr.label), labelArea, juce::Justification::centredLeft, true);
+        g.drawText (mr.label, labelArea, juce::Justification::centredLeft, true);
 
         g.setColour (juce::Colour (0xff1d2536));
         g.fillRoundedRectangle (barArea, 3.0f);
@@ -537,8 +539,8 @@ void PeriodicTableGrid::drawInspectorHud (juce::Graphics& g, const LayoutMetrics
     {
         g.setColour (juce::Colour (0xff5f6d85));
         g.setFont (juce::FontOptions (9.6f, juce::Font::plain));
-        g.drawText (juce::String::fromUTF8 (isPt ? u8"Clique em qualquer elemento para carregar seu preset sonoro"
-                                                 : u8"Click any element to load its sound preset"),
+        g.drawText (loc.getUiString ("inspector.emptyHoverHint", currentLanguage,
+                                    "Click any element to load its sound preset"),
                     footerLine, juce::Justification::centredLeft, true);
     }
 }

@@ -1,0 +1,430 @@
+{
+  "meta": {
+    "locale": "en-US",
+    "name": "English",
+    "flag": "EN",
+    "decimalSeparator": "."
+  },
+  "elements": {
+    "1": {
+      "name": "Hydrogen"
+    },
+    "2": {
+      "name": "Helium"
+    },
+    "3": {
+      "name": "Lithium"
+    },
+    "4": {
+      "name": "Beryllium"
+    },
+    "5": {
+      "name": "Boron"
+    },
+    "6": {
+      "name": "Carbon"
+    },
+    "7": {
+      "name": "Nitrogen"
+    },
+    "8": {
+      "name": "Oxygen"
+    },
+    "9": {
+      "name": "Fluorine"
+    },
+    "10": {
+      "name": "Neon"
+    },
+    "11": {
+      "name": "Sodium"
+    },
+    "12": {
+      "name": "Magnesium"
+    },
+    "13": {
+      "name": "Aluminium"
+    },
+    "14": {
+      "name": "Silicon"
+    },
+    "15": {
+      "name": "Phosphorus"
+    },
+    "16": {
+      "name": "Sulfur"
+    },
+    "17": {
+      "name": "Chlorine"
+    },
+    "18": {
+      "name": "Argon"
+    },
+    "19": {
+      "name": "Potassium"
+    },
+    "20": {
+      "name": "Calcium"
+    },
+    "21": {
+      "name": "Scandium"
+    },
+    "22": {
+      "name": "Titanium"
+    },
+    "23": {
+      "name": "Vanadium"
+    },
+    "24": {
+      "name": "Chromium"
+    },
+    "25": {
+      "name": "Manganese"
+    },
+    "26": {
+      "name": "Iron"
+    },
+    "27": {
+      "name": "Cobalt"
+    },
+    "28": {
+      "name": "Nickel"
+    },
+    "29": {
+      "name": "Copper"
+    },
+    "30": {
+      "name": "Zinc"
+    },
+    "31": {
+      "name": "Gallium"
+    },
+    "32": {
+      "name": "Germanium"
+    },
+    "33": {
+      "name": "Arsenic"
+    },
+    "34": {
+      "name": "Selenium"
+    },
+    "35": {
+      "name": "Bromine"
+    },
+    "36": {
+      "name": "Krypton"
+    },
+    "37": {
+      "name": "Rubidium"
+    },
+    "38": {
+      "name": "Strontium"
+    },
+    "39": {
+      "name": "Yttrium"
+    },
+    "40": {
+      "name": "Zirconium"
+    },
+    "41": {
+      "name": "Niobium"
+    },
+    "42": {
+      "name": "Molybdenum"
+    },
+    "43": {
+      "name": "Technetium"
+    },
+    "44": {
+      "name": "Ruthenium"
+    },
+    "45": {
+      "name": "Rhodium"
+    },
+    "46": {
+      "name": "Palladium"
+    },
+    "47": {
+      "name": "Silver"
+    },
+    "48": {
+      "name": "Cadmium"
+    },
+    "49": {
+      "name": "Indium"
+    },
+    "50": {
+      "name": "Tin"
+    },
+    "51": {
+      "name": "Antimony"
+    },
+    "52": {
+      "name": "Tellurium"
+    },
+    "53": {
+      "name": "Iodine"
+    },
+    "54": {
+      "name": "Xenon"
+    },
+    "55": {
+      "name": "Caesium"
+    },
+    "56": {
+      "name": "Barium"
+    },
+    "57": {
+      "name": "Lanthanum"
+    },
+    "58": {
+      "name": "Cerium"
+    },
+    "59": {
+      "name": "Praseodymium"
+    },
+    "60": {
+      "name": "Neodymium"
+    },
+    "61": {
+      "name": "Promethium"
+    },
+    "62": {
+      "name": "Samarium"
+    },
+    "63": {
+      "name": "Europium"
+    },
+    "64": {
+      "name": "Gadolinium"
+    },
+    "65": {
+      "name": "Terbium"
+    },
+    "66": {
+      "name": "Dysprosium"
+    },
+    "67": {
+      "name": "Holmium"
+    },
+    "68": {
+      "name": "Erbium"
+    },
+    "69": {
+      "name": "Thulium"
+    },
+    "70": {
+      "name": "Ytterbium"
+    },
+    "71": {
+      "name": "Lutetium"
+    },
+    "72": {
+      "name": "Hafnium"
+    },
+    "73": {
+      "name": "Tantalum"
+    },
+    "74": {
+      "name": "Tungsten"
+    },
+    "75": {
+      "name": "Rhenium"
+    },
+    "76": {
+      "name": "Osmium"
+    },
+    "77": {
+      "name": "Iridium"
+    },
+    "78": {
+      "name": "Platinum"
+    },
+    "79": {
+      "name": "Gold"
+    },
+    "80": {
+      "name": "Mercury"
+    },
+    "81": {
+      "name": "Thallium"
+    },
+    "82": {
+      "name": "Lead"
+    },
+    "83": {
+      "name": "Bismuth"
+    },
+    "84": {
+      "name": "Polonium"
+    },
+    "85": {
+      "name": "Astatine"
+    },
+    "86": {
+      "name": "Radon"
+    },
+    "87": {
+      "name": "Francium"
+    },
+    "88": {
+      "name": "Radium"
+    },
+    "89": {
+      "name": "Actinium"
+    },
+    "90": {
+      "name": "Thorium"
+    },
+    "91": {
+      "name": "Protactinium"
+    },
+    "92": {
+      "name": "Uranium"
+    },
+    "93": {
+      "name": "Neptunium"
+    },
+    "94": {
+      "name": "Plutonium"
+    },
+    "95": {
+      "name": "Americium"
+    },
+    "96": {
+      "name": "Curium"
+    },
+    "97": {
+      "name": "Berkelium"
+    },
+    "98": {
+      "name": "Californium"
+    },
+    "99": {
+      "name": "Einsteinium"
+    },
+    "100": {
+      "name": "Fermium"
+    },
+    "101": {
+      "name": "Mendelevium"
+    },
+    "102": {
+      "name": "Nobelium"
+    },
+    "103": {
+      "name": "Lawrencium"
+    },
+    "104": {
+      "name": "Rutherfordium"
+    },
+    "105": {
+      "name": "Dubnium"
+    },
+    "106": {
+      "name": "Seaborgium"
+    },
+    "107": {
+      "name": "Bohrium"
+    },
+    "108": {
+      "name": "Hassium"
+    },
+    "109": {
+      "name": "Meitnerium"
+    },
+    "110": {
+      "name": "Darmstadtium"
+    },
+    "111": {
+      "name": "Roentgenium"
+    },
+    "112": {
+      "name": "Copernicium"
+    },
+    "113": {
+      "name": "Nihonium"
+    },
+    "114": {
+      "name": "Flerovium"
+    },
+    "115": {
+      "name": "Moscovium"
+    },
+    "116": {
+      "name": "Livermorium"
+    },
+    "117": {
+      "name": "Tennessine"
+    },
+    "118": {
+      "name": "Oganesson"
+    }
+  },
+  "categories": {
+    "nonMetal": "Nonmetals",
+    "alkaliMetal": "Alkali metals",
+    "semimetal": "Semimetals",
+    "otherMetal": "Other metals",
+    "lanthanide": "Lanthanides",
+    "nobleGas": "Noble gases",
+    "alkalineEarth": "Alkaline earth metals",
+    "halogen": "Halogens",
+    "transitionMetal": "Transition metals",
+    "actinide": "Actinides"
+  },
+  "phases": {
+    "solid": "Solid",
+    "liquid": "Liquid",
+    "gas": "Gas"
+  },
+  "engineDescriptions": {
+    "nobleGas": "Atmospheric Pad • Gaseous Breath & Pure Harmonics",
+    "nonMetalGas": "Organic Wind Synth • Light Diatomic Gas & Smooth Filter",
+    "nonMetalSolid": "Organic Analog Poly • Warm Covalent Timbre",
+    "halogen": "Ionized Lead/Pad • Acid Resonance & Reactive Pulse",
+    "alkaliMetal": "Reactive Electric Pluck • Alkaline Spark & Percussive Attack",
+    "alkalineEarth": "Earthy Brass-Poly • Dense Sub-Harmonic & Analog Filter",
+    "transitionMetalLiquid": "Liquid Metal FM • Fluid Resonance & Harmonics",
+    "transitionMetalSolid": "Resonant Metallic FM • Forged Bell & Shimmer",
+    "semimetal": "Semiconductor Crystal • Harmonic Wavefolder & Digital Prism",
+    "otherMetal": "Tube Malleable Metal • Warm Tine & Dense Body",
+    "lanthanide": "Rare-Earth Ensemble • Super-Harmonics & Laser Shimmer",
+    "actinide": "Radioactive Drone • Nuclear Sub-Mass & Unstable Pulse"
+  },
+  "meters": {
+    "atomicNumber": "Atomic No. -> Harmonics",
+    "atomicMass": "Mass -> Body & Inertia",
+    "spectralBrightness": "Spectral Brightness (Filter)",
+    "resonanceRelease": "Resonance & Release"
+  },
+  "ui": {
+    "header": {
+      "subtitle": "Periodic Synthesizer • 118 Elements",
+      "octaveDown": "- Octave",
+      "octaveUp": "Octave +"
+    },
+    "inspector": {
+      "oscilloscopeLive": "OSCILLOSCOPE • LIVE",
+      "harmonicSignature": "HARMONIC SIGNATURE",
+      "emptyHoverHint": "Click any element to load its sound preset"
+    },
+    "piano": {
+      "title": "MIDI PIANO",
+      "instructionHelp": "Click/drag keys, use PC keyboard (A-L / Z-X octave) or send notes from a DAW MIDI track"
+    },
+    "standaloneMenu": {
+      "settings": "Audio/MIDI Settings...",
+      "saveState": "Save current state...",
+      "loadState": "Load a saved state...",
+      "resetState": "Reset to default state",
+      "about": "About Md-101..."
+    },
+    "about": {
+      "subtitle": "16-Voice Polyphonic Periodic Table Synthesizer",
+      "licenseHeader": "License: MIT License  •  Copyright © 2026 LU5",
+      "licenseBody": "This software is released under the MIT License (source code).\nBinaries compiled with the open-source JUCE 8 framework are subject to GPLv3 terms.",
+      "close": "Close"
+    }
+  }
+}

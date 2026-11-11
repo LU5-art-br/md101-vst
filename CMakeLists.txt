@@ -37,6 +37,12 @@ else()
     FetchContent_MakeAvailable(JUCE)
 endif()
 
+juce_add_binary_data(Md101BinaryData
+    SOURCES
+        assets/translations/en-US.json
+        assets/translations/pt-BR.json
+)
+
 juce_add_plugin(Md101
     COMPANY_NAME "LU5"
     COMPANY_WEBSITE "https://lu5.art.br"
@@ -55,6 +61,8 @@ juce_add_plugin(Md101
 
 target_sources(Md101
     PRIVATE
+        Source/LocalizationManager.h
+        Source/LocalizationManager.cpp
         Source/ElementData.h
         Source/ElementData.cpp
         Source/SynthEngine.h
@@ -85,6 +93,7 @@ target_compile_definitions(Md101
 
 target_link_libraries(Md101
     PUBLIC
+        Md101BinaryData
         juce::juce_audio_utils
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags

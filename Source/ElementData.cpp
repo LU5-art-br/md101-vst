@@ -25,136 +25,136 @@ namespace
     // Complete 118-element Periodic Table matching the reference Toda Matéria table
     const std::array<ElementInfo, kNumElements> kElements {{
         // Period 1 (row 0)
-        {   1, "H",  u8"Hidrogênio",    "Hydrogen",      1.008f,   "1,008",    NM, Gas, 1,  1, 0,  0, false },
-        {   2, "He", u8"Hélio",         "Helium",        4.0026f,  "4,0026",   NG, Gas, 1, 18, 0, 17, false },
+        { 1, "H", 1.008f, "1,008", NM, Gas, 1, 1, 0, 0, false },
+        { 2, "He", 4.0026f, "4,0026", NG, Gas, 1, 18, 0, 17, false },
 
         // Period 2 (row 1)
-        {   3, "Li", u8"Lítio",         "Lithium",       6.94f,    "6,94",     AM, Sol, 2,  1, 1,  0, false },
-        {   4, "Be", u8"Berílio",       "Beryllium",     9.0122f,  "9,0122",   AE, Sol, 2,  2, 1,  1, false },
-        {   5, "B",  u8"Boro",          "Boron",         10.81f,   "10,81",    SM, Sol, 2, 13, 1, 12, false },
-        {   6, "C",  u8"Carbono",       "Carbon",        12.011f,  "12,011",   NM, Sol, 2, 14, 1, 13, false },
-        {   7, "N",  u8"Nitrogênio",    "Nitrogen",      14.007f,  "14,007",   NM, Gas, 2, 15, 1, 14, false },
-        {   8, "O",  u8"Oxigênio",      "Oxygen",        15.999f,  "15,999",   NM, Gas, 2, 16, 1, 15, false },
-        {   9, "F",  u8"Flúor",         "Fluorine",      18.998f,  "18,998",   HA, Gas, 2, 17, 1, 16, false },
-        {  10, "Ne", u8"Neônio",        "Neon",          20.180f,  "20,180",   NG, Gas, 2, 18, 1, 17, false },
+        { 3, "Li", 6.94f, "6,94", AM, Sol, 2, 1, 1, 0, false },
+        { 4, "Be", 9.0122f, "9,0122", AE, Sol, 2, 2, 1, 1, false },
+        { 5, "B", 10.81f, "10,81", SM, Sol, 2, 13, 1, 12, false },
+        { 6, "C", 12.011f, "12,011", NM, Sol, 2, 14, 1, 13, false },
+        { 7, "N", 14.007f, "14,007", NM, Gas, 2, 15, 1, 14, false },
+        { 8, "O", 15.999f, "15,999", NM, Gas, 2, 16, 1, 15, false },
+        { 9, "F", 18.998f, "18,998", HA, Gas, 2, 17, 1, 16, false },
+        { 10, "Ne", 20.180f, "20,180", NG, Gas, 2, 18, 1, 17, false },
 
         // Period 3 (row 2)
-        {  11, "Na", u8"Sódio",         "Sodium",        22.990f,  "22,990",   AM, Sol, 3,  1, 2,  0, false },
-        {  12, "Mg", u8"Magnésio",      "Magnesium",     24.305f,  "24,305",   AE, Sol, 3,  2, 2,  1, false },
-        {  13, "Al", u8"Alumínio",      "Aluminium",     26.982f,  "26,982",   OM, Sol, 3, 13, 2, 12, false },
-        {  14, "Si", u8"Silício",       "Silicon",       28.085f,  "28,085",   SM, Sol, 3, 14, 2, 13, false },
-        {  15, "P",  u8"Fósforo",       "Phosphorus",    30.974f,  "30,974",   NM, Sol, 3, 15, 2, 14, false },
-        {  16, "S",  u8"Enxofre",       "Sulfur",        32.06f,   "32,06",    NM, Sol, 3, 16, 2, 15, false },
-        {  17, "Cl", u8"Cloro",         "Chlorine",      35.45f,   "35,45",    HA, Gas, 3, 17, 2, 16, false },
-        {  18, "Ar", u8"Argônio",       "Argon",         39.948f,  "39,948",   NG, Gas, 3, 18, 2, 17, false },
+        { 11, "Na", 22.990f, "22,990", AM, Sol, 3, 1, 2, 0, false },
+        { 12, "Mg", 24.305f, "24,305", AE, Sol, 3, 2, 2, 1, false },
+        { 13, "Al", 26.982f, "26,982", OM, Sol, 3, 13, 2, 12, false },
+        { 14, "Si", 28.085f, "28,085", SM, Sol, 3, 14, 2, 13, false },
+        { 15, "P", 30.974f, "30,974", NM, Sol, 3, 15, 2, 14, false },
+        { 16, "S", 32.06f, "32,06", NM, Sol, 3, 16, 2, 15, false },
+        { 17, "Cl", 35.45f, "35,45", HA, Gas, 3, 17, 2, 16, false },
+        { 18, "Ar", 39.948f, "39,948", NG, Gas, 3, 18, 2, 17, false },
 
         // Period 4 (row 3)
-        {  19, "K",  u8"Potássio",      "Potassium",     39.098f,  "39,098",   AM, Sol, 4,  1, 3,  0, false },
-        {  20, "Ca", u8"Cálcio",        "Calcium",       40.078f,  "40,078",   AE, Sol, 4,  2, 3,  1, false },
-        {  21, "Sc", u8"Escândio",      "Scandium",      44.956f,  "44,956",   TM, Sol, 4,  3, 3,  2, false },
-        {  22, "Ti", u8"Titânio",       "Titanium",      47.867f,  "47,867",   TM, Sol, 4,  4, 3,  3, false },
-        {  23, "V",  u8"Vanádio",       "Vanadium",      50.942f,  "50,942",   TM, Sol, 4,  5, 3,  4, false },
-        {  24, "Cr", u8"Crômio",        "Chromium",      51.996f,  "51,996",   TM, Sol, 4,  6, 3,  5, false },
-        {  25, "Mn", u8"Manganês",      "Manganese",     54.938f,  "54,938",   TM, Sol, 4,  7, 3,  6, false },
-        {  26, "Fe", u8"Ferro",         "Iron",          55.845f,  "55,845",   TM, Sol, 4,  8, 3,  7, false },
-        {  27, "Co", u8"Cobalto",       "Cobalt",        58.933f,  "58,933",   TM, Sol, 4,  9, 3,  8, false },
-        {  28, "Ni", u8"Níquel",        "Nickel",        58.693f,  "58,693",   TM, Sol, 4, 10, 3,  9, false },
-        {  29, "Cu", u8"Cobre",         "Copper",        63.546f,  "63,546",   TM, Sol, 4, 11, 3, 10, false },
-        {  30, "Zn", u8"Zinco",         "Zinc",          65.38f,   "65,38",    TM, Sol, 4, 12, 3, 11, false },
-        {  31, "Ga", u8"Gálio",         "Gallium",       69.723f,  "69,723",   OM, Sol, 4, 13, 3, 12, false },
-        {  32, "Ge", u8"Germânio",      "Germanium",     72.630f,  "72,630",   SM, Sol, 4, 14, 3, 13, false },
-        {  33, "As", u8"Arsênio",       "Arsenic",       74.922f,  "74,922",   SM, Sol, 4, 15, 3, 14, false },
-        {  34, "Se", u8"Selênio",       "Selenium",      78.971f,  "78,971",   NM, Sol, 4, 16, 3, 15, false },
-        {  35, "Br", u8"Bromo",         "Bromine",       79.904f,  "79,904",   HA, Liq, 4, 17, 3, 16, false },
-        {  36, "Kr", u8"Criptônio",     "Krypton",       83.798f,  "83,798",   NG, Gas, 4, 18, 3, 17, false },
+        { 19, "K", 39.098f, "39,098", AM, Sol, 4, 1, 3, 0, false },
+        { 20, "Ca", 40.078f, "40,078", AE, Sol, 4, 2, 3, 1, false },
+        { 21, "Sc", 44.956f, "44,956", TM, Sol, 4, 3, 3, 2, false },
+        { 22, "Ti", 47.867f, "47,867", TM, Sol, 4, 4, 3, 3, false },
+        { 23, "V", 50.942f, "50,942", TM, Sol, 4, 5, 3, 4, false },
+        { 24, "Cr", 51.996f, "51,996", TM, Sol, 4, 6, 3, 5, false },
+        { 25, "Mn", 54.938f, "54,938", TM, Sol, 4, 7, 3, 6, false },
+        { 26, "Fe", 55.845f, "55,845", TM, Sol, 4, 8, 3, 7, false },
+        { 27, "Co", 58.933f, "58,933", TM, Sol, 4, 9, 3, 8, false },
+        { 28, "Ni", 58.693f, "58,693", TM, Sol, 4, 10, 3, 9, false },
+        { 29, "Cu", 63.546f, "63,546", TM, Sol, 4, 11, 3, 10, false },
+        { 30, "Zn", 65.38f, "65,38", TM, Sol, 4, 12, 3, 11, false },
+        { 31, "Ga", 69.723f, "69,723", OM, Sol, 4, 13, 3, 12, false },
+        { 32, "Ge", 72.630f, "72,630", SM, Sol, 4, 14, 3, 13, false },
+        { 33, "As", 74.922f, "74,922", SM, Sol, 4, 15, 3, 14, false },
+        { 34, "Se", 78.971f, "78,971", NM, Sol, 4, 16, 3, 15, false },
+        { 35, "Br", 79.904f, "79,904", HA, Liq, 4, 17, 3, 16, false },
+        { 36, "Kr", 83.798f, "83,798", NG, Gas, 4, 18, 3, 17, false },
 
         // Period 5 (row 4)
-        {  37, "Rb", u8"Rubídio",       "Rubidium",      85.468f,  "85,468",   AM, Sol, 5,  1, 4,  0, false },
-        {  38, "Sr", u8"Estrôncio",     "Strontium",     87.62f,   "87,62",    AE, Sol, 5,  2, 4,  1, false },
-        {  39, "Y",  u8"Ítrio",         "Yttrium",       88.906f,  "88,906",   TM, Sol, 5,  3, 4,  2, false },
-        {  40, "Zr", u8"Zircônio",      "Zirconium",     91.224f,  "91,224",   TM, Sol, 5,  4, 4,  3, false },
-        {  41, "Nb", u8"Nióbio",        "Niobium",       92.906f,  "92,906",   TM, Sol, 5,  5, 4,  4, false },
-        {  42, "Mo", u8"Molibdênio",    "Molybdenum",    95.95f,   "95,95",    TM, Sol, 5,  6, 4,  5, false },
-        {  43, "Tc", u8"Tecnécio",      "Technetium",    98.0f,    "[98]",     TM, Sol, 5,  7, 4,  6, true  },
-        {  44, "Ru", u8"Rutênio",       "Ruthenium",     101.07f,  "101,07",   TM, Sol, 5,  8, 4,  7, false },
-        {  45, "Rh", u8"Ródio",         "Rhodium",       102.91f,  "102,91",   TM, Sol, 5,  9, 4,  8, false },
-        {  46, "Pd", u8"Paládio",       "Palladium",     106.42f,  "106,42",   TM, Sol, 5, 10, 4,  9, false },
-        {  47, "Ag", u8"Prata",         "Silver",        107.87f,  "107,87",   TM, Sol, 5, 11, 4, 10, false },
-        {  48, "Cd", u8"Cádmio",        "Cadmium",      112.41f,  "112,41",   TM, Sol, 5, 12, 4, 11, false },
-        {  49, "In", u8"Índio",         "Indium",        114.82f,  "114,82",   OM, Sol, 5, 13, 4, 12, false },
-        {  50, "Sn", u8"Estanho",       "Tin",           118.71f,  "118,71",   OM, Sol, 5, 14, 4, 13, false },
-        {  51, "Sb", u8"Antimônio",     "Antimony",      121.76f,  "121,76",   SM, Sol, 5, 15, 4, 14, false },
-        {  52, "Te", u8"Telúrio",       "Tellurium",     127.60f,  "127,60",   SM, Sol, 5, 16, 4, 15, false },
-        {  53, "I",  u8"Iodo",          "Iodine",        126.90f,  "126,90",   HA, Sol, 5, 17, 4, 16, false },
-        {  54, "Xe", u8"Xenônio",       "Xenon",         131.29f,  "131,29",   NG, Gas, 5, 18, 4, 17, false },
+        { 37, "Rb", 85.468f, "85,468", AM, Sol, 5, 1, 4, 0, false },
+        { 38, "Sr", 87.62f, "87,62", AE, Sol, 5, 2, 4, 1, false },
+        { 39, "Y", 88.906f, "88,906", TM, Sol, 5, 3, 4, 2, false },
+        { 40, "Zr", 91.224f, "91,224", TM, Sol, 5, 4, 4, 3, false },
+        { 41, "Nb", 92.906f, "92,906", TM, Sol, 5, 5, 4, 4, false },
+        { 42, "Mo", 95.95f, "95,95", TM, Sol, 5, 6, 4, 5, false },
+        { 43, "Tc", 98.0f, "[98]", TM, Sol, 5, 7, 4, 6, true },
+        { 44, "Ru", 101.07f, "101,07", TM, Sol, 5, 8, 4, 7, false },
+        { 45, "Rh", 102.91f, "102,91", TM, Sol, 5, 9, 4, 8, false },
+        { 46, "Pd", 106.42f, "106,42", TM, Sol, 5, 10, 4, 9, false },
+        { 47, "Ag", 107.87f, "107,87", TM, Sol, 5, 11, 4, 10, false },
+        { 48, "Cd", 112.41f, "112,41", TM, Sol, 5, 12, 4, 11, false },
+        { 49, "In", 114.82f, "114,82", OM, Sol, 5, 13, 4, 12, false },
+        { 50, "Sn", 118.71f, "118,71", OM, Sol, 5, 14, 4, 13, false },
+        { 51, "Sb", 121.76f, "121,76", SM, Sol, 5, 15, 4, 14, false },
+        { 52, "Te", 127.60f, "127,60", SM, Sol, 5, 16, 4, 15, false },
+        { 53, "I", 126.90f, "126,90", HA, Sol, 5, 17, 4, 16, false },
+        { 54, "Xe", 131.29f, "131,29", NG, Gas, 5, 18, 4, 17, false },
 
         // Period 6 (row 5) + Lanthanides (row 7, cols 3..17)
-        {  55, "Cs", u8"Césio",         "Caesium",       132.91f,  "132,91",   AM, Sol, 6,  1, 5,  0, false },
-        {  56, "Ba", u8"Bário",         "Barium",        137.33f,  "137,33",   AE, Sol, 6,  2, 5,  1, false },
-        {  57, "La", u8"Lantânio",      "Lanthanum",     138.91f,  "138,91",   LA, Sol, 6,  0, 7,  3, false },
-        {  58, "Ce", u8"Cério",         "Cerium",        140.12f,  "140,12",   LA, Sol, 6,  0, 7,  4, false },
-        {  59, "Pr", u8"Praseodímio",   "Praseodymium",  140.91f,  "140,91",   LA, Sol, 6,  0, 7,  5, false },
-        {  60, "Nd", u8"Neodímio",      "Neodymium",     144.24f,  "144,24",   LA, Sol, 6,  0, 7,  6, false },
-        {  61, "Pm", u8"Promécio",      "Promethium",    145.0f,   "[145]",    LA, Sol, 6,  0, 7,  7, true  },
-        {  62, "Sm", u8"Samário",       "Samarium",      150.36f,  "150,36",   LA, Sol, 6,  0, 7,  8, false },
-        {  63, "Eu", u8"Európio",       "Europium",      151.96f,  "151,96",   LA, Sol, 6,  0, 7,  9, false },
-        {  64, "Gd", u8"Gadolínio",     "Gadolinium",    157.25f,  "157,25",   LA, Sol, 6,  0, 7, 10, false },
-        {  65, "Tb", u8"Térbio",        "Terbium",       158.93f,  "158,93",   LA, Sol, 6,  0, 7, 11, false },
-        {  66, "Dy", u8"Disprósio",     "Dysprosium",    162.50f,  "162,50",   LA, Sol, 6,  0, 7, 12, false },
-        {  67, "Ho", u8"Hólmio",        "Holmium",       164.93f,  "164,93",   LA, Sol, 6,  0, 7, 13, false },
-        {  68, "Er", u8"Érbio",         "Erbium",        167.26f,  "167,26",   LA, Sol, 6,  0, 7, 14, false },
-        {  69, "Tm", u8"Túlio",         "Thulium",       168.93f,  "168,93",   LA, Sol, 6,  0, 7, 15, false },
-        {  70, "Yb", u8"Itérbio",       "Ytterbium",     173.05f,  "173,05",   LA, Sol, 6,  0, 7, 16, false },
-        {  71, "Lu", u8"Lutécio",       "Lutetium",      174.97f,  "174,97",   LA, Sol, 6,  0, 7, 17, false },
-        {  72, "Hf", u8"Háfnio",        "Hafnium",       178.49f,  "178,49",   TM, Sol, 6,  4, 5,  3, false },
-        {  73, "Ta", u8"Tântalo",       "Tantalum",      180.95f,  "180,95",   TM, Sol, 6,  5, 5,  4, false },
-        {  74, "W",  u8"Tungstênio",    "Tungsten",      183.84f,  "183,84",   TM, Sol, 6,  6, 5,  5, false },
-        {  75, "Re", u8"Rênio",         "Rhenium",       186.21f,  "186,21",   TM, Sol, 6,  7, 5,  6, false },
-        {  76, "Os", u8"Ósmio",         "Osmium",        190.23f,  "190,23",   TM, Sol, 6,  8, 5,  7, false },
-        {  77, "Ir", u8"Irídio",        "Iridium",       192.22f,  "192,22",   TM, Sol, 6,  9, 5,  8, false },
-        {  78, "Pt", u8"Platina",       "Platinum",      195.08f,  "195,08",   TM, Sol, 6, 10, 5,  9, false },
-        {  79, "Au", u8"Ouro",          "Gold",          196.97f,  "196,97",   TM, Sol, 6, 11, 5, 10, false },
-        {  80, "Hg", u8"Mercúrio",      "Mercury",       200.59f,  "200,59",   TM, Liq, 6, 12, 5, 11, false },
-        {  81, "Tl", u8"Tálio",         "Thallium",      204.38f,  "204,38",   OM, Sol, 6, 13, 5, 12, false },
-        {  82, "Pb", u8"Chumbo",        "Lead",          207.2f,   "207,2",    OM, Sol, 6, 14, 5, 13, false },
-        {  83, "Bi", u8"Bismuto",       "Bismuth",       208.98f,  "208,98",   OM, Sol, 6, 15, 5, 14, false },
-        {  84, "Po", u8"Polônio",       "Polonium",      209.0f,   "[209]",    SM, Sol, 6, 16, 5, 15, true  },
-        {  85, "At", u8"Astato",        "Astatine",      210.0f,   "[210]",    HA, Sol, 6, 17, 5, 16, true  },
-        {  86, "Rn", u8"Radônio",       "Radon",         222.0f,   "[222]",    NG, Gas, 6, 18, 5, 17, true  },
+        { 55, "Cs", 132.91f, "132,91", AM, Sol, 6, 1, 5, 0, false },
+        { 56, "Ba", 137.33f, "137,33", AE, Sol, 6, 2, 5, 1, false },
+        { 57, "La", 138.91f, "138,91", LA, Sol, 6, 0, 7, 3, false },
+        { 58, "Ce", 140.12f, "140,12", LA, Sol, 6, 0, 7, 4, false },
+        { 59, "Pr", 140.91f, "140,91", LA, Sol, 6, 0, 7, 5, false },
+        { 60, "Nd", 144.24f, "144,24", LA, Sol, 6, 0, 7, 6, false },
+        { 61, "Pm", 145.0f, "[145]", LA, Sol, 6, 0, 7, 7, true },
+        { 62, "Sm", 150.36f, "150,36", LA, Sol, 6, 0, 7, 8, false },
+        { 63, "Eu", 151.96f, "151,96", LA, Sol, 6, 0, 7, 9, false },
+        { 64, "Gd", 157.25f, "157,25", LA, Sol, 6, 0, 7, 10, false },
+        { 65, "Tb", 158.93f, "158,93", LA, Sol, 6, 0, 7, 11, false },
+        { 66, "Dy", 162.50f, "162,50", LA, Sol, 6, 0, 7, 12, false },
+        { 67, "Ho", 164.93f, "164,93", LA, Sol, 6, 0, 7, 13, false },
+        { 68, "Er", 167.26f, "167,26", LA, Sol, 6, 0, 7, 14, false },
+        { 69, "Tm", 168.93f, "168,93", LA, Sol, 6, 0, 7, 15, false },
+        { 70, "Yb", 173.05f, "173,05", LA, Sol, 6, 0, 7, 16, false },
+        { 71, "Lu", 174.97f, "174,97", LA, Sol, 6, 0, 7, 17, false },
+        { 72, "Hf", 178.49f, "178,49", TM, Sol, 6, 4, 5, 3, false },
+        { 73, "Ta", 180.95f, "180,95", TM, Sol, 6, 5, 5, 4, false },
+        { 74, "W", 183.84f, "183,84", TM, Sol, 6, 6, 5, 5, false },
+        { 75, "Re", 186.21f, "186,21", TM, Sol, 6, 7, 5, 6, false },
+        { 76, "Os", 190.23f, "190,23", TM, Sol, 6, 8, 5, 7, false },
+        { 77, "Ir", 192.22f, "192,22", TM, Sol, 6, 9, 5, 8, false },
+        { 78, "Pt", 195.08f, "195,08", TM, Sol, 6, 10, 5, 9, false },
+        { 79, "Au", 196.97f, "196,97", TM, Sol, 6, 11, 5, 10, false },
+        { 80, "Hg", 200.59f, "200,59", TM, Liq, 6, 12, 5, 11, false },
+        { 81, "Tl", 204.38f, "204,38", OM, Sol, 6, 13, 5, 12, false },
+        { 82, "Pb", 207.2f, "207,2", OM, Sol, 6, 14, 5, 13, false },
+        { 83, "Bi", 208.98f, "208,98", OM, Sol, 6, 15, 5, 14, false },
+        { 84, "Po", 209.0f, "[209]", SM, Sol, 6, 16, 5, 15, true },
+        { 85, "At", 210.0f, "[210]", HA, Sol, 6, 17, 5, 16, true },
+        { 86, "Rn", 222.0f, "[222]", NG, Gas, 6, 18, 5, 17, true },
 
         // Period 7 (row 6) + Actinides (row 8, cols 3..17)
-        {  87, "Fr", u8"Frâncio",       "Francium",      223.0f,   "[223]",    AM, Sol, 7,  1, 6,  0, true  },
-        {  88, "Ra", u8"Rádio",         "Radium",        226.0f,   "[226]",    AE, Sol, 7,  2, 6,  1, true  },
-        {  89, "Ac", u8"Actínio",       "Actinium",      227.0f,   "[227]",    AC, Sol, 7,  0, 8,  3, true  },
-        {  90, "Th", u8"Tório",         "Thorium",       232.04f,  "232,04",   AC, Sol, 7,  0, 8,  4, true  },
-        {  91, "Pa", u8"Protactínio",   "Protactinium",  231.04f,  "231,04",   AC, Sol, 7,  0, 8,  5, true  },
-        {  92, "U",  u8"Urânio",        "Uranium",       238.03f,  "238,03",   AC, Sol, 7,  0, 8,  6, true  },
-        {  93, "Np", u8"Netúnio",       "Neptunium",     237.0f,   "[237]",    AC, Sol, 7,  0, 8,  7, true  },
-        {  94, "Pu", u8"Plutônio",      "Plutonium",     244.0f,   "[244]",    AC, Sol, 7,  0, 8,  8, true  },
-        {  95, "Am", u8"Amerício",      "Americium",     243.0f,   "[243]",    AC, Sol, 7,  0, 8,  9, true  },
-        {  96, "Cm", u8"Cúrio",         "Curium",        247.0f,   "[247]",    AC, Sol, 7,  0, 8, 10, true  },
-        {  97, "Bk", u8"Berquélio",     "Berkelium",     247.0f,   "[247]",    AC, Sol, 7,  0, 8, 11, true  },
-        {  98, "Cf", u8"Califórnio",    "Californium",   251.0f,   "[251]",    AC, Sol, 7,  0, 8, 12, true  },
-        {  99, "Es", u8"Einstênio",     "Einsteinium",   252.0f,   "[252]",    AC, Sol, 7,  0, 8, 13, true  },
-        { 100, "Fm", u8"Férmio",        "Fermium",       257.0f,   "[257]",    AC, Sol, 7,  0, 8, 14, true  },
-        { 101, "Md", u8"Mendelévio",    "Mendelevium",   258.0f,   "[258]",    AC, Sol, 7,  0, 8, 15, true  },
-        { 102, "No", u8"Nobélio",       "Nobelium",      259.0f,   "[259]",    AC, Sol, 7,  0, 8, 16, true  },
-        { 103, "Lr", u8"Laurêncio",     "Lawrencium",    262.0f,   "[262]",    AC, Sol, 7,  0, 8, 17, true  },
-        { 104, "Rf", u8"Rutherfórdio",  "Rutherfordium", 267.0f,   "[267]",    TM, Sol, 7,  4, 6,  3, true  },
-        { 105, "Db", u8"Dúbnio",        "Dubnium",       268.0f,   "[268]",    TM, Sol, 7,  5, 6,  4, true  },
-        { 106, "Sg", u8"Seabórgio",     "Seaborgium",    269.0f,   "[269]",    TM, Sol, 7,  6, 6,  5, true  },
-        { 107, "Bh", u8"Bóhrio",        "Bohrium",       270.0f,   "[270]",    TM, Sol, 7,  7, 6,  6, true  },
-        { 108, "Hs", u8"Hássio",        "Hassium",       269.0f,   "[269]",    TM, Sol, 7,  8, 6,  7, true  },
-        { 109, "Mt", u8"Meitnério",     "Meitnerium",    278.0f,   "[278]",    TM, Sol, 7,  9, 6,  8, true  },
-        { 110, "Ds", u8"Darmstádtio",   "Darmstadtium",  281.0f,   "[281]",    TM, Sol, 7, 10, 6,  9, true  },
-        { 111, "Rg", u8"Roentgênio",    "Roentgenium",   281.0f,   "[281]",    TM, Sol, 7, 11, 6, 10, true  },
-        { 112, "Cn", u8"Copernício",    "Copernicium",   285.0f,   "[285]",    TM, Sol, 7, 12, 6, 11, true  },
-        { 113, "Nh", u8"Nihônio",       "Nihonium",      286.0f,   "[286]",    OM, Sol, 7, 13, 6, 12, true  },
-        { 114, "Fl", u8"Fleróvio",      "Flerovium",     289.0f,   "[289]",    OM, Sol, 7, 14, 6, 13, true  },
-        { 115, "Mc", u8"Moscóvio",      "Moscovium",     288.0f,   "[288]",    OM, Sol, 7, 15, 6, 14, true  },
-        { 116, "Lv", u8"Livermório",    "Livermorium",   293.0f,   "[293]",    OM, Sol, 7, 16, 6, 15, true  },
-        { 117, "Ts", u8"Tenessino",     "Tennessine",    294.0f,   "[294]",    HA, Sol, 7, 17, 6, 16, true  },
-        { 118, "Og", u8"Oganessônio",   "Oganesson",     294.0f,   "[294]",    NG, Sol, 7, 18, 6, 17, true  }
+        { 87, "Fr", 223.0f, "[223]", AM, Sol, 7, 1, 6, 0, true },
+        { 88, "Ra", 226.0f, "[226]", AE, Sol, 7, 2, 6, 1, true },
+        { 89, "Ac", 227.0f, "[227]", AC, Sol, 7, 0, 8, 3, true },
+        { 90, "Th", 232.04f, "232,04", AC, Sol, 7, 0, 8, 4, true },
+        { 91, "Pa", 231.04f, "231,04", AC, Sol, 7, 0, 8, 5, true },
+        { 92, "U", 238.03f, "238,03", AC, Sol, 7, 0, 8, 6, true },
+        { 93, "Np", 237.0f, "[237]", AC, Sol, 7, 0, 8, 7, true },
+        { 94, "Pu", 244.0f, "[244]", AC, Sol, 7, 0, 8, 8, true },
+        { 95, "Am", 243.0f, "[243]", AC, Sol, 7, 0, 8, 9, true },
+        { 96, "Cm", 247.0f, "[247]", AC, Sol, 7, 0, 8, 10, true },
+        { 97, "Bk", 247.0f, "[247]", AC, Sol, 7, 0, 8, 11, true },
+        { 98, "Cf", 251.0f, "[251]", AC, Sol, 7, 0, 8, 12, true },
+        { 99, "Es", 252.0f, "[252]", AC, Sol, 7, 0, 8, 13, true },
+        { 100, "Fm", 257.0f, "[257]", AC, Sol, 7, 0, 8, 14, true },
+        { 101, "Md", 258.0f, "[258]", AC, Sol, 7, 0, 8, 15, true },
+        { 102, "No", 259.0f, "[259]", AC, Sol, 7, 0, 8, 16, true },
+        { 103, "Lr", 262.0f, "[262]", AC, Sol, 7, 0, 8, 17, true },
+        { 104, "Rf", 267.0f, "[267]", TM, Sol, 7, 4, 6, 3, true },
+        { 105, "Db", 268.0f, "[268]", TM, Sol, 7, 5, 6, 4, true },
+        { 106, "Sg", 269.0f, "[269]", TM, Sol, 7, 6, 6, 5, true },
+        { 107, "Bh", 270.0f, "[270]", TM, Sol, 7, 7, 6, 6, true },
+        { 108, "Hs", 269.0f, "[269]", TM, Sol, 7, 8, 6, 7, true },
+        { 109, "Mt", 278.0f, "[278]", TM, Sol, 7, 9, 6, 8, true },
+        { 110, "Ds", 281.0f, "[281]", TM, Sol, 7, 10, 6, 9, true },
+        { 111, "Rg", 281.0f, "[281]", TM, Sol, 7, 11, 6, 10, true },
+        { 112, "Cn", 285.0f, "[285]", TM, Sol, 7, 12, 6, 11, true },
+        { 113, "Nh", 286.0f, "[286]", OM, Sol, 7, 13, 6, 12, true },
+        { 114, "Fl", 289.0f, "[289]", OM, Sol, 7, 14, 6, 13, true },
+        { 115, "Mc", 288.0f, "[288]", OM, Sol, 7, 15, 6, 14, true },
+        { 116, "Lv", 293.0f, "[293]", OM, Sol, 7, 16, 6, 15, true },
+        { 117, "Ts", 294.0f, "[294]", HA, Sol, 7, 17, 6, 16, true },
+        { 118, "Og", 294.0f, "[294]", NG, Sol, 7, 18, 6, 17, true }
     }};
 } // namespace
 
@@ -207,84 +207,27 @@ juce::Colour getCategoryColour (ElementCategory category) noexcept
 
 juce::String getElementName (const ElementInfo& element, Language lang)
 {
-    if (lang == Language::Portuguese)
-        return juce::String::fromUTF8 (element.namePt);
-    return juce::String::fromUTF8 (element.nameEn);
+    return LocalizationManager::getInstance().getElementName (element.atomicNumber, lang);
 }
 
 juce::String getElementMassDisplay (const ElementInfo& element, Language lang)
 {
-    juce::String s = juce::String::fromUTF8 (element.massDisplay);
-    if (lang == Language::English)
-        return s.replaceCharacter (',', '.');
-    return s;
+    return LocalizationManager::getInstance().formatMassDisplay (element.massDisplay, lang);
 }
 
 juce::String getCategoryName (ElementCategory category, Language lang)
 {
-    if (lang == Language::Portuguese)
-    {
-        switch (category)
-        {
-            case ElementCategory::NonMetal:        return juce::String::fromUTF8 (u8"Não metais");
-            case ElementCategory::AlkaliMetal:     return juce::String::fromUTF8 (u8"Metais alcalinos");
-            case ElementCategory::Semimetal:       return juce::String::fromUTF8 (u8"Semimetais");
-            case ElementCategory::OtherMetal:      return juce::String::fromUTF8 (u8"Outros metais");
-            case ElementCategory::Lanthanide:      return juce::String::fromUTF8 (u8"Lantanídeos");
-            case ElementCategory::NobleGas:        return juce::String::fromUTF8 (u8"Gases nobres");
-            case ElementCategory::AlkalineEarth:   return juce::String::fromUTF8 (u8"Metais alcalino-terrosos");
-            case ElementCategory::Halogen:         return juce::String::fromUTF8 (u8"Halogênios");
-            case ElementCategory::TransitionMetal: return juce::String::fromUTF8 (u8"Metais de transição");
-            case ElementCategory::Actinide:        return juce::String::fromUTF8 (u8"Actinídios");
-            case ElementCategory::Count:           break;
-        }
-        return {};
-    }
-
-    switch (category)
-    {
-        case ElementCategory::NonMetal:        return "Nonmetals";
-        case ElementCategory::AlkaliMetal:     return "Alkali metals";
-        case ElementCategory::Semimetal:       return "Semimetals";
-        case ElementCategory::OtherMetal:      return "Other metals";
-        case ElementCategory::Lanthanide:      return "Lanthanides";
-        case ElementCategory::NobleGas:        return "Noble gases";
-        case ElementCategory::AlkalineEarth:   return "Alkaline earth metals";
-        case ElementCategory::Halogen:         return "Halogens";
-        case ElementCategory::TransitionMetal: return "Transition metals";
-        case ElementCategory::Actinide:        return "Actinides";
-        case ElementCategory::Count:           break;
-    }
-    return {};
+    return LocalizationManager::getInstance().getCategoryName (category, lang);
 }
 
 juce::String getPhaseName (PhysicalPhase phase, Language lang)
 {
-    if (lang == Language::Portuguese)
-    {
-        switch (phase)
-        {
-            case PhysicalPhase::Gas:    return juce::String::fromUTF8 (u8"Gasoso");
-            case PhysicalPhase::Liquid: return juce::String::fromUTF8 (u8"Líquido");
-            case PhysicalPhase::Solid:  return juce::String::fromUTF8 (u8"Sólido");
-        }
-        return {};
-    }
-
-    switch (phase)
-    {
-        case PhysicalPhase::Gas:    return "Gas";
-        case PhysicalPhase::Liquid: return "Liquid";
-        case PhysicalPhase::Solid:  return "Solid";
-    }
-    return {};
+    return LocalizationManager::getInstance().getPhaseName (phase, lang);
 }
 
 juce::String getEngineDescription (const ElementSynthProfile& profile, Language lang)
 {
-    if (lang == Language::Portuguese)
-        return juce::String::fromUTF8 (profile.engineDescriptionPt);
-    return juce::String::fromUTF8 (profile.engineDescriptionEn);
+    return LocalizationManager::getInstance().getEngineDescription (profile.engineDescriptionKey, lang);
 }
 
 juce::String getCategoryNamePt (ElementCategory category)
@@ -324,8 +267,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         case ElementCategory::NobleGas:
         {
             // Ethereal, airy, floating Ambient Breath Pad — all Noble Gases sound unmistakably gaseous & luminous
-            p.engineDescriptionPt = u8"Pad Atmosférico • Sopro Gasoso & Harmônicos Puros";
-            p.engineDescriptionEn = u8"Atmospheric Pad • Gaseous Breath & Pure Harmonics";
+            p.engineDescriptionKey = "nobleGas";
             p.triSineMix        = 0.85f;
             p.sawMix            = 0.12f + 0.16f * z;
             p.pulseMix          = 0.0f;
@@ -359,12 +301,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         {
             // Organic Warm Analog / Wind-Reed Synth — gaseous non-metals (H, N, O) share airy breathiness with gases!
             const bool isGas = (el.phase == PhysicalPhase::Gas);
-            p.engineDescriptionPt = isGas
-                ? u8"Synth Sopro Orgânico • Gás Diatômico Leve & Filtro Suave"
-                : u8"Poly Analógico Orgânico • Timbre Quente Covalente";
-            p.engineDescriptionEn = isGas
-                ? u8"Organic Wind Synth • Light Diatomic Gas & Smooth Filter"
-                : u8"Organic Analog Poly • Warm Covalent Timbre";
+            p.engineDescriptionKey = isGas ? "nonMetalGas" : "nonMetalSolid";
 
             p.triSineMix        = isGas ? 0.72f : 0.52f;
             p.sawMix            = (isGas ? 0.18f : 0.34f) + 0.25f * z;
@@ -401,8 +338,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
             // Reactive Acid / Ionized Resonant Synth — biting filter resonance, electric sizzle, gaseous fizz on F/Cl
             const bool isGas = (el.phase == PhysicalPhase::Gas);
             const bool isLiq = (el.phase == PhysicalPhase::Liquid);
-            p.engineDescriptionPt = u8"Lead/Pad Ionizado • Ressonância Ácida & Pulso Reativo";
-            p.engineDescriptionEn = u8"Ionized Lead/Pad • Acid Resonance & Reactive Pulse";
+            p.engineDescriptionKey = "halogen";
 
             p.triSineMix        = 0.18f;
             p.sawMix            = 0.58f + 0.20f * z;
@@ -437,8 +373,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         case ElementCategory::AlkaliMetal:
         {
             // Energetic Spark Pluck / Electric Keys — fast percussive transient with pitch chirp ("water reaction spark")
-            p.engineDescriptionPt = u8"Pluck Elétrico Reativo • Centelha Alcalina & Ataque Percussivo";
-            p.engineDescriptionEn = u8"Reactive Electric Pluck • Alkaline Spark & Percussive Attack";
+            p.engineDescriptionKey = "alkaliMetal";
 
             p.triSineMix          = 0.38f;
             p.sawMix              = 0.45f + 0.25f * z;
@@ -474,8 +409,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         case ElementCategory::AlkalineEarth:
         {
             // Grounded Warm Brass-Poly & Sub-Harmonic Synth — solid structural foundation
-            p.engineDescriptionPt = u8"Brass-Poly Terroso • Sub-Harmônico Denso & Filtro Analógico";
-            p.engineDescriptionEn = u8"Earthy Brass-Poly • Dense Sub-Harmonic & Analog Filter";
+            p.engineDescriptionKey = "alkalineEarth";
 
             p.triSineMix        = 0.30f;
             p.sawMix            = 0.68f;
@@ -521,13 +455,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
             }};
             const int dIdx = juce::jlimit (0, 9, el.group - 3);
             const bool isMercury = (el.phase == PhysicalPhase::Liquid);
-
-            p.engineDescriptionPt = isMercury
-                ? u8"FM Metal Líquido • Ressonância Fluida & Harmônicos"
-                : u8"FM Metálico Ressonante • Sino Forjado & Brilho";
-            p.engineDescriptionEn = isMercury
-                ? u8"Liquid Metal FM • Fluid Resonance & Harmonics"
-                : u8"Resonant Metallic FM • Forged Bell & Shimmer";
+            p.engineDescriptionKey = isMercury ? "transitionMetalLiquid" : "transitionMetalSolid";
 
             p.triSineMix        = 0.82f;
             p.sawMix            = 0.14f + 0.15f * z;
@@ -561,8 +489,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         case ElementCategory::Semimetal:
         {
             // Crystalline Wavefold / Semiconductor Digital-Hybrid Synth
-            p.engineDescriptionPt = u8"Cristal Semicondutor • Wavefolder Harmônico & Prisma Digital";
-            p.engineDescriptionEn = u8"Semiconductor Crystal • Harmonic Wavefolder & Digital Prism";
+            p.engineDescriptionKey = "semimetal";
 
             p.triSineMix        = 0.78f;
             p.sawMix            = 0.15f;
@@ -600,8 +527,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         case ElementCategory::OtherMetal:
         {
             // Malleable Warm Electric Tine / Tube-Saturated Post-Transition Metal (Al, Sn, Pb, Bi...)
-            p.engineDescriptionPt = u8"Metal Maleável Valvulado • Tine Quente & Corpo Denso";
-            p.engineDescriptionEn = u8"Tube Malleable Metal • Warm Tine & Dense Body";
+            p.engineDescriptionKey = "otherMetal";
 
             p.triSineMix        = 0.74f;
             p.sawMix            = 0.24f + 0.18f * z;
@@ -636,8 +562,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         {
             // Luminous Rare-Earth Shimmer / Magnetic Detuned Ensemble Synth
             const float fBlockPos = juce::jlimit (0.0f, 1.0f, static_cast<float> (el.atomicNumber - 57) / 14.0f);
-            p.engineDescriptionPt = u8"Ensemble Terras-Raras • Super-Harmônicos & Brilho Laser";
-            p.engineDescriptionEn = u8"Rare-Earth Ensemble • Super-Harmonics & Laser Shimmer";
+            p.engineDescriptionKey = "lanthanide";
 
             p.triSineMix        = 0.42f;
             p.sawMix            = 0.65f;
@@ -674,8 +599,7 @@ ElementSynthProfile computeSynthProfile (const ElementInfo& el) noexcept
         {
             // Heavy Radioactive Drone / Unstable Sub-Pulse Synth (Ac..Lr: U, Pu, Cf...)
             const float actPos = juce::jlimit (0.0f, 1.0f, static_cast<float> (el.atomicNumber - 89) / 14.0f);
-            p.engineDescriptionPt = u8"Drone Radioativo • Sub-Massa Nuclear & Pulso Instável";
-            p.engineDescriptionEn = u8"Radioactive Drone • Nuclear Sub-Mass & Unstable Pulse";
+            p.engineDescriptionKey = "actinide";
 
             p.triSineMix          = 0.36f;
             p.sawMix              = 0.56f + 0.20f * actPos;

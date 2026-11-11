@@ -3,6 +3,7 @@
 #include <juce_core/juce_core.h>
 #include <juce_graphics/juce_graphics.h>
 #include <array>
+#include "LocalizationManager.h"
 
 namespace PeriodicSynth
 {
@@ -29,18 +30,10 @@ enum class PhysicalPhase : int
     Gas
 };
 
-enum class Language : int
-{
-    English = 0,
-    Portuguese = 1
-};
-
 struct ElementInfo
 {
     int atomicNumber;               // Z = 1..118
     const char* symbol;             // "H" .. "Og"
-    const char* namePt;             // UTF-8 Portuguese name matching reference table
-    const char* nameEn;             // English IUPAC element name
     float atomicMass;               // Numerical atomic mass (u)
     const char* massDisplay;        // Exact display string from reference table ("1,008", "[294]", etc.)
     ElementCategory category;       // Chemical family (10 categories from reference legend)
@@ -102,8 +95,7 @@ struct ElementSynthProfile
     float reverbRoomSize = 0.55f;
     float reverbDamping = 0.45f;
 
-    const char* engineDescriptionPt = "";
-    const char* engineDescriptionEn = "";
+    const char* engineDescriptionKey = "";
 };
 
 // Database accessors (1-based Z = 1..118, or 0-based index 0..117)
