@@ -515,14 +515,21 @@
 
         <div class="content-card">
           <div class="card-icon">🎚️</div>
-          <h3>Controles Globais de Master</h3>
+          <h3>Barra Superior & Monitor de Vozes</h3>
           <p>
-            Ajustes essenciais localizados no topo da janela com interpolação anti-click:
+            Ajustes essenciais localizados no topo da janela com interpolação anti-click e utilitários:
           </p>
           <ul>
+            <li><strong>Seletor de Idioma (<code class="inline-code">EN | PT</code>)</strong>: Alternância instantânea de toda a interface entre Inglês e Português, salva com sua sessão da DAW.</li>
             <li><strong>Volume Master</strong>: Controla o ganho geral de saída sem introduzir estalos digitais.</li>
             <li><strong>Ambiência / Reverb</strong>: Regula a intensidade espacial da reverberação e da espacialização estéreo.</li>
-            <li><strong>Automação Total</strong>: Ambos os controles são automatizáveis nas pistas da sua DAW.</li>
+            <li><strong>Monitor de Vozes e Polifonia (<code class="inline-code">MIDI 0/16</code>)</strong>: Mostra em tempo real quantas notas estão soando (de 0 até o limite de 16) e acende um LED na cor da família química atual.
+              <ul style="margin-top: 0.35rem; font-size: 0.88rem; opacity: 0.95;">
+                <li><em>Diagnóstico imediato ("Cadê o som?")</em>: se você tocar e continuar em <code class="inline-code">0/16</code>, o sinal MIDI não está chegando ao plugin; se subir para <code class="inline-code">&ge; 1/16</code> e o LED acender, o MIDI está perfeito e o problema é apenas de áudio (volume baixo ou canal mutado).</li>
+                <li><em>Notas travadas</em>: identifica se há vozes soando quando a DAW está pausada (para limpar com o botão <strong>Panic</strong>).</li>
+                <li><em>Teto de polifonia</em>: bater em <code class="inline-code">16/16</code> avisa que o limite de 16 notas foi atingido e as notas antigas estão dando lugar às novas (*voice stealing*).</li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -764,9 +771,9 @@ cp -r build/Md101_artefacts/Release/VST3/Md-101.vst3 ~/.vst3/</pre>
         </div>
 
         <div class="content-card">
-          <h3>Uma nota ficou presa. Como silenciá-la?</h3>
+          <h3>Uma nota ficou presa ou não sai som. Como resolver?</h3>
           <p>
-            Clique no botão <strong>Panic</strong> no rodapé da janela do sintetizador. Esse botão envia um comando imediato de <em>All Notes Off</em> e limpa todas as 16 vozes ativas. Verifique também se o botão <strong>Hold</strong> não foi deixado ligado acidentalmente.
+            Basta olhar para o indicador <strong>`MIDI n/16`</strong> no topo: se ele marcar <code>0/16</code>, o sinal MIDI não está chegando da sua DAW ou teclado. Se marcar <code>1/16</code> ou mais mas você não ouvir som, o sinal está chegando e basta subir o Volume Master. Se uma nota ficou soando sem parar, clique no botão <strong>Panic</strong> no rodapé para enviar um comando imediato de <em>All Notes Off</em> e verifique se o botão <strong>Hold</strong> não ficou ativado.
           </p>
         </div>
 

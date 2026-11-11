@@ -76,7 +76,12 @@ The Md-101 interface is designed for high contrast and visual immersion (*Dark S
 - **Language Switcher (`EN | PT`)**: Instantly toggle the entire interface between **English** and **Portuguese** with a single click. The selected language is saved directly with your DAW project session.
 - **Master Volume**: Smooth, de-zippered output gain control preventing digital clicks and pops.
 - **Ambience / Reverb**: Regulates spatial reverb depth and stereo chorus spreading.
-- **Active Voice Monitor (`MIDI 0/16`)**: Real-time LED and voice count indicator reflecting active polyphony.
+- **Active Voice & Polyphony Monitor (`MIDI 0/16`)**: Displays the number of notes currently sounding in real time (from 0 up to the 16-voice maximum) alongside an activity LED illuminated in the active chemical family's color:
+  - **Purpose and Practical Benefits:**
+    - **Instant Troubleshooting ("Why is there no sound?")**: If you play a note and hear silence, glance at the indicator. If it remains at `0/16`, no MIDI signal is reaching the plugin (check your DAW track arming, routing, or MIDI channel 1). If it rises to `1/16` or higher and the LED lights up, MIDI is arriving properly and the issue is audio-related (Master Volume at zero or muted track output).
+    - **Detecting Hanging/Stuck Notes**: If your DAW project is stopped but audio lingers, the monitor immediately reveals if voices are still active (e.g., `1/16`). Click the **Panic** button in the footer to silence them.
+    - **Tracking Polyphony Limits & Voice Stealing**: Md-101 supports up to 16 simultaneous voices. When playing dense chords with a sustain pedal, reaching `16/16` indicates maximum capacity has been reached and older voices are being smoothly reassigned to new notes.
+    - **Monitoring Envelope Release & CPU Rest**: Easily see when long resonant tails have faded to silence and the engine returns to full idle (`0/16`).
 
 ### 3.2. Interactive Periodic Table (118 Presets)
 - **One-Click Preset Loading**: Left-click any element cell to immediately load its sound preset.
@@ -151,12 +156,14 @@ For melodic percussion and shimmering chimes, look to the central block of Trans
 3. Ensure your DAW supports **64-bit VST3** plugins.
 
 ### Notes continue sounding without stopping
+- Look at the **`MIDI n/16`** indicator in the top header: if it displays `1/16` or higher while playback is stopped, voices are stuck active.
 - Check whether the **`Hold`** button on the bottom toolbar is active (highlighted background). If active, click it to release.
-- If your MIDI keyboard controller sent a stuck sustain pedal message, simply click the **`Panic`** button to silence all active voices immediately.
+- If your MIDI keyboard controller sent a stuck sustain pedal message or the DAW stopped before sending a *Note Off*, click the **`Panic`** button to silence all active voices immediately.
 
-### No sound is produced when playing the virtual keyboard
-- Check that the **Volume** slider at the top is not set to zero.
-- If running inside a DAW, verify that the MIDI track is armed for recording/monitoring (*Record Arm / Input Monitor*) and routed to MIDI Channel 1.
+### No sound is produced when playing the virtual keyboard or controller
+- Look at the **`MIDI n/16`** monitor in the top header:
+  - If it remains at **`0/16`**: The plugin is not receiving MIDI events. Ensure the track's MIDI channel is set to 1 and the track is armed for recording/monitoring (*Record Arm / Monitor*).
+  - If it rises to **`1/16`** or higher (LED illuminated): MIDI input is received normally. Verify that the **Master Volume** slider at the top is not turned all the way down and that your audio track is not muted.
 
 ---
 

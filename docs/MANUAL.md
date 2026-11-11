@@ -91,7 +91,12 @@ A interface do Md-101 foi desenhada para oferecer uma experiência imersiva e de
 - **Seletor de Idioma (`EN | PT`)**: Alterna instantaneamente a interface inteira entre **Inglês** e **Português**, salvando sua preferência junto com a sessão da DAW.
 - **Volume Master**: Controla o ganho geral de saída com interpolação suave (evita estalos ou cliques digitais).
 - **Ambiência / Reverb**: Ajusta a intensidade espacial da reverberação e da espacialização estéreo.
-- **Monitor de Vozes (`MIDI 0/16`)**: Indicador numérico e LED em tempo real da contagem de vozes polifônicas ativas.
+- **Monitor de Vozes e Polifonia (`MIDI 0/16`)**: Mostra em tempo real quantas notas estão soando naquele momento (de 0 até o limite de 16) e acende um LED colorido na cor da família química atual.
+  - **Para que serve e quais os benefícios:**
+    - **Diagnóstico rápido ("Cadê o som?")**: Se você tocar no teclado ou disparar uma trilha na DAW e não sair som, olhe para esse indicador. Se ele continuar em `0/16`, o sinal MIDI não está chegando ao plugin (verifique o canal MIDI ou se a pista está armada). Se ele subir para `1/16` ou mais e o LED acender, o sinal MIDI está perfeito e o problema é apenas de áudio (volume master zerado ou canal mutado na DAW).
+    - **Identificar notas presas (*stuck notes*)**: Se a música foi pausada na DAW mas um som continuar soando ao fundo, o indicador mostra se há vozes travadas (ex.: `1/16`). Basta clicar no botão **Panic** no rodapé para silenciá-las.
+    - **Saber se notas estão sendo cortadas (*voice stealing*)**: O sintetizador toca até 16 notas simultâneas. Ao tocar acordes densos com pedal de sustentação, se o contador bater em `16/16`, o sintetizador atingiu o teto e as notas mais antigas darão lugar às novas notas de forma suave.
+    - **Acompanhar o decaimento (*release*) e repouso da CPU**: Permite ver exatamente quando os sons com caudas longas de sustentação terminam de tocar e o motor volta ao repouso total (`0/16`), liberando ciclos do processador.
 
 ### 3.4. Teclado Virtual & Controles de Performance
 - **Sensibilidade à Velocidade Vertical**: Ao clicar em uma tecla, a posição vertical do cursor define a dinâmica:
@@ -151,12 +156,14 @@ Para instrumentos percussivos metálicos, explore o bloco central de Metais de T
 3. Verifique se a sua DAW suporta plugins **VST3 de 64-bit**.
 
 ### As notas continuam soando sem parar
+- Olhe para o indicador **`MIDI n/16`** no topo da janela: se estiver marcando `1/16` ou mais com o projeto pausado, há notas ativas ou presas.
 - Verifique se o botão **`Hold`** no rodapé do sintetizador está ativado (fundo iluminado). Se estiver, clique nele para desativá-lo.
-- Se o seu teclado controlador enviou um evento de pedal de sustain que ficou preso, basta clicar no botão **`Panic`** para silenciar todas as vozes instantaneamente.
+- Se o seu teclado controlador enviou um evento de pedal de sustain que ficou preso ou a DAW foi interrompida antes do comando *Note Off*, basta clicar no botão **`Panic`** para silenciar todas as vozes instantaneamente.
 
-### Não sai som ao tocar no teclado virtual
-- Verifique se o controle de **Volume Master** no topo não está zerado.
-- Caso esteja usando uma DAW, certifique-se de que a pista MIDI está armada para gravação/monitoramento (*Record Arm / Input Monitor*) e enviando para o canal MIDI 1.
+### Não sai som ao tocar no teclado virtual ou controlador
+- Olhe para o indicador **`MIDI n/16`** no topo:
+  - Se estiver em **`0/16`**: O plugin não está recebendo notas MIDI. Verifique se o canal MIDI da pista é o canal 1 e se a pista está armada para gravação/monitoramento (*Record Arm / Monitor*).
+  - Se estiver em **`1/16`** ou mais (LED aceso): O sinal MIDI está chegando normalmente. Verifique se o controle de **Volume Master** no topo não está no mínimo ou se a saída da sua pista de áudio não está silenciada.
 
 ---
 
