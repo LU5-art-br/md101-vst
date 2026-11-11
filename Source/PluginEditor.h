@@ -74,9 +74,11 @@ private:
 
     private:
         juce::Rectangle<float> getCardBounds() const noexcept;
+        void loadLogo();
 
         juce::Colour accent { 0xffdcadd7 };
         PeriodicSynth::Language language = PeriodicSynth::Language::English;
+        std::unique_ptr<juce::Drawable> logoDrawable;
         juce::HyperlinkButton authorLinkBtn { "by LU5 | lu5.art.br", juce::URL ("https://lu5.art.br") };
         juce::TextButton closeBtn { "Close" };
     };

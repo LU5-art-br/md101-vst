@@ -2,6 +2,14 @@
 #include <juce_audio_devices/juce_audio_devices.h>
 #include <juce_audio_utils/juce_audio_utils.h>
 
+#if __has_include(<BinaryData.h>)
+    #include <BinaryData.h>
+    #define MD101_HAS_BINARY_DATA 1
+#elif __has_include("BinaryData.h")
+    #include "BinaryData.h"
+    #define MD101_HAS_BINARY_DATA 1
+#endif
+
 extern juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 #include <juce_audio_plugin_client/Standalone/juce_StandaloneFilterWindow.h>
 
@@ -125,6 +133,8 @@ void PeriodicSynthAudioProcessorEditor::DarkStudioLookAndFeel::drawLinearSlider 
 // ==============================================================================
 PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::AboutOverlayComponent()
 {
+    loadLogo();
+
     authorLinkBtn.setFont (juce::FontOptions (13.5f, juce::Font::bold), false, juce::Justification::centred);
     authorLinkBtn.setColour (juce::HyperlinkButton::textColourId, juce::Colour (0xff72cbeb));
     addAndMakeVisible (authorLinkBtn);
@@ -135,6 +145,76 @@ PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::AboutOverlayComponent(
         if (onClose)
             onClose();
     };
+}
+
+void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::loadLogo()
+{
+#if defined(MD101_HAS_BINARY_DATA)
+    int dataSize = 0;
+    const char* data = BinaryData::getNamedResource ("md101_svg", dataSize);
+    if (data == nullptr)
+        data = BinaryData::getNamedResource ("md_101_svg", dataSize);
+
+    if (data != nullptr && dataSize > 0)
+    {
+        if (auto xml = juce::XmlDocument::parse (juce::String::createStringFromData (data, dataSize)))
+        {
+            logoDrawable = juce::Drawable::createFromSVG (*xml);
+            if (logoDrawable != nullptr)
+                return;
+        }
+    }
+#endif
+
+    const std::initializer_list<juce::File> candidateFiles = {
+        juce::File ("assets/md-101.svg"),
+        juce::File ("../assets/md-101.svg"),
+        juce::File::getSpecialLocation (juce::File::currentExecutableFile).getParentDirectory().getChildFile ("assets/md-101.svg"),
+        juce::File::getSpecialLocation (juce::File::currentExecutableFile).getParentDirectory().getParentDirectory().getChildFile ("assets/md-101.svg")
+    };
+
+    for (const auto& file : candidateFiles)
+    {
+        if (file.existsAsFile())
+        {
+            if (auto xml = juce::XmlDocument::parse (file.loadFileAsString()))
+            {
+                logoDrawable = juce::Drawable::createFromSVG (*xml);
+                if (logoDrawable != nullptr)
+                    return;
+            }
+        }
+    }
+
+    // Direct inline SVG fallback ensures logo always renders identically even if files or resources are detached
+    static constexpr const char* kMd101Svg =
+        R"svg(<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141A24"/>
+      <stop offset="100%" stop-color="#0A0E14"/>
+    </linearGradient>
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#DCADD7"/>
+      <stop offset="50%" stop-color="#72CBEB"/>
+      <stop offset="100%" stop-color="#3D9EE5"/>
+    </linearGradient>
+    <filter id="glow" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect x="12" y="12" width="232" height="232" rx="32" ry="32" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="6"/>
+  <rect x="22" y="22" width="212" height="212" rx="24" ry="24" fill="none" stroke="#DCADD7" stroke-opacity="0.25" stroke-width="2"/>
+  <text x="38" y="62" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#72CBEB">101</text>
+  <circle cx="208" cy="48" r="8" fill="#A3D246" filter="url(#glow)"/>
+  <text x="128" y="148" text-anchor="middle" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="92" font-weight="800" fill="#FFFFFF" letter-spacing="-2">Md</text>
+  <path d="M 44 182 Q 65 182, 76 166 T 104 182 T 128 154 T 152 182 T 180 168 Q 191 182, 212 182" fill="none" stroke="#DCADD7" stroke-width="4" stroke-linecap="round"/>
+  <text x="128" y="216" text-anchor="middle" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#92E3E4" letter-spacing="3">SYNTH [258]</text>
+</svg>)svg";
+
+    if (auto xml = juce::XmlDocument::parse (juce::String (kMd101Svg)))
+        logoDrawable = juce::Drawable::createFromSVG (*xml);
 }
 
 void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::setAccent (juce::Colour c)
@@ -199,24 +279,35 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::paint (juce::Grap
     g.setColour (accent.withAlpha (0.22f));
     g.drawRoundedRectangle (card.reduced (4.0f), 8.5f, 1.0f);
 
-    // Periodic Table Element Badge [101 Md]
-    const juce::Rectangle<float> tile (card.getX() + 26.0f, card.getY() + 24.0f, 64.0f, 64.0f);
-    g.setColour (juce::Colour (0xff0c1018));
-    g.fillRoundedRectangle (tile, 7.0f);
-    g.setColour (accent.brighter (0.2f));
-    g.drawRoundedRectangle (tile, 7.0f, 1.8f);
+    // Periodic Table Element Badge [101 Md] - md-101.svg Logo
+    const juce::Rectangle<float> tile (card.getX() + 24.0f, card.getY() + 22.0f, 68.0f, 68.0f);
 
-    g.setColour (juce::Colour (0xff72cbeb));
-    g.setFont (juce::FontOptions (11.0f, juce::Font::bold));
-    g.drawText ("101", tile.withTrimmedLeft (6.0f).withTrimmedTop (4.0f).withHeight (14.0f),
-                juce::Justification::centredLeft, false);
+    if (logoDrawable != nullptr)
+    {
+        g.setColour (accent.withAlpha (0.22f));
+        g.fillRoundedRectangle (tile.expanded (2.0f), 10.0f);
 
-    g.setColour (juce::Colour (0xffa3d246));
-    g.fillEllipse (tile.getRight() - 13.0f, tile.getY() + 6.0f, 6.5f, 6.5f);
+        logoDrawable->drawWithin (g, tile, juce::RectanglePlacement::centred, 1.0f);
+    }
+    else
+    {
+        g.setColour (juce::Colour (0xff0c1018));
+        g.fillRoundedRectangle (tile, 7.0f);
+        g.setColour (accent.brighter (0.2f));
+        g.drawRoundedRectangle (tile, 7.0f, 1.8f);
 
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (26.0f, juce::Font::bold));
-    g.drawText ("Md", tile.withTrimmedTop (14.0f), juce::Justification::centred, false);
+        g.setColour (juce::Colour (0xff72cbeb));
+        g.setFont (juce::FontOptions (11.0f, juce::Font::bold));
+        g.drawText ("101", tile.withTrimmedLeft (6.0f).withTrimmedTop (4.0f).withHeight (14.0f),
+                    juce::Justification::centredLeft, false);
+
+        g.setColour (juce::Colour (0xffa3d246));
+        g.fillEllipse (tile.getRight() - 13.0f, tile.getY() + 6.0f, 6.5f, 6.5f);
+
+        g.setColour (juce::Colours::white);
+        g.setFont (juce::FontOptions (26.0f, juce::Font::bold));
+        g.drawText ("Md", tile.withTrimmedTop (14.0f), juce::Justification::centred, false);
+    }
 
     // Title & Version Badge
     g.setColour (juce::Colours::white);

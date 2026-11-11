@@ -41,6 +41,7 @@ juce_add_binary_data(Md101BinaryData
     SOURCES
         assets/translations/en-US.json
         assets/translations/pt-BR.json
+        assets/md-101.svg
 )
 
 juce_add_plugin(Md101
