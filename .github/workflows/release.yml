@@ -90,9 +90,36 @@ jobs:
 
       - name: Install Linux Audio & GUI Dependencies
         run: |
-          if [ -f /etc/apt/apt-mirrors.txt ]; then
-            sudo sed -i '/azure\.archive\.ubuntu\.com/d' /etc/apt/apt-mirrors.txt
+          # 1. Add Cloudflare & Google DNS fallback in case Azure internal DNS fails on *.ubuntu.com
+          if [ -f /etc/systemd/resolved.conf ]; then
+            sudo sed -i 's/^#*DNS=.*/DNS=1.1.1.1 8.8.8.8/' /etc/systemd/resolved.conf || true
+            sudo systemctl restart systemd-resolved || true
           fi
+
+          # 2. Pick the first reachable Ubuntu mirror (includes non-ubuntu.com CDN mirrors)
+          WORKING_MIRROR=""
+          for m in \
+            "http://azure.archive.ubuntu.com/ubuntu" \
+            "http://archive.ubuntu.com/ubuntu" \
+            "https://mirrors.edge.kernel.org/ubuntu" \
+            "https://mirror.umd.edu/ubuntu" \
+            "http://mirrors.ocf.berkeley.edu/ubuntu"; do
+            if curl -fsSL --connect-timeout 5 --max-time 10 "${m}/dists/jammy/Release" >/dev/null 2>&1; then
+              WORKING_MIRROR="${m}"
+              echo "==> Selected reachable Ubuntu mirror: ${WORKING_MIRROR}"
+              break
+            fi
+          done
+
+          if [ -n "${WORKING_MIRROR}" ]; then
+            sudo tee /etc/apt/sources.list >/dev/null <<EOF
+          deb ${WORKING_MIRROR} jammy main restricted universe multiverse
+          deb ${WORKING_MIRROR} jammy-updates main restricted universe multiverse
+          deb ${WORKING_MIRROR} jammy-backports main restricted universe multiverse
+          deb ${WORKING_MIRROR} jammy-security main restricted universe multiverse
+          EOF
+          fi
+
           sudo apt-get -o Acquire::Retries=3 update
           sudo apt-get -o Acquire::Retries=3 install -y --no-install-recommends \
             ninja-build \
