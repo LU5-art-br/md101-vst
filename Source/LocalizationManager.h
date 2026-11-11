@@ -75,11 +75,13 @@ private:
         std::unordered_map<juce::String, juce::String> engineDescriptions;
         std::unordered_map<juce::String, juce::String> meterLabels;
         std::unordered_map<juce::String, juce::String> uiStrings;
+        std::unordered_map<juce::String, juce::String> juceStrings;
     };
 
     void loadAllLocales();
     void loadLocaleData (Language lang, const juce::String& jsonString);
     void flattenUiJson (LocaleData& target, const juce::String& prefix, const juce::var& jsonVar);
+    void applyJuceMappings (Language lang);
     const LocaleData& getLocaleData (Language lang) const noexcept;
 
     Language currentLanguage = Language::English;

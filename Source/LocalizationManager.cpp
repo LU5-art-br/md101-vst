@@ -21,11 +21,13 @@ LocalizationManager& LocalizationManager::getInstance() noexcept
 LocalizationManager::LocalizationManager()
 {
     loadAllLocales();
+    applyJuceMappings (currentLanguage);
 }
 
 void LocalizationManager::setLanguage (Language lang) noexcept
 {
     currentLanguage = lang;
+    applyJuceMappings (lang);
 }
 
 void LocalizationManager::loadAllLocales()
@@ -138,6 +140,36 @@ void LocalizationManager::loadLocaleData (Language lang, const juce::String& jso
     // 7. UI strings
     if (root->getProperty ("ui").isObject())
         flattenUiJson (target, {}, root->getProperty ("ui"));
+
+    // 8. JUCE framework internal strings
+    if (auto* jc = root->getProperty ("juce").getDynamicObject())
+    {
+        for (const auto& prop : jc->getProperties())
+            target.juceStrings[prop.name.toString()] = prop.value.toString();
+    }
+}
+
+void LocalizationManager::applyJuceMappings (Language lang)
+{
+    const auto& data = getLocaleData (lang);
+    if (data.juceStrings.empty())
+    {
+        juce::LocalisedStrings::setCurrentMappings (nullptr);
+        return;
+    }
+
+    juce::String mappingsText;
+    auto escape = [] (const juce::String& s)
+    {
+        return s.replace ("\\", "\\\\").replace ("\"", "\\\"");
+    };
+
+    for (const auto& [orig, trans] : data.juceStrings)
+    {
+        mappingsText << "\"" << escape (orig) << "\" = \"" << escape (trans) << "\"\n";
+    }
+
+    juce::LocalisedStrings::setCurrentMappings (new juce::LocalisedStrings (mappingsText, false));
 }
 
 void LocalizationManager::flattenUiJson (LocaleData& target, const juce::String& prefix, const juce::var& jsonVar)

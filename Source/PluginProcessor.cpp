@@ -1,11 +1,23 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "LocalizationManager.h"
+
+PeriodicSynth::Language PeriodicSynthAudioProcessor::detectInitialLanguage() noexcept
+{
+    const auto sysLang = juce::SystemStats::getUserLanguage();
+    if (sysLang.startsWithIgnoreCase ("pt"))
+        return PeriodicSynth::Language::Portuguese;
+    return PeriodicSynth::Language::English;
+}
 
 PeriodicSynthAudioProcessor::PeriodicSynthAudioProcessor()
     : AudioProcessor (BusesProperties()
                         .withOutput ("Output", juce::AudioChannelSet::stereo(), true)),
       apvts (*this, nullptr, "Md101Parameters", createParameterLayout())
 {
+    const auto initialLang = detectInitialLanguage();
+    setLanguage (initialLang);
+
     elementParam = apvts.getRawParameterValue ("element");
     gainParam    = apvts.getRawParameterValue ("masterGain");
     spaceParam   = apvts.getRawParameterValue ("space");
@@ -111,6 +123,7 @@ void PeriodicSynthAudioProcessor::selectElementIndex (int zeroBasedIndex)
 void PeriodicSynthAudioProcessor::setLanguage (PeriodicSynth::Language lang) noexcept
 {
     currentLanguage.store (static_cast<int> (lang), std::memory_order_relaxed);
+    PeriodicSynth::LocalizationManager::getInstance().setLanguage (lang);
 }
 
 PeriodicSynth::Language PeriodicSynthAudioProcessor::getLanguage() const noexcept

@@ -149,6 +149,13 @@ PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::AboutOverlayComponent(
 
 void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::loadLogo()
 {
+    auto sanitizeSvgFonts = [] (juce::XmlElement& element, auto& self) -> void {
+        if (element.hasAttribute ("font-family"))
+            element.removeAttribute ("font-family");
+        for (auto* child : element.getChildIterator())
+            self (*child, self);
+    };
+
 #if defined(MD101_HAS_BINARY_DATA)
     int dataSize = 0;
     const char* data = BinaryData::getNamedResource ("md101_svg", dataSize);
@@ -159,6 +166,7 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::loadLogo()
     {
         if (auto xml = juce::XmlDocument::parse (juce::String::createStringFromData (data, dataSize)))
         {
+            sanitizeSvgFonts (*xml, sanitizeSvgFonts);
             logoDrawable = juce::Drawable::createFromSVG (*xml);
             if (logoDrawable != nullptr)
                 return;
@@ -179,6 +187,7 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::loadLogo()
         {
             if (auto xml = juce::XmlDocument::parse (file.loadFileAsString()))
             {
+                sanitizeSvgFonts (*xml, sanitizeSvgFonts);
                 logoDrawable = juce::Drawable::createFromSVG (*xml);
                 if (logoDrawable != nullptr)
                     return;
@@ -206,15 +215,18 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::loadLogo()
   </defs>
   <rect x="12" y="12" width="232" height="232" rx="32" ry="32" fill="url(#bgGrad)" stroke="url(#borderGrad)" stroke-width="6"/>
   <rect x="22" y="22" width="212" height="212" rx="24" ry="24" fill="none" stroke="#DCADD7" stroke-opacity="0.25" stroke-width="2"/>
-  <text x="38" y="62" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="28" font-weight="700" fill="#72CBEB">101</text>
+  <text x="38" y="62" font-size="28" font-weight="700" fill="#72CBEB">101</text>
   <circle cx="208" cy="48" r="8" fill="#A3D246" filter="url(#glow)"/>
-  <text x="128" y="148" text-anchor="middle" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="92" font-weight="800" fill="#FFFFFF" letter-spacing="-2">Md</text>
+  <text x="128" y="148" text-anchor="middle" font-size="92" font-weight="800" fill="#FFFFFF" letter-spacing="-2">Md</text>
   <path d="M 44 182 Q 65 182, 76 166 T 104 182 T 128 154 T 152 182 T 180 168 Q 191 182, 212 182" fill="none" stroke="#DCADD7" stroke-width="4" stroke-linecap="round"/>
-  <text x="128" y="216" text-anchor="middle" font-family="Segoe UI, Inter, Arial, sans-serif" font-size="20" font-weight="600" fill="#92E3E4" letter-spacing="3">SYNTH [258]</text>
+  <text x="128" y="216" text-anchor="middle" font-size="20" font-weight="600" fill="#92E3E4" letter-spacing="3">SYNTH [258]</text>
 </svg>)svg";
 
     if (auto xml = juce::XmlDocument::parse (juce::String (kMd101Svg)))
+    {
+        sanitizeSvgFonts (*xml, sanitizeSvgFonts);
         logoDrawable = juce::Drawable::createFromSVG (*xml);
+    }
 }
 
 void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::setAccent (juce::Colour c)
@@ -507,6 +519,9 @@ void PeriodicSynthAudioProcessorEditor::attachStandaloneOptionsMenu()
     if (standaloneWin == nullptr)
         return;
 
+    auto& loc = PeriodicSynth::LocalizationManager::getInstance();
+    customStandaloneOptionsBtn.setButtonText (loc.getUiString ("standaloneMenu.options", currentLanguage, "Options"));
+
     if (hookedStandaloneWindow == standaloneWin && origStandaloneOptionsBtn != nullptr)
     {
         customStandaloneOptionsBtn.setBounds (origStandaloneOptionsBtn->getBounds());
@@ -606,6 +621,7 @@ bool PeriodicSynthAudioProcessorEditor::keyPressed (const juce::KeyPress& key)
 void PeriodicSynthAudioProcessorEditor::setLanguage (PeriodicSynth::Language lang)
 {
     currentLanguage = lang;
+    PeriodicSynth::LocalizationManager::getInstance().setLanguage (lang);
     audioProcessor.setLanguage (lang);
     studioLaf.setLanguage (lang);
     periodicTable.setLanguage (lang);
@@ -614,6 +630,7 @@ void PeriodicSynthAudioProcessorEditor::setLanguage (PeriodicSynth::Language lan
     auto& loc = PeriodicSynth::LocalizationManager::getInstance();
     octDownBtn.setButtonText (loc.getUiString ("header.octaveDown", lang, "- Octave"));
     octUpBtn.setButtonText   (loc.getUiString ("header.octaveUp", lang, "Octave +"));
+    customStandaloneOptionsBtn.setButtonText (loc.getUiString ("standaloneMenu.options", lang, "Options"));
     langBtn.repaint();
     repaint();
 }

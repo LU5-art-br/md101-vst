@@ -41,6 +41,7 @@ public:
 
     void setLanguage (PeriodicSynth::Language lang) noexcept;
     PeriodicSynth::Language getLanguage() const noexcept;
+    static PeriodicSynth::Language detectInitialLanguage() noexcept;
 
     juce::MidiKeyboardState& getKeyboardState() noexcept { return keyboardState; }
     PeriodicSynth::SynthEngine& getSynthEngine() noexcept { return synthEngine; }

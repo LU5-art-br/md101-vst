@@ -414,6 +414,7 @@
       "instructionHelp": "Click/drag keys, use PC keyboard (A-L / Z-X octave) or send notes from a DAW MIDI track"
     },
     "standaloneMenu": {
+      "options": "Options",
       "settings": "Audio/MIDI Settings...",
       "saveState": "Save current state...",
       "loadState": "Load a saved state...",
@@ -426,5 +427,6 @@
       "licenseBody": "This software is released under the MIT License (source code).\nBinaries compiled with the open-source JUCE 8 framework are subject to GPLv3 terms.",
       "close": "Close"
     }
-  }
+  },
+  "juce": {}
 }

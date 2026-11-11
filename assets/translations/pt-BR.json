@@ -414,6 +414,7 @@
       "instructionHelp": "Clique/arraste nas teclas, use o teclado PC (A-L / Z-X oitava) ou envie notas de uma track MIDI da DAW"
     },
     "standaloneMenu": {
+      "options": "Opções",
       "settings": "Configurações de Áudio/MIDI...",
       "saveState": "Salvar estado atual...",
       "loadState": "Carregar estado salvo...",
@@ -426,5 +427,43 @@
       "licenseBody": "Este software é disponibilizado sob a licença MIT (código-fonte).\nBinários compilados com a versão aberta do framework JUCE 8 seguem os termos da GPLv3.",
       "close": "Fechar"
     }
+  },
+  "juce": {
+    "Audio/MIDI Settings": "Configurações de Áudio/MIDI",
+    "Audio/MIDI Settings...": "Configurações de Áudio/MIDI...",
+    "Audio device type:": "Tipo de dispositivo de áudio:",
+    "Device:": "Dispositivo:",
+    "Output:": "Saída:",
+    "Input:": "Entrada:",
+    "Active output channels:": "Canais de saída ativos:",
+    "Active input channels:": "Canais de entrada ativos:",
+    "(no audio output channels found)": "(nenhum canal de saída encontrado)",
+    "(no audio input channels found)": "(nenhum canal de entrada encontrado)",
+    "Sample rate:": "Taxa de amostragem:",
+    "Audio buffer size:": "Tamanho do buffer de áudio:",
+    "Active MIDI inputs:": "Entradas MIDI ativas:",
+    "MIDI Output:": "Saída MIDI:",
+    "No MIDI inputs available": "Nenhuma entrada MIDI disponível",
+    "Bluetooth MIDI": "MIDI Bluetooth",
+    "Scan for bluetooth MIDI devices": "Procurar dispositivos MIDI Bluetooth",
+    "none": "nenhum",
+    "Test": "Testar",
+    "Plays a test tone": "Toca um tom de teste",
+    "Show advanced settings...": "Mostrar configurações avançadas...",
+    "Control Panel": "Painel de Controle",
+    "Opens the device's own control panel": "Abre o painel de controle do dispositivo",
+    "Reset Device": "Reiniciar Dispositivo",
+    "Resets the audio interface - sometimes needed after changing a device's properties in its custom control panel": "Reinicia a interface de áudio - às vezes necessário após alterar propriedades no painel do dispositivo",
+    "Error when trying to open audio device!": "Erro ao tentar abrir o dispositivo de áudio!",
+    "Save current state": "Salvar estado atual",
+    "Save current state...": "Salvar estado atual...",
+    "Load a saved state": "Carregar estado salvo",
+    "Load a saved state...": "Carregar estado salvo...",
+    "Reset to default state": "Restaurar estado padrão",
+    "Error whilst saving": "Erro ao salvar",
+    "Couldn't write to the specified file!": "Não foi possível gravar no arquivo especificado!",
+    "Error whilst loading": "Erro ao carregar",
+    "Couldn't read from the specified file!": "Não foi possível ler do arquivo especificado!",
+    "OK": "OK"
   }
 }

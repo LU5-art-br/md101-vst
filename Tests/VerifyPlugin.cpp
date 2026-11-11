@@ -120,8 +120,30 @@ int main (int argc, char* argv[])
                   << proc.getCurrentProgram() << ")" << std::endl;
         return 1;
     }
+    // Verify JUCE internal TRANS() bridge via proc.setLanguage
+    proc.setLanguage (PeriodicSynth::Language::Portuguese);
+    if (juce::translate ("Audio/MIDI Settings") != "Configurações de Áudio/MIDI"
+        || juce::translate ("Audio device type:") != "Tipo de dispositivo de áudio:"
+        || juce::translate ("Output:") != "Saída:"
+        || juce::translate ("Test") != "Testar"
+        || juce::translate ("Active output channels:") != "Canais de saída ativos:"
+        || juce::translate ("Sample rate:") != "Taxa de amostragem:"
+        || juce::translate ("Audio buffer size:") != "Tamanho do buffer de áudio:"
+        || juce::translate ("Active MIDI inputs:") != "Entradas MIDI ativas:")
+    {
+        std::cerr << "FAIL: JUCE internal translation mapping not active for Portuguese in proc.setLanguage" << std::endl;
+        return 1;
+    }
     proc.setLanguage (PeriodicSynth::Language::English);
-    std::cout << "[PASS] DAW Preset Programs (118), Bilingual EN/PT Names & XML State Persistence verified." << std::endl;
+    if (juce::translate ("Audio/MIDI Settings") != "Audio/MIDI Settings"
+        || juce::translate ("Output:") != "Output:")
+    {
+        std::cerr << "FAIL: JUCE internal translation mapping not reset for English in proc.setLanguage" << std::endl;
+        return 1;
+    }
+
+    proc.setLanguage (PeriodicSynth::Language::English);
+    std::cout << "[PASS] DAW Preset Programs (118), Bilingual EN/PT Names, JUCE Audio/MIDI Dialog & XML State Persistence verified." << std::endl;
 
     // 3. Render MIDI audio through ALL 118 elements & verify signal integrity + physical trends
     juce::AudioBuffer<float> audioBuf (2, 512);
