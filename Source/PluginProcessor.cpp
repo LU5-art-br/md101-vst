@@ -21,7 +21,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout PeriodicSynthAudioProcessor:
         .withStringFromValueFunction ([] (int value, int)
         {
             const auto& el = PeriodicSynth::getElementByAtomicNumber (value);
-            return juce::String (el.atomicNumber) + " - " + el.symbol + " (" + juce::String::fromUTF8 (el.nameEn) + ")";
+            return juce::String (el.atomicNumber) + " - " + el.symbol + " (" + PeriodicSynth::getElementName (el, PeriodicSynth::Language::English) + ")";
         });
 
     params.push_back (std::make_unique<juce::AudioParameterInt> (

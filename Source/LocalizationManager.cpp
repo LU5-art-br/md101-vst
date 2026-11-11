@@ -136,7 +136,7 @@ void LocalizationManager::loadLocaleData (Language lang, const juce::String& jso
     }
 
     // 7. UI strings
-    if (auto* ui = root->getProperty ("ui").getDynamicObject())
+    if (root->getProperty ("ui").isObject())
         flattenUiJson (target, {}, root->getProperty ("ui"));
 }
 
