@@ -98,7 +98,6 @@ if (MD101_BUILD_TESTS)
 
     target_compile_features(Md101Verify PRIVATE cxx_std_17)
     target_compile_options(Md101Verify PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
-    target_link_options(Md101Verify PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/MANIFEST:NO>)
 
     target_link_libraries(Md101Verify
         PRIVATE
