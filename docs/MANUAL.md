@@ -91,12 +91,6 @@ A interface do Md-101 foi desenhada para oferecer uma experiência imersiva e de
 - **Seletor de Idioma (`EN | PT`)**: Alterna instantaneamente a interface inteira entre **Inglês** e **Português**, salvando sua preferência junto com a sessão da DAW.
 - **Volume Master**: Controla o ganho geral de saída com interpolação suave (evita estalos ou cliques digitais).
 - **Ambiência / Reverb**: Ajusta a intensidade espacial da reverberação e da espacialização estéreo.
-- **Monitor de Vozes e Polifonia (`MIDI 0/16`)**: Mostra em tempo real quantas notas estão soando naquele momento (de 0 até o limite de 16) e acende um LED colorido na cor da família química atual.
-  - **Para que serve e quais os benefícios:**
-    - **Diagnóstico rápido ("Cadê o som?")**: Se você tocar no teclado ou disparar uma trilha na DAW e não sair som, olhe para esse indicador. Se ele continuar em `0/16`, o sinal MIDI não está chegando ao plugin (verifique o canal MIDI ou se a pista está armada). Se ele subir para `1/16` ou mais e o LED acender, o sinal MIDI está perfeito e o problema é apenas de áudio (volume master zerado ou canal mutado na DAW).
-    - **Identificar notas presas (*stuck notes*)**: Se a música foi pausada na DAW mas um som continuar soando ao fundo, o indicador mostra se há vozes travadas (ex.: `1/16`). Basta clicar no botão **Panic** no rodapé para silenciá-las.
-    - **Saber se notas estão sendo cortadas (*voice stealing*)**: O sintetizador toca até 16 notas simultâneas. Ao tocar acordes densos com pedal de sustentação, se o contador bater em `16/16`, o sintetizador atingiu o teto e as notas mais antigas darão lugar às novas notas de forma suave.
-    - **Acompanhar o decaimento (*release*) e repouso da CPU**: Permite ver exatamente quando os sons com caudas longas de sustentação terminam de tocar e o motor volta ao repouso total (`0/16`), liberando ciclos do processador.
 
 ### 3.4. Teclado Virtual & Controles de Performance
 - **Sensibilidade à Velocidade Vertical**: Ao clicar em uma tecla, a posição vertical do cursor define a dinâmica:
@@ -110,6 +104,12 @@ A interface do Md-101 foi desenhada para oferecer uma experiência imersiva e de
 - **Botões `- Oitava` e `Oitava +`**: Deslocam o registro do teclado de 61 teclas em até $\pm 2$ oitavas (alcance de $C_0$ a $C_9$).
 - **Botão `Hold` (Sustain Virtual)**: Mantém todas as notas acionadas soando continuamente até ser desativado.
 - **Botão `Panic`**: Desliga imediatamente todas as vozes e corta qualquer nota sustentada (*All Notes Off*).
+- **Monitor de Vozes e Polifonia (`MIDI 0/16`)**: Localizado na barra de ferramentas do piano (imediatamente à esquerda dos botões de oitava), mostra em tempo real quantas notas estão soando naquele momento (de 0 até o limite de 16) e acende um LED colorido na cor da família química atual.
+  - **Para que serve e quais os benefícios:**
+    - **Diagnóstico rápido ("Cadê o som?")**: Se você tocar no teclado ou disparar uma trilha na DAW e não sair som, olhe para esse indicador. Se ele continuar em `0/16`, o sinal MIDI não está chegando ao plugin (verifique o canal MIDI ou se a pista está armada). Se ele subir para `1/16` ou mais e o LED acender, o sinal MIDI está perfeito e o problema é apenas de áudio (volume master zerado ou canal mutado na DAW).
+    - **Identificar notas presas (*stuck notes*)**: Se a música foi pausada na DAW mas um som continuar soando ao fundo, o indicador mostra se há vozes travadas (ex.: `1/16`). Basta clicar no botão **Panic** logo ao lado para silenciá-las.
+    - **Saber se notas estão sendo cortadas (*voice stealing*)**: O sintetizador toca até 16 notas simultâneas. Ao tocar acordes densos com o botão **Hold** ou pedal de sustentação, se o contador bater em `16/16`, o sintetizador atingiu o teto e as notas mais antigas darão lugar às novas notas de forma suave.
+    - **Acompanhar o decaimento (*release*) e repouso da CPU**: Permite ver exatamente quando os sons com caudas longas de sustentação terminam de tocar e o motor volta ao repouso total (`0/16`), liberando ciclos do processador.
 - **Monitoramento de DAW**: Ao tocar através de uma controladora MIDI externa ou de uma trilha gravada na sua DAW, as teclas virtuais acendem em tempo real acompanhando a música.
 
 ---

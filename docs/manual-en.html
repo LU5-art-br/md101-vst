@@ -519,19 +519,13 @@
           <div class="card-icon">🌐</div>
           <h3>Top Bar & Language Selector</h3>
           <p>
-            Global controls and studio utilities with de-zippered anti-click smoothing:
+            Global controls and studio utilities with a clean layout and de-zippered anti-click smoothing:
           </p>
           <ul>
             <li><strong>Language Switcher (<code class="inline-code">EN | PT</code>)</strong>: Instant toggle between English and Portuguese, saved with your DAW session.</li>
             <li><strong>Master Volume</strong>: Smooth linear output gain control preventing digital clicks and overs.</li>
             <li><strong>Ambience / Reverb</strong>: Regulates spatial reverb depth and stereo chorus spreading.</li>
-            <li><strong>Voice & Polyphony Monitor (<code class="inline-code">MIDI 0/16</code>)</strong>: Real-time active voice count (up to 16) and status LED colored by the active chemical family.
-              <ul style="margin-top: 0.35rem; font-size: 0.88rem; opacity: 0.95;">
-                <li><em>Instant diagnostic ("Where is the sound?")</em>: if you play and it stays at <code class="inline-code">0/16</code>, MIDI is not reaching the plugin; if it rises to <code class="inline-code">&ge; 1/16</code> and lights up, MIDI is fine and you only need to check Master Volume or audio output.</li>
-                <li><em>Hanging notes</em>: reveals if notes are still active when your DAW playback is stopped (clear with the <strong>Panic</strong> button).</li>
-                <li><em>Polyphony ceiling</em>: reaching <code class="inline-code">16/16</code> shows the 16-voice maximum is reached and older voices are being smoothly recycled (*voice stealing*).</li>
-              </ul>
-            </li>
+            <li><strong>Full DAW Automation</strong>: Both master volume and reverb sliders can be automated in your project tracks.</li>
           </ul>
         </div>
       </div>
@@ -573,11 +567,18 @@
 
         <div class="content-card">
           <div class="card-icon">🛡️</div>
-          <h3>Performance Controls</h3>
+          <h3>Performance Controls & Polyphony</h3>
           <p>
             Dedicated utility buttons designed for studio and live workflow:
           </p>
           <ul>
+            <li><strong>Voice & Polyphony Monitor (<code class="inline-code">MIDI 0/16</code>)</strong>: Real-time active voice count (up to 16) and status LED colored by the active chemical family.
+              <ul style="margin-top: 0.35rem; font-size: 0.88rem; opacity: 0.95;">
+                <li><em>Instant diagnostic ("Where is the sound?")</em>: if you play and it stays at <code class="inline-code">0/16</code>, MIDI is not reaching the plugin; if it rises to <code class="inline-code">&ge; 1/16</code> and lights up, MIDI is fine and you only need to check Master Volume or audio output.</li>
+                <li><em>Hanging notes</em>: reveals if notes are still active when your DAW playback is stopped (clear with the <strong>Panic</strong> button right next to it).</li>
+                <li><em>Polyphony ceiling</em>: reaching <code class="inline-code">16/16</code> shows the 16-voice maximum is reached and older voices are being smoothly recycled (*voice stealing*).</li>
+              </ul>
+            </li>
             <li><strong>Hold Button (Virtual Sustain)</strong>: Latches triggered notes to sustain indefinitely for infinite pads and drones.</li>
             <li><strong>Panic Button</strong>: Dispatches an instant <em>All Notes Off</em> command and silences any hung voices.</li>
             <li><strong>- Octave and Octave +</strong>: Shifts the keyboard register across &plusmn;2 octaves (spanning C0 to C9).</li>

@@ -69,7 +69,7 @@ Elementos de um mesmo grupo compartilham a mesma arquitetura de síntese, soando
 ## Interface Escura & Controles
 
 - **Barra Superior com Seletor de Idioma (`EN | PT`)**:
-  - Navegação de presets (`<` / `>`), controles de **Volume** e **Reverb**, indicador de vozes MIDI (`MIDI 0/16`) e botão **`EN | PT`** para alternar toda a interface instantaneamente entre **Inglês** e **Português**.
+  - Navegação de presets (`<` / `>`), controles deslizantes de **Volume** e **Reverb** com layout limpo e botão **`EN | PT`** para alternar toda a interface instantaneamente entre **Inglês** e **Português**.
 - **Tabela Periódica Interativa (118 Presets)**:
   - Cores fiéis à tabela de referência com aura luminosa (*glow*) sobre fundo escuro.
   - **Indicador de Hover**: halo brilhante, expansão suave da célula, borda clara e prévia instantânea no painel central.
@@ -77,8 +77,8 @@ Elementos de um mesmo grupo compartilham a mesma arquitetura de síntese, soando
   - **Legenda Interativa**: passar o mouse sobre uma das 10 categorias destaca todos os elementos daquela família química.
 - **Painel Central (HUD + Osciloscópio)**:
   - Cartão ampliado do elemento ativo ($Z$, símbolo, nome em português, massa atômica e fase física), barras de mapeamento físico-sonoro e **osciloscópio estéreo em tempo real**.
-- **Rodapé — Piano MIDI Tradicional**:
-  - Teclas brancas e pretas tradicionais sensíveis à velocidade vertical do clique, suporte a *glissando* com o mouse, teclado do PC (`A`–`L` / `W`–`P`, `Z`/`X` para oitavas), botões de **Oitava**, **Hold (Sustain)** e **Panic**, além de iluminação em tempo real ao receber notas de uma **track MIDI da DAW**.
+- **Rodapé — Piano MIDI Tradicional & Controles de Performance**:
+  - Teclas brancas e pretas tradicionais sensíveis à velocidade vertical do clique, monitor de vozes e polifonia em tempo real (`MIDI 0/16`), suporte a *glissando* com o mouse, teclado do PC (`A`–`L` / `W`–`P`, `Z`/`X` para oitavas), botões de **Oitava**, **Hold (Sustain)** e **Panic**, além de iluminação em tempo real ao receber notas de uma **track MIDI da DAW**.
 
 ---
 

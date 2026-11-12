@@ -69,7 +69,7 @@ Elements belonging to the same chemical group share the same core synthesis arch
 ## Dark Studio Interface & Controls
 
 - **Bilingual Top Control Bar (`EN | PT`)**:
-  - Includes preset navigation (`<` / `>`), **Master Volume** and **Reverb** sliders, real-time active voice counter (`MIDI 0/16`), and an **`EN | PT` language selector button** that switches the entire interface between **English** and **Portuguese** on the fly (persisted with DAW project state).
+  - Includes preset navigation (`<` / `>`), **Master Volume** and **Reverb** sliders with generous spacing, and an **`EN | PT` language selector button** that switches the entire interface between **English** and **Portuguese** on the fly (persisted with DAW project state).
 - **Interactive Periodic Table (118 Presets)**:
   - Category color palette with luminous neon aura against a dark studio background.
   - **Hover Indicator**: bright halo, smooth cell expansion, crisp border, and instant preview in the center HUD.
@@ -77,8 +77,8 @@ Elements belonging to the same chemical group share the same core synthesis arch
   - **Interactive Legend**: hovering over any of the 10 chemical categories highlights all elements of that family; clicking a category auditions its first element.
 - **Center Inspector Panel (HUD + Oscilloscope)**:
   - Zoomed card of the active element ($Z$, chemical symbol, localized name, atomic mass, and physical phase), physical-to-sonic telemetry bars, and a **real-time stereo oscilloscope**.
-- **Footer — Traditional 61-Key MIDI Piano**:
-  - Velocity-sensitive white and black keys (vertical click position controls velocity), mouse glissando support, computer QWERTY keyboard playback (`A`–`L` / `W`–`P`, `Z`/`X` for octave shift), **Octave**, **Hold (Sustain)**, and **Panic** buttons, plus real-time key illumination from incoming **DAW MIDI tracks**.
+- **Footer — Traditional 61-Key MIDI Piano & Performance Toolbar**:
+  - Velocity-sensitive white and black keys (vertical click position controls velocity), real-time active voice and polyphony counter (`MIDI 0/16`), mouse glissando support, computer QWERTY keyboard playback (`A`–`L` / `W`–`P`, `Z`/`X` for octave shift), **Octave**, **Hold (Sustain)**, and **Panic** buttons, plus real-time key illumination from incoming **DAW MIDI tracks**.
 
 ---
 

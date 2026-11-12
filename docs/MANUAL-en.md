@@ -76,12 +76,6 @@ The Md-101 interface is designed for high contrast and visual immersion (*Dark S
 - **Language Switcher (`EN | PT`)**: Instantly toggle the entire interface between **English** and **Portuguese** with a single click. The selected language is saved directly with your DAW project session.
 - **Master Volume**: Smooth, de-zippered output gain control preventing digital clicks and pops.
 - **Ambience / Reverb**: Regulates spatial reverb depth and stereo chorus spreading.
-- **Active Voice & Polyphony Monitor (`MIDI 0/16`)**: Displays the number of notes currently sounding in real time (from 0 up to the 16-voice maximum) alongside an activity LED illuminated in the active chemical family's color:
-  - **Purpose and Practical Benefits:**
-    - **Instant Troubleshooting ("Why is there no sound?")**: If you play a note and hear silence, glance at the indicator. If it remains at `0/16`, no MIDI signal is reaching the plugin (check your DAW track arming, routing, or MIDI channel 1). If it rises to `1/16` or higher and the LED lights up, MIDI is arriving properly and the issue is audio-related (Master Volume at zero or muted track output).
-    - **Detecting Hanging/Stuck Notes**: If your DAW project is stopped but audio lingers, the monitor immediately reveals if voices are still active (e.g., `1/16`). Click the **Panic** button in the footer to silence them.
-    - **Tracking Polyphony Limits & Voice Stealing**: Md-101 supports up to 16 simultaneous voices. When playing dense chords with a sustain pedal, reaching `16/16` indicates maximum capacity has been reached and older voices are being smoothly reassigned to new notes.
-    - **Monitoring Envelope Release & CPU Rest**: Easily see when long resonant tails have faded to silence and the engine returns to full idle (`0/16`).
 
 ### 3.2. Interactive Periodic Table (118 Presets)
 - **One-Click Preset Loading**: Left-click any element cell to immediately load its sound preset.
@@ -110,6 +104,12 @@ The Md-101 interface is designed for high contrast and visual immersion (*Dark S
 - **`- Octave` and `Octave +` Buttons**: Shift the 61-key playing range by up to $\pm 2$ octaves (spanning $C_0$ to $C_9$).
 - **`Hold` (Virtual Sustain)**: Latches triggered notes to sound continuously for drones and ambient pads.
 - **`Panic` Button**: Sends an immediate *All Notes Off* command and clears all active voices.
+- **Active Voice & Polyphony Monitor (`MIDI 0/16`)**: Located on the piano performance toolbar (directly to the left of the octave buttons), displays the number of notes currently sounding in real time (from 0 up to the 16-voice maximum) alongside an activity LED illuminated in the active chemical family's color:
+  - **Purpose and Practical Benefits:**
+    - **Instant Troubleshooting ("Why is there no sound?")**: If you play a note and hear silence, glance at the indicator. If it remains at `0/16`, no MIDI signal is reaching the plugin (check your DAW track arming, routing, or MIDI channel 1). If it rises to `1/16` or higher and the LED lights up, MIDI is arriving properly and the issue is audio-related (Master Volume at zero or muted track output).
+    - **Detecting Hanging/Stuck Notes**: If your DAW project is stopped but audio lingers, the monitor immediately reveals if voices are still active (e.g., `1/16`). Click the **Panic** button right next to it to silence them.
+    - **Tracking Polyphony Limits & Voice Stealing**: Md-101 supports up to 16 simultaneous voices. When playing dense chords with a sustain pedal or the **Hold** button, reaching `16/16` indicates maximum capacity has been reached and older voices are being smoothly reassigned to new notes.
+    - **Monitoring Envelope Release & CPU Rest**: Easily see when long resonant tails have faded to silence and the engine returns to full idle (`0/16`).
 - **DAW MIDI Illumination**: Incoming MIDI notes from external controllers or DAW tracks light up keys in real time.
 
 ---

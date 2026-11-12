@@ -725,23 +725,6 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
     g.drawText ("VOLUME", gainSlider.getX() - 54, 10, 50, 20, juce::Justification::centredRight, false);
     g.drawText ("REVERB", spaceSlider.getX() - 52, 10, 48, 20, juce::Justification::centredRight, false);
 
-    // MIDI / Polyphony Voice Status Pill (left of language selector button)
-    const int voices = audioProcessor.getSynthEngine().getActiveVoiceCount();
-    const float voicePillX = static_cast<float> (langBtn.getX() - 98);
-    const juce::Rectangle<float> voicePill (voicePillX, 8.0f, 90.0f, 24.0f);
-    g.setColour (juce::Colour (0xff141b28));
-    g.fillRoundedRectangle (voicePill, 12.0f);
-    g.setColour (voices > 0 ? accent.withAlpha (0.80f) : juce::Colour (0xff253044));
-    g.drawRoundedRectangle (voicePill, 12.0f, 1.1f);
-
-    g.setColour (voices > 0 ? accent.brighter (0.35f) : juce::Colour (0xff49566e));
-    g.fillEllipse (voicePill.getX() + 9.0f, voicePill.getCentreY() - 3.5f, 7.0f, 7.0f);
-
-    g.setColour (voices > 0 ? juce::Colours::white : juce::Colour (0xff8a98b0));
-    g.setFont (juce::FontOptions (10.5f, juce::Font::bold));
-    g.drawText ("MIDI " + juce::String (voices) + "/16",
-                voicePill.withTrimmedLeft (20.0f), juce::Justification::centredLeft, false);
-
     // 3. Footer Piano Section Housing & Toolbar Label
     const float footerTop = static_cast<float> (pianoKeyboard.getY() - 30);
     const juce::Rectangle<float> footerPanel (10.0f, footerTop, bounds.getWidth() - 20.0f, bounds.getHeight() - footerTop - 8.0f);
@@ -757,13 +740,38 @@ void PeriodicSynthAudioProcessorEditor::paint (juce::Graphics& g)
                 static_cast<int> (footerTop + 5.0f),
                 170, 20, juce::Justification::centredLeft, false);
 
+    // MIDI / Polyphony Voice Status Pill (in piano performance toolbar, left of octave buttons)
+    if (! voicePillBounds.isEmpty())
+    {
+        const int voices = audioProcessor.getSynthEngine().getActiveVoiceCount();
+        g.setColour (juce::Colour (0xff141b28));
+        g.fillRoundedRectangle (voicePillBounds, 11.0f);
+        g.setColour (voices > 0 ? accent.withAlpha (0.80f) : juce::Colour (0xff253044));
+        g.drawRoundedRectangle (voicePillBounds, 11.0f, 1.1f);
+
+        g.setColour (voices > 0 ? accent.brighter (0.35f) : juce::Colour (0xff49566e));
+        g.fillEllipse (voicePillBounds.getX() + 9.0f, voicePillBounds.getCentreY() - 3.5f, 7.0f, 7.0f);
+
+        g.setColour (voices > 0 ? juce::Colours::white : juce::Colour (0xff8a98b0));
+        g.setFont (juce::FontOptions (10.5f, juce::Font::bold));
+        g.drawText ("MIDI " + juce::String (voices) + "/16",
+                    voicePillBounds.withTrimmedLeft (20.0f), juce::Justification::centredLeft, false);
+    }
+
+    // Instruction Help text (bounded between title and voice pill)
+    const float helpTextX = footerPanel.getX() + 180.0f;
+    const float helpTextRight = voicePillBounds.isEmpty()
+                                  ? static_cast<float> (octDownBtn.getX() - 10)
+                                  : voicePillBounds.getX() - 12.0f;
+    const float helpTextW = std::max (60.0f, helpTextRight - helpTextX);
+
     g.setColour (juce::Colour (0xff6e7d96));
     g.setFont (juce::FontOptions (10.0f, juce::Font::plain));
     g.drawText (loc.getUiString ("piano.instructionHelp", currentLanguage,
                     "Click/drag keys, use PC keyboard (A-L / Z-X octave) or send notes from a DAW MIDI track"),
-                static_cast<int> (footerPanel.getX() + 178.0f),
+                static_cast<int> (helpTextX),
                 static_cast<int> (footerTop + 5.0f),
-                540, 20, juce::Justification::centredLeft, true);
+                static_cast<int> (helpTextW), 20, juce::Justification::centredLeft, true);
 }
 
 void PeriodicSynthAudioProcessorEditor::resized()
@@ -776,17 +784,16 @@ void PeriodicSynthAudioProcessorEditor::resized()
     auto header = area.removeFromTop (40);
 
     langBtn.setBounds (header.getWidth() - 76, 8, 64, 24);
-    const int voicePillLeft = langBtn.getX() - 98;
 
-    const int sliderW = header.getWidth() < 1040 ? 76 : 86;
+    const int sliderW = header.getWidth() < 1040 ? 80 : 92;
     const int labelGap = 52;
-    spaceSlider.setBounds (voicePillLeft - 10 - sliderW, 10, sliderW, 20);
-    gainSlider.setBounds  (spaceSlider.getX() - labelGap - 10 - sliderW, 10, sliderW, 20);
+    spaceSlider.setBounds (langBtn.getX() - 14 - sliderW, 10, sliderW, 20);
+    gainSlider.setBounds  (spaceSlider.getX() - labelGap - 14 - sliderW, 10, sliderW, 20);
 
     const int leftLimit   = 274;
     const int rightLimit  = gainSlider.getX() - labelGap - 8;
     const int availCenter = std::max (180, rightLimit - leftLimit);
-    const int centerPresetW = juce::jlimit (180, 250, availCenter - 12);
+    const int centerPresetW = juce::jlimit (180, 260, availCenter - 12);
     const int centerStart = leftLimit + (availCenter - centerPresetW) / 2;
     prevPresetBtn.setBounds (centerStart, 7, 28, 26);
     nextPresetBtn.setBounds (centerStart + centerPresetW - 28, 7, 28, 26);
@@ -804,6 +811,9 @@ void PeriodicSynthAudioProcessorEditor::resized()
     octUpBtn.setBounds   (pianoToolbar.removeFromRight (70).reduced (0, 1));
     pianoToolbar.removeFromRight (5);
     octDownBtn.setBounds (pianoToolbar.removeFromRight (70).reduced (0, 1));
+    pianoToolbar.removeFromRight (10);
+
+    voicePillBounds = pianoToolbar.removeFromRight (90).reduced (0, 1).toFloat();
 
     pianoKeyboard.setBounds (footer);
 
@@ -826,5 +836,13 @@ void PeriodicSynthAudioProcessorEditor::timerCallback()
     auto& eng = audioProcessor.getSynthEngine();
     eng.copyScopeData (scope);
 
-    periodicTable.updateAudioVisuals (scope, eng.getOutputLevel(), eng.getActiveVoiceCount());
+    const int currentVoices = eng.getActiveVoiceCount();
+    if (currentVoices != lastSyncedVoices)
+    {
+        lastSyncedVoices = currentVoices;
+        if (! voicePillBounds.isEmpty())
+            repaint (voicePillBounds.toNearestInt().expanded (2));
+    }
+
+    periodicTable.updateAudioVisuals (scope, eng.getOutputLevel(), currentVoices);
 }

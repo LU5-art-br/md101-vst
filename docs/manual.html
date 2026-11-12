@@ -515,21 +515,15 @@
 
         <div class="content-card">
           <div class="card-icon">🎚️</div>
-          <h3>Barra Superior & Monitor de Vozes</h3>
+          <h3>Controles Globais de Master</h3>
           <p>
-            Ajustes essenciais localizados no topo da janela com interpolação anti-click e utilitários:
+            Ajustes essenciais localizados no topo da janela com layout limpo e interpolação anti-click:
           </p>
           <ul>
             <li><strong>Seletor de Idioma (<code class="inline-code">EN | PT</code>)</strong>: Alternância instantânea de toda a interface entre Inglês e Português, salva com sua sessão da DAW.</li>
             <li><strong>Volume Master</strong>: Controla o ganho geral de saída sem introduzir estalos digitais.</li>
             <li><strong>Ambiência / Reverb</strong>: Regula a intensidade espacial da reverberação e da espacialização estéreo.</li>
-            <li><strong>Monitor de Vozes e Polifonia (<code class="inline-code">MIDI 0/16</code>)</strong>: Mostra em tempo real quantas notas estão soando (de 0 até o limite de 16) e acende um LED na cor da família química atual.
-              <ul style="margin-top: 0.35rem; font-size: 0.88rem; opacity: 0.95;">
-                <li><em>Diagnóstico imediato ("Cadê o som?")</em>: se você tocar e continuar em <code class="inline-code">0/16</code>, o sinal MIDI não está chegando ao plugin; se subir para <code class="inline-code">&ge; 1/16</code> e o LED acender, o MIDI está perfeito e o problema é apenas de áudio (volume baixo ou canal mutado).</li>
-                <li><em>Notas travadas</em>: identifica se há vozes soando quando a DAW está pausada (para limpar com o botão <strong>Panic</strong>).</li>
-                <li><em>Teto de polifonia</em>: bater em <code class="inline-code">16/16</code> avisa que o limite de 16 notas foi atingido e as notas antigas estão dando lugar às novas (*voice stealing*).</li>
-              </ul>
-            </li>
+            <li><strong>Automação Total</strong>: Ambos os controles são automatizáveis nas pistas da sua DAW.</li>
           </ul>
         </div>
       </div>
@@ -571,11 +565,18 @@
 
         <div class="content-card">
           <div class="card-icon">🛡️</div>
-          <h3>Controles de Performance</h3>
+          <h3>Controles de Performance & Polifonia</h3>
           <p>
-            Ferramentas dedicadas para flexibilidade no fluxo de trabalho:
+            Ferramentas dedicadas na barra de ferramentas do piano:
           </p>
           <ul>
+            <li><strong>Monitor de Vozes e Polifonia (<code class="inline-code">MIDI 0/16</code>)</strong>: Mostra em tempo real quantas notas estão soando (de 0 até o limite de 16) com LED na cor da família química atual.
+              <ul style="margin-top: 0.35rem; font-size: 0.88rem; opacity: 0.95;">
+                <li><em>Diagnóstico imediato ("Cadê o som?")</em>: se você tocar e continuar em <code class="inline-code">0/16</code>, o sinal MIDI não está chegando ao plugin; se subir para <code class="inline-code">&ge; 1/16</code> e o LED acender, o MIDI está perfeito e o problema é apenas de áudio.</li>
+                <li><em>Notas travadas</em>: identifica se há som residual quando a DAW está pausada (para limpar com o botão <strong>Panic</strong> logo ao lado).</li>
+                <li><em>Teto de polifonia</em>: bater em <code class="inline-code">16/16</code> avisa que o limite de 16 notas foi atingido e as notas antigas dão lugar às novas (*voice stealing*).</li>
+              </ul>
+            </li>
             <li><strong>Botão Hold (Sustain Virtual)</strong>: Mantém as notas acionadas soando continuamente para criar texturas e pads infinitos.</li>
             <li><strong>Botão Panic</strong>: Dispara um comando imediato de <em>All Notes Off</em> para silenciar qualquer nota presa.</li>
             <li><strong>Botões - Oitava e Oitava +</strong>: Deslocam o registro do teclado em até &plusmn;2 oitavas (alcance estendido de C0 a C9).</li>

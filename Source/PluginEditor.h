@@ -117,6 +117,8 @@ private:
 
     juce::String pianoRangeText { "C2 - C7" };
     int lastSyncedElement = -1;
+    int lastSyncedVoices = -1;
+    juce::Rectangle<float> voicePillBounds;
     PeriodicSynth::Language currentLanguage = PeriodicSynth::Language::English;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PeriodicSynthAudioProcessorEditor)
