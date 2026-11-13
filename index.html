@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Md-101 — Periodic Table Polyphonic VST3 Synthesizer</title>
+  <meta name="description" content="Md-101 is a free, open-source 16-voice polyphonic VST3 & Standalone MIDI synthesizer where every one of the 118 chemical elements shapes its timbre in real time. Available for Windows and Linux.">
+  <meta name="theme-color" content="#090c11">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Md-101 — Periodic Table Polyphonic VST3 Synthesizer">
+  <meta property="og:description" content="118 chemical elements, 118 real-time synthesized timbres. Free VST3 & Standalone plugin for Windows and Linux by LU5.">
+  <meta property="og:image" content="assets/screenshot.jpg">
+  <link rel="icon" type="image/svg+xml" href="assets/md-101.svg">
+  <link rel="apple-touch-icon" href="assets/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="#top" class="brand">
+        <img src="assets/md-101.svg" alt="Md-101 Logo" class="brand-icon">
+        <span class="brand-text">
+          <span class="brand-name">Md-101</span>
+          <span class="brand-sub" data-i18n="brandSub">Periodic Table Synth • LU5</span>
+        </span>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="#download" data-i18n="navDownload">Download</a></li>
+        <li><a href="#engine" data-i18n="navEngine">Sound Engine</a></li>
+        <li><a href="#families" data-i18n="navFamilies">Chemical Families</a></li>
+        <li><a href="#origin" data-i18n="navDocs">Manual &amp; Docs</a></li>
+      </ul>
+
+      <div class="header-actions">
+        <button type="button" class="lang-toggle" id="lang-toggle" aria-label="Switch language">
+          <span id="lang-en" class="active-lang">EN</span>
+          <span>|</span>
+          <span id="lang-pt">PT</span>
+        </button>
+        <a href="https://github.com/LU5-art-br/md101-vst" target="_blank" rel="noopener" class="header-gh">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.57.1.78-.25.78-.55 0-.27-.01-1.18-.02-2.14-3.2.69-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.05 11.05 0 0 1 5.78 0c2.21-1.49 3.18-1.18 3.18-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.26 5.67.42.36.79 1.07.79 2.16 0 1.56-.01 2.82-.01 3.2 0 .31.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <a href="#download" class="release-pill" id="release-pill">
+          <span class="status-dot"></span>
+          <span id="release-pill-text">Latest Release • v1.1.1 • Windows &amp; Linux</span>
+        </a>
+
+        <h1 data-i18n="heroTitle">118 Elements. 118 Living Timbres.</h1>
+
+        <p class="hero-subtitle" data-i18n="heroSubtitle">
+          Md-101 is a 16-voice polyphonic VST3 &amp; Standalone synthesizer built in C++17 / JUCE 8. Every chemical element in the Periodic Table computes its timbre in real time from its chemical family, atomic number (Z), atomic mass (A), and physical phase.
+        </p>
+
+        <div class="hero-specs">
+          <span class="spec-chip" data-i18n="chip1">VST3 + Standalone</span>
+          <span class="spec-chip" data-i18n="chip2">16-Voice Polyphonic</span>
+          <span class="spec-chip" data-i18n="chip3">Windows &amp; Linux (x64)</span>
+          <span class="spec-chip" data-i18n="chip4">MIT Open Source</span>
+        </div>
+
+        <div class="hero-cta-group">
+          <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/Md-101-v1.1.1-Windows-x64-Setup.exe" class="btn btn-win" id="hero-win-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 5.5L10.5 4.4V11.5H3V5.5ZM11.5 4.25L21 2.85V11.5H11.5V4.25ZM3 12.5H10.5V19.6L3 18.5V12.5ZM11.5 12.5H21V21.15L11.5 19.75V12.5Z"/>
+            </svg>
+            <span data-i18n="heroWinBtn">Download for Windows</span>
+          </a>
+
+          <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/Md-101-v1.1.1-Linux-x64-Installer.run" class="btn btn-linux" id="hero-linux-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="4 17 10 11 4 5"/>
+              <line x1="12" y1="19" x2="20" y2="19"/>
+            </svg>
+            <span data-i18n="heroLinuxBtn">Download for Linux</span>
+          </a>
+
+          <a href="#download" class="btn btn-ghost" data-i18n="heroAllBtn">
+            All Formats (.zip, .deb, .tar.gz)
+          </a>
+        </div>
+
+        <p class="hero-subnote" id="hero-subnote">
+          <span data-i18n="heroSubnotePrefix">Release</span>
+          <strong id="hero-version-inline">v1.1.1</strong>
+          <span>•</span>
+          <a href="https://github.com/LU5-art-br/md101-vst/releases/latest" target="_blank" rel="noopener" id="hero-notes-link" data-i18n="heroReleaseNotes">View Release Notes on GitHub</a>
+        </p>
+
+        <div class="showcase-frame">
+          <div class="showcase-inner">
+            <img src="assets/screenshot.jpg" alt="Md-101 Periodic Table Synthesizer interface showing the 118-element grid, center HUD oscilloscope, and 61-key MIDI keyboard">
+            <div class="showcase-caption">
+              <span data-i18n="captionLeft">Preset #101 Md (Mendelevium) — Real-time stereo oscilloscope &amp; physical-to-sonic telemetry</span>
+              <span data-i18n="captionRight">Bilingual EN | PT Studio Interface • 61-Key Velocity MIDI Piano</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Download Section -->
+    <section class="section" id="download">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker" data-i18n="dlKicker">01 / Official Releases</span>
+          <h2 data-i18n="dlTitle">Download Latest Release</h2>
+          <p data-i18n="dlSubtitle">
+            Pre-built 64-bit installers and portable packages directly from GitHub Releases. Includes both the VST3 plugin and Standalone desktop synthesizer.
+          </p>
+        </div>
+
+        <div class="release-meta-bar">
+          <div class="release-meta-left">
+            <span class="version-tag" id="dl-version">v1.1.1</span>
+            <span class="release-date" id="dl-date" data-i18n="dlDateLoading">Latest GitHub release</span>
+          </div>
+          <div class="release-meta-links">
+            <a href="https://github.com/LU5-art-br/md101-vst/releases/latest" target="_blank" rel="noopener" id="dl-notes-link" data-i18n="dlNotesLink">Release Notes</a>
+            <a href="https://github.com/LU5-art-br/md101-vst/releases/latest" target="_blank" rel="noopener" id="dl-checksums-link">SHA256SUMS.txt</a>
+            <a href="https://github.com/LU5-art-br/md101-vst/releases" target="_blank" rel="noopener" data-i18n="dlAllReleases">All Releases</a>
+          </div>
+        </div>
+
+        <div class="download-grid">
+          <!-- Windows Card -->
+          <article class="os-card os-card-win" id="card-windows">
+            <div class="os-card-header">
+              <div class="os-title-wrap">
+                <div class="os-icon" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3 5.5L10.5 4.4V11.5H3V5.5ZM11.5 4.25L21 2.85V11.5H11.5V4.25ZM3 12.5H10.5V19.6L3 18.5V12.5ZM11.5 12.5H21V21.15L11.5 19.75V12.5Z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3>Windows</h3>
+                  <span class="os-arch">Windows 10 / 11 • x64 (64-bit)</span>
+                </div>
+              </div>
+              <span class="rec-badge" data-i18n="recommendedBadge">Recommended</span>
+            </div>
+
+            <p class="os-desc" data-i18n="winDesc">
+              Includes the bilingual Dark Studio Setup Wizard (.exe) or a portable archive with install scripts. Zero extra runtime DLLs required.
+            </p>
+
+            <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/Md-101-v1.1.1-Windows-x64-Setup.exe" class="btn btn-win dl-primary-btn" id="win-exe-btn">
+              <span class="dl-btn-label">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span data-i18n="winPrimaryLabel">Setup Wizard (.exe)</span>
+              </span>
+              <span class="dl-btn-meta" id="win-exe-meta">Windows x64</span>
+            </a>
+
+            <div class="dl-alt-row">
+              <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/Md-101-v1.1.1-Windows-x64.zip" class="dl-alt-link" id="win-zip-link">
+                <span data-i18n="winZipLabel">Portable Archive (.zip)</span>
+                <span id="win-zip-size"></span>
+              </a>
+            </div>
+
+            <ul class="os-notes">
+              <li data-i18n="winNote1">Installs VST3 to <code>C:\Program Files\Common Files\VST3\Md-101.vst3</code></li>
+              <li data-i18n="winNote2">Installs Standalone app &amp; offline HTML manuals</li>
+              <li data-i18n="winNote3">Silent CLI mode supported via <code>/S</code> flag</li>
+            </ul>
+          </article>
+
+          <!-- Linux Card -->
+          <article class="os-card os-card-linux" id="card-linux">
+            <div class="os-card-header">
+              <div class="os-title-wrap">
+                <div class="os-icon" aria-hidden="true">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="4 17 10 11 4 5"/>
+                    <line x1="12" y1="19" x2="20" y2="19"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3>Linux</h3>
+                  <span class="os-arch">Ubuntu, Debian, Fedora, Arch • x64</span>
+                </div>
+              </div>
+              <span class="rec-badge" data-i18n="recommendedBadge">Recommended</span>
+            </div>
+
+            <p class="os-desc" data-i18n="linuxDesc">
+              Universal self-extracting installer (.run) for any distribution, native Debian/Ubuntu package (.deb), or portable tarball (.tar.gz).
+            </p>
+
+            <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/Md-101-v1.1.1-Linux-x64-Installer.run" class="btn btn-linux dl-primary-btn" id="linux-run-btn">
+              <span class="dl-btn-label">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span data-i18n="linuxPrimaryLabel">Universal Installer (.run)</span>
+              </span>
+              <span class="dl-btn-meta" id="linux-run-meta">Linux x64</span>
+            </a>
+
+            <div class="dl-alt-row">
+              <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/md-101_1.1.1_amd64.deb" class="dl-alt-link" id="linux-deb-link">
+                <span>Debian / Ubuntu (.deb)</span>
+                <span id="linux-deb-size"></span>
+              </a>
+              <a href="https://github.com/LU5-art-br/md101-vst/releases/download/v1.1.1/Md-101-v1.1.1-Linux-x64.tar.gz" class="dl-alt-link" id="linux-tar-link">
+                <span data-i18n="linuxTarLabel">Portable (.tar.gz)</span>
+                <span id="linux-tar-size"></span>
+              </a>
+            </div>
+
+            <div class="install-snippet">
+              <button type="button" class="copy-btn" id="copy-linux-cmd" data-i18n="copyBtn">Copy</button>
+              <pre id="linux-cmd">chmod +x Md-101-v1.1.1-Linux-x64-Installer.run
+./Md-101-v1.1.1-Linux-x64-Installer.run</pre>
+            </div>
+
+            <ul class="os-notes">
+              <li data-i18n="linuxNote1">User mode (no sudo): installs to <code>~/.vst3/Md-101.vst3</code> &amp; <code>~/.local/bin/Md-101</code></li>
+              <li data-i18n="linuxNote2">System-wide mode supported with <code>--system</code></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sound Engine Section -->
+    <section class="section" id="engine">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker" data-i18n="engineKicker">02 / Chemistry → DSP</span>
+          <h2 data-i18n="engineTitle">Physical Properties Computed into Sound</h2>
+          <p data-i18n="engineSubtitle">
+            Rather than static sample banks, Md-101 synthesizes every preset procedurally in real time using analytical DSP modules parameterized by atomic data.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          <article class="feature-card">
+            <span class="feature-badge">PolyBLEP • 2-Op FM • Wavefolder</span>
+            <h3 data-i18n="feat1Title">Hybrid Synthesis Architecture</h3>
+            <p data-i18n="feat1Desc">
+              Combines band-limited Virtual Analog oscillators, 2-operator FM bell resonators, sinusoidal wavefolding, and gaseous breath / Geiger scintillation generators.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-badge">24 dB/oct Cytomic TPT SVF</span>
+            <h3 data-i18n="feat2Title">Zero-Delay Feedback Filter &amp; FX</h3>
+            <p data-i18n="feat2Desc">
+              4-pole Topology-Preserving Transform State-Variable Filter feeding a stereo Chorus and spatial Reverb chain for smooth harmonic sculpting without aliasing.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-badge">Z (1–118) &amp; A (1.008–294 u)</span>
+            <h3 data-i18n="feat3Title">Atomic Number &amp; Mass Mapping</h3>
+            <p data-i18n="feat3Desc">
+              Atomic number Z drives harmonic density, FM index, and unison detune; atomic mass A governs spectral weight, filter brightness, and envelope inertia.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <span class="feature-badge">16 Voices • Lock-Free Audio</span>
+            <h3 data-i18n="feat4Title">Built for DAW &amp; Live Play</h3>
+            <p data-i18n="feat4Desc">
+              Automate the <code>element</code> (1–118) parameter in any VST3 DAW, play velocity-sensitive notes across the 61-key MIDI piano, or perform directly on your QWERTY keyboard.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chemical Families Interactive Section -->
+    <section class="section" id="families">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker" data-i18n="famKicker">03 / Timbral Palette</span>
+          <h2 data-i18n="famTitle">10 Chemical Families</h2>
+          <p data-i18n="famSubtitle">
+            Elements in the same chemical group share a cohesive synthesis architecture. Select any family below to inspect its sonic signature and showcase element.
+          </p>
+        </div>
+
+        <div class="families-layout">
+          <div class="families-grid" id="families-grid" role="tablist" aria-label="Chemical families">
+            <!-- Populated by app.js -->
+          </div>
+
+          <aside class="family-inspector" id="family-inspector" aria-live="polite">
+            <div class="inspector-top">
+              <div class="element-tile" id="insp-tile">
+                <span class="tile-num" id="insp-num">101</span>
+                <span class="tile-sym" id="insp-sym">Md</span>
+                <span class="tile-mass" id="insp-mass">[258] u</span>
+              </div>
+              <div>
+                <div class="inspector-cat" id="insp-cat">Actinides</div>
+                <div class="inspector-name" id="insp-name">Mendelevium (#101)</div>
+              </div>
+            </div>
+
+            <p class="inspector-desc" id="insp-desc">
+              Deep radioactive drones with nuclear sub-mass, unstable pitch drift, and Geiger micro-scintillation.
+            </p>
+
+            <div class="telemetry-bars">
+              <div class="telemetry-row">
+                <span data-i18n="barHarmonics">Harmonic Density</span>
+                <div class="bar-track"><div class="bar-fill" id="bar-harmonics" style="width: 88%"></div></div>
+              </div>
+              <div class="telemetry-row">
+                <span data-i18n="barMass">Sub-Mass / Inertia</span>
+                <div class="bar-track"><div class="bar-fill" id="bar-mass" style="width: 94%"></div></div>
+              </div>
+              <div class="telemetry-row">
+                <span data-i18n="barBright">Spectral Filter</span>
+                <div class="bar-track"><div class="bar-fill" id="bar-bright" style="width: 52%"></div></div>
+              </div>
+              <div class="telemetry-row">
+                <span data-i18n="barSpace">Resonance &amp; Tail</span>
+                <div class="bar-track"><div class="bar-fill" id="bar-space" style="width: 90%"></div></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- Origin & Docs Section -->
+    <section class="section" id="origin">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker" data-i18n="originKicker">04 / Story &amp; Documentation</span>
+          <h2 data-i18n="originTitle">Why the name Md-101?</h2>
+        </div>
+
+        <div class="origin-grid">
+          <article class="story-card">
+            <h3 data-i18n="storyHeading">Where Dmitri Mendeleev meets classic synth lore</h3>
+            <p data-i18n="storyP1">
+              In 1869, Russian chemist Dmitri Mendeleev formulated the Periodic Law. Decades later, in 1955, synthetic radioactive element 101 was identified atom by atom at UC Berkeley and named Mendelevium (Md) in his honor.
+            </p>
+            <p data-i18n="storyP2">
+              Combined with the classic hyphenated naming tradition of iconic studio synthesizers like the Roland SH-101, Yamaha DX-7, and Oberheim OB-X, Md-101 unites periodic chemistry with expressive electronic sound design.
+            </p>
+          </article>
+
+          <div class="docs-card">
+            <h3 data-i18n="docsHeading">Documentation &amp; Source</h3>
+            <div class="docs-list">
+              <a href="docs/manual-en.html" class="doc-link-item" id="manual-link">
+                <div>
+                  <span class="doc-link-title" data-i18n="docManualTitle">Interactive User Manual</span>
+                  <span class="doc-link-sub" data-i18n="docManualSub">DAW setup, QWERTY shortcuts, MIDI guide &amp; FAQ</span>
+                </div>
+                <span class="doc-arrow">→</span>
+              </a>
+
+              <a href="https://github.com/LU5-art-br/md101-vst/blob/main/docs/ARCHITECTURE-en.md" target="_blank" rel="noopener" class="doc-link-item" id="arch-link">
+                <div>
+                  <span class="doc-link-title" data-i18n="docArchTitle">DSP &amp; Software Architecture</span>
+                  <span class="doc-link-sub" data-i18n="docArchSub">Threading model, TPT SVF math &amp; verification suite</span>
+                </div>
+                <span class="doc-arrow">↗</span>
+              </a>
+
+              <a href="https://github.com/LU5-art-br/md101-vst" target="_blank" rel="noopener" class="doc-link-item">
+                <div>
+                  <span class="doc-link-title" data-i18n="docSourceTitle">Source Code on GitHub</span>
+                  <span class="doc-link-sub" data-i18n="docSourceSub">C++17 / JUCE 8 • Build scripts &amp; issue tracker</span>
+                </div>
+                <span class="doc-arrow">↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>
+        <strong>Md-101</strong> — <span data-i18n="footerTagline">Periodic Table Polyphonic VST3 Synthesizer</span> •
+        <span data-i18n="footerBy">Developed by</span>
+        <a href="https://lu5.art.br" target="_blank" rel="noopener"><strong>LU5</strong></a>
+      </p>
+      <p class="footer-legal" data-i18n="footerLegal">
+        Source code released under the MIT License. Distributed binaries combine JUCE under GPLv3 terms.
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
