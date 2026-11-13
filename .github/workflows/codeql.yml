@@ -43,6 +43,7 @@ jobs:
         with:
           languages: c-cpp
           build-mode: manual
+          config-file: ./.github/codeql/codeql-config.yml
 
       - name: Configure and Build Md-101 + Tests
         run: |

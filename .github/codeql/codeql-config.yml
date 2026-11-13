@@ -1,0 +1,5 @@
+name: "Md-101 CodeQL Config"
+
+paths-ignore:
+  - build/_deps/**
+  - external/**
