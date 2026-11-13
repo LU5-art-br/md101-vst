@@ -2,9 +2,9 @@
   "use strict";
 
   const REPO = "LU5-art-br/md101-vst";
-  const FALLBACK_TAG = "v1.1.1";
-  const FALLBACK_DEB_VER = "1.1.1";
-  const CACHE_KEY = "md101_latest_release_v1";
+  const FALLBACK_TAG = "v1.1.2";
+  const FALLBACK_DEB_VER = "1.1.2";
+  const CACHE_KEY = "md101_latest_release_v1_1_2";
   const CACHE_TTL_MS = 5 * 60 * 1000;
 
   const FALLBACK_URLS = {
@@ -665,7 +665,7 @@
         sessionStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
       } catch (_) {}
     } catch (_) {
-      // Fallback static v1.1.1 links remain active if offline or rate-limited
+      // Fallback static v1.1.2 links remain active if offline or rate-limited
     }
   }
 
