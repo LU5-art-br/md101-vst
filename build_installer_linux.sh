@@ -80,7 +80,7 @@ cleanup() {
 trap cleanup EXIT
 
 ARCHIVE_LINE="$(awk '/^__ARCHIVE_BELOW__$/ {print NR + 1; exit 0; }' "$0")"
-tail -n +"${ARCHIVE_LINE}" "$0" | tar -xzf - -C "${TMP_EXTRACT}"
+tail -n +"${ARCHIVE_LINE}" "$0" | tar -xzf - --no-same-owner -C "${TMP_EXTRACT}"
 
 chmod +x "${TMP_EXTRACT}/install.sh" "${TMP_EXTRACT}/uninstall.sh"
 exec bash "${TMP_EXTRACT}/install.sh" "$@"

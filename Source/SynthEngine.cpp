@@ -20,7 +20,7 @@ namespace
 
 void SynthEngine::StereoChorus::prepare (double sr)
 {
-    sampleRate = std::max (8000.0, sr);
+    sampleRate = std::isfinite (sr) ? juce::jlimit (8000.0, 768000.0, sr) : 44100.0;
     const int bufLen = static_cast<int> (sampleRate * 0.060) + 16; // 60 ms max delay
     delayL.assign (static_cast<size_t> (bufLen), 0.0f);
     delayR.assign (static_cast<size_t> (bufLen), 0.0f);
@@ -89,7 +89,7 @@ SynthEngine::SynthEngine()
 
 void SynthEngine::prepare (double sampleRate, int /*maxBlockSize*/)
 {
-    currentSampleRate = std::max (8000.0, sampleRate);
+    currentSampleRate = std::isfinite (sampleRate) ? juce::jlimit (8000.0, 768000.0, sampleRate) : 44100.0;
 
     for (auto& v : voices)
     {
@@ -206,7 +206,7 @@ void SynthEngine::processBlock (juce::AudioBuffer<float>& buffer, const juce::Mi
 
     buffer.clear();
     const int totalSamples = buffer.getNumSamples();
-    if (totalSamples <= 0)
+    if (totalSamples <= 0 || buffer.getNumChannels() <= 0)
         return;
 
     if (panicRequested.exchange (false, std::memory_order_relaxed))
@@ -456,6 +456,9 @@ void SynthEngine::releaseSustainedNotes() noexcept
 
 void SynthEngine::renderSubBlock (juce::AudioBuffer<float>& buffer, int startSample, int numSamples, const ElementSynthProfile& p) noexcept
 {
+    if (numSamples <= 0 || buffer.getNumChannels() <= 0)
+        return;
+
     float* outL = buffer.getWritePointer (0);
     float* outR = buffer.getNumChannels() > 1 ? buffer.getWritePointer (1) : nullptr;
 

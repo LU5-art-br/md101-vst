@@ -167,6 +167,10 @@ void PeriodicSynthAudioProcessor::getStateInformation (juce::MemoryBlock& destDa
 
 void PeriodicSynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+    constexpr int kMaxStateSizeBytes = 1024 * 1024; // 1 MiB
+    if (data == nullptr || sizeInBytes <= 0 || sizeInBytes > kMaxStateSizeBytes)
+        return;
+
     if (auto xml = getXmlFromBinary (data, sizeInBytes))
     {
         if (xml->hasTagName (apvts.state.getType()))

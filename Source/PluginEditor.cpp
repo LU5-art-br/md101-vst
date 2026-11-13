@@ -175,8 +175,6 @@ void PeriodicSynthAudioProcessorEditor::AboutOverlayComponent::loadLogo()
 #endif
 
     const std::initializer_list<juce::File> candidateFiles = {
-        juce::File ("assets/md-101.svg"),
-        juce::File ("../assets/md-101.svg"),
         juce::File::getSpecialLocation (juce::File::currentExecutableFile).getParentDirectory().getChildFile ("assets/md-101.svg"),
         juce::File::getSpecialLocation (juce::File::currentExecutableFile).getParentDirectory().getParentDirectory().getChildFile ("assets/md-101.svg")
     };

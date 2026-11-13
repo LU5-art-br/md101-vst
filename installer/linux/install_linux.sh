@@ -100,11 +100,19 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --prefix)
-            CUSTOM_PREFIX="${2:-}"
+            if [[ $# -lt 2 || -z "${2:-}" ]]; then
+                echo "Error: --prefix requires a non-empty directory path." >&2
+                exit 1
+            fi
+            CUSTOM_PREFIX="${2}"
             shift 2
             ;;
         --vst3-dir)
-            CUSTOM_VST3_DIR="${2:-}"
+            if [[ $# -lt 2 || -z "${2:-}" ]]; then
+                echo "Error: --vst3-dir requires a non-empty directory path." >&2
+                exit 1
+            fi
+            CUSTOM_VST3_DIR="${2}"
             shift 2
             ;;
         --uninstall)
@@ -116,7 +124,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --lang)
-            UI_LANG="${2:-en}"
+            if [[ $# -lt 2 || ( "${2:-}" != "pt" && "${2:-}" != "en" ) ]]; then
+                echo "Error: --lang must be 'pt' or 'en'." >&2
+                exit 1
+            fi
+            UI_LANG="${2}"
             shift 2
             ;;
         -h|--help)
@@ -132,11 +144,29 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+validate_abs_dir_path() {
+    local label="$1"
+    local val="$2"
+    if [[ -z "${val}" ]]; then
+        return 0
+    fi
+    if [[ "${val}" != /* ]] || [[ "${val}" == *$'\n'* ]] || [[ "${val}" == *$'\r'* ]]; then
+        echo "Error: ${label} must be an absolute path without control/newline characters." >&2
+        exit 1
+    fi
+}
+
+validate_abs_dir_path "--prefix" "${CUSTOM_PREFIX}"
+validate_abs_dir_path "--vst3-dir" "${CUSTOM_VST3_DIR}"
+
 if [[ "${UNINSTALL_FLAG}" -eq 1 ]]; then
+    UNINSTALL_ARGS=(--lang "${UI_LANG}")
+    [[ "${AUTO_YES}" -eq 1 ]] && UNINSTALL_ARGS+=(--yes)
+    [[ -n "${INSTALL_MODE}" ]] && UNINSTALL_ARGS+=("--${INSTALL_MODE}")
     if [[ -f "${SCRIPT_DIR}/uninstall_linux.sh" ]]; then
-        exec bash "${SCRIPT_DIR}/uninstall_linux.sh" --lang "${UI_LANG}" $([[ "${AUTO_YES}" -eq 1 ]] && echo "--yes" || true) $([[ -n "${INSTALL_MODE}" ]] && echo "--${INSTALL_MODE}" || true)
+        exec bash "${SCRIPT_DIR}/uninstall_linux.sh" "${UNINSTALL_ARGS[@]}"
     elif [[ -f "${SCRIPT_DIR}/uninstall.sh" ]]; then
-        exec bash "${SCRIPT_DIR}/uninstall.sh" --lang "${UI_LANG}" $([[ "${AUTO_YES}" -eq 1 ]] && echo "--yes" || true) $([[ -n "${INSTALL_MODE}" ]] && echo "--${INSTALL_MODE}" || true)
+        exec bash "${SCRIPT_DIR}/uninstall.sh" "${UNINSTALL_ARGS[@]}"
     fi
 fi
 

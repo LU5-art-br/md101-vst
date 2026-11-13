@@ -83,7 +83,17 @@ target_compile_features(Md101 PUBLIC cxx_std_17)
 target_compile_options(Md101
     PUBLIC
         $<$<CXX_COMPILER_ID:MSVC>:/utf-8>
+    PRIVATE
+        $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>,$<CXX_COMPILER_ID:GNU,Clang>>:-fstack-protector-strong>
+        $<$<AND:$<BOOL:${UNIX}>,$<NOT:$<BOOL:${APPLE}>>,$<CXX_COMPILER_ID:GNU,Clang>,$<NOT:$<CONFIG:Debug>>>:-D_FORTIFY_SOURCE=2>
 )
+
+if (UNIX AND NOT APPLE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+    target_link_options(Md101 PRIVATE
+        -Wl,-z,relro
+        -Wl,-z,now
+    )
+endif()
 
 target_compile_definitions(Md101
     PUBLIC

@@ -13,7 +13,9 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Win32;
@@ -123,7 +125,8 @@ namespace Md101Installer
                 }
                 else if (a.StartsWith("--lang=", StringComparison.OrdinalIgnoreCase))
                 {
-                    opts.Lang = a.Substring(7).Trim().ToLowerInvariant();
+                    string l = a.Substring(7).Trim().ToLowerInvariant();
+                    opts.Lang = (l == "pt") ? "pt" : "en";
                 }
                 else if (a.StartsWith("--vst3=", StringComparison.OrdinalIgnoreCase))
                 {
@@ -149,6 +152,14 @@ namespace Md101Installer
         {
             try
             {
+                string normApp, normVst;
+                if (!InstallerEngine.NormalizeAndValidateDirectory(opts.InstallDir, out normApp))
+                    throw new ArgumentException("Invalid installation directory path.");
+                if (!InstallerEngine.NormalizeAndValidateDirectory(opts.Vst3Dir, out normVst))
+                    throw new ArgumentException("Invalid VST3 directory path.");
+                opts.InstallDir = normApp;
+                opts.Vst3Dir = normVst;
+
                 if (opts.Uninstall)
                 {
                     InstallerEngine.LoadManifestIfPresent(opts);
@@ -179,6 +190,301 @@ namespace Md101Installer
 
     internal static class InstallerEngine
     {
+        private static readonly char[] ForbiddenPathChars = new char[]
+        {
+            '"', '&', '|', '<', '>', ';', '%', '*', '?', '\r', '\n', '\0'
+        };
+
+        private const uint PROCESS_QUERY_INFORMATION = 0x0400;
+        private const uint TOKEN_DUPLICATE = 0x0002;
+        private const uint TOKEN_ASSIGN_PRIMARY = 0x0001;
+        private const uint TOKEN_QUERY = 0x0008;
+        private const uint MAXIMUM_ALLOWED = 0x02000000;
+        private const int SecurityImpersonation = 2;
+        private const int TokenPrimary = 1;
+        private const int MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct STARTUPINFOW
+        {
+            public int cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public int dwX;
+            public int dwY;
+            public int dwXSize;
+            public int dwYSize;
+            public int dwXCountChars;
+            public int dwYCountChars;
+            public int dwFillAttribute;
+            public int dwFlags;
+            public short wShowWindow;
+            public short cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct PROCESS_INFORMATION
+        {
+            public IntPtr hProcess;
+            public IntPtr hThread;
+            public int dwProcessId;
+            public int dwThreadId;
+        }
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetShellWindow();
+
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool DuplicateTokenEx(
+            IntPtr hExistingToken,
+            uint dwDesiredAccess,
+            IntPtr lpTokenAttributes,
+            int ImpersonationLevel,
+            int TokenType,
+            out IntPtr phNewToken);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool CreateProcessWithTokenW(
+            IntPtr hToken,
+            int dwLogonFlags,
+            string lpApplicationName,
+            string lpCommandLine,
+            int dwCreationFlags,
+            IntPtr lpEnvironment,
+            string lpCurrentDirectory,
+            ref STARTUPINFOW lpStartupInfo,
+            out PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool CloseHandle(IntPtr hObject);
+
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern bool MoveFileExW(string lpExistingFileName, string lpNewFileName, int dwFlags);
+
+        public static bool NormalizeAndValidateDirectory(string rawPath, out string normalized)
+        {
+            normalized = null;
+            if (string.IsNullOrWhiteSpace(rawPath))
+                return false;
+
+            string trimmed = rawPath.Trim();
+            if (trimmed.IndexOfAny(ForbiddenPathChars) >= 0)
+                return false;
+
+            // Reject UNC paths or device namespaces (\\server\share, \\?\...)
+            if (trimmed.StartsWith("\\\\", StringComparison.Ordinal))
+                return false;
+
+            try
+            {
+                if (!Path.IsPathRooted(trimmed))
+                    return false;
+
+                string full = Path.GetFullPath(trimmed).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                if (string.IsNullOrEmpty(full))
+                    return false;
+
+                string root = Path.GetPathRoot(full);
+                if (string.IsNullOrEmpty(root))
+                    return false;
+
+                string cleanRoot = root.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                if (string.Equals(full, cleanRoot, StringComparison.OrdinalIgnoreCase))
+                    return false;
+
+                string[] protectedDirs = new string[]
+                {
+                    Environment.GetFolderPath(Environment.SpecialFolder.Windows),
+                    Environment.GetFolderPath(Environment.SpecialFolder.System),
+                    Environment.GetFolderPath(Environment.SpecialFolder.SystemX86),
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                    Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFiles),
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonProgramFilesX86),
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonDesktopDirectory)
+                };
+
+                for (int i = 0; i < protectedDirs.Length; i++)
+                {
+                    string p = protectedDirs[i];
+                    if (string.IsNullOrEmpty(p)) continue;
+                    string cleanP = Path.GetFullPath(p).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    if (string.Equals(full, cleanP, StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
+
+                string userRoot = Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+                if (!string.IsNullOrEmpty(userRoot))
+                {
+                    string cleanUserRoot = Path.GetFullPath(userRoot).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                    if (string.Equals(full, cleanUserRoot, StringComparison.OrdinalIgnoreCase))
+                        return false;
+                }
+
+                normalized = full;
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static bool IsReparsePoint(string path)
+        {
+            try
+            {
+                if (!Directory.Exists(path) && !File.Exists(path))
+                    return false;
+                return (File.GetAttributes(path) & FileAttributes.ReparsePoint) != 0;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
+        private static void SafeDeleteDirectory(string path)
+        {
+            if (!Directory.Exists(path) || IsReparsePoint(path))
+                return;
+            Directory.Delete(path, true);
+        }
+
+        private static void DeleteDirectoryContentsExceptSelf(string dirPath, string currentExeFullPath)
+        {
+            if (!Directory.Exists(dirPath) || IsReparsePoint(dirPath))
+                return;
+
+            foreach (string file in Directory.GetFiles(dirPath))
+            {
+                if (!string.Equals(Path.GetFullPath(file), currentExeFullPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    try { File.Delete(file); } catch { }
+                }
+            }
+
+            foreach (string subDir in Directory.GetDirectories(dirPath))
+            {
+                if (IsReparsePoint(subDir))
+                    continue;
+                DeleteDirectoryContentsExceptSelf(subDir, currentExeFullPath);
+                try
+                {
+                    if (Directory.GetFiles(subDir).Length == 0 && Directory.GetDirectories(subDir).Length == 0)
+                        Directory.Delete(subDir, false);
+                }
+                catch { }
+            }
+        }
+
+        private static bool IsSafeToDeleteInstallDir(string dirPath)
+        {
+            string norm;
+            if (!NormalizeAndValidateDirectory(dirPath, out norm))
+                return false;
+            if (!Directory.Exists(norm) || IsReparsePoint(norm))
+                return false;
+
+            return File.Exists(Path.Combine(norm, "Md-101.exe")) ||
+                   File.Exists(Path.Combine(norm, "Uninstall-Md-101.exe")) ||
+                   File.Exists(Path.Combine(norm, "install-manifest.cfg"));
+        }
+
+        public static bool LaunchAsDesktopUser(string exePath)
+        {
+            if (string.IsNullOrEmpty(exePath) || !File.Exists(exePath))
+                return false;
+
+            if (!IsAdministrator())
+            {
+                try
+                {
+                    Process.Start(exePath);
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            IntPtr hShellProc = IntPtr.Zero;
+            IntPtr hShellToken = IntPtr.Zero;
+            IntPtr hPrimaryToken = IntPtr.Zero;
+            try
+            {
+                IntPtr shellHwnd = GetShellWindow();
+                if (shellHwnd == IntPtr.Zero)
+                    return false;
+
+                uint shellPid;
+                GetWindowThreadProcessId(shellHwnd, out shellPid);
+                if (shellPid == 0)
+                    return false;
+
+                hShellProc = OpenProcess(PROCESS_QUERY_INFORMATION, false, shellPid);
+                if (hShellProc == IntPtr.Zero)
+                    return false;
+
+                if (!OpenProcessToken(hShellProc, TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | TOKEN_QUERY, out hShellToken))
+                    return false;
+
+                if (!DuplicateTokenEx(hShellToken, MAXIMUM_ALLOWED, IntPtr.Zero, SecurityImpersonation, TokenPrimary, out hPrimaryToken))
+                    return false;
+
+                STARTUPINFOW si = new STARTUPINFOW();
+                si.cb = Marshal.SizeOf(typeof(STARTUPINFOW));
+                PROCESS_INFORMATION pi;
+                string workDir = Path.GetDirectoryName(exePath);
+                bool ok = CreateProcessWithTokenW(
+                    hPrimaryToken,
+                    0,
+                    exePath,
+                    "\"" + exePath + "\"",
+                    0,
+                    IntPtr.Zero,
+                    workDir,
+                    ref si,
+                    out pi);
+
+                if (ok)
+                {
+                    if (pi.hThread != IntPtr.Zero) CloseHandle(pi.hThread);
+                    if (pi.hProcess != IntPtr.Zero) CloseHandle(pi.hProcess);
+                }
+                return ok;
+            }
+            catch
+            {
+                return false;
+            }
+            finally
+            {
+                if (hPrimaryToken != IntPtr.Zero) CloseHandle(hPrimaryToken);
+                if (hShellToken != IntPtr.Zero) CloseHandle(hShellToken);
+                if (hShellProc != IntPtr.Zero) CloseHandle(hShellProc);
+            }
+        }
         public static bool IsAdministrator()
         {
             try
@@ -226,13 +532,21 @@ namespace Md101Installer
 
         public static int RelaunchElevated(InstallOptions opts, bool silent)
         {
+            string normApp, normVst;
+            if (!NormalizeAndValidateDirectory(opts.InstallDir, out normApp) ||
+                !NormalizeAndValidateDirectory(opts.Vst3Dir, out normVst))
+            {
+                throw new ArgumentException("Invalid target directory path.");
+            }
+            string safeLang = (opts.Lang == "pt") ? "pt" : "en";
+
             List<string> argParts = new List<string>();
             if (silent) argParts.Add("/S");
             if (opts.Uninstall) argParts.Add("/UNINSTALL");
             argParts.Add("--elevated-run");
-            argParts.Add("--lang=" + opts.Lang);
-            argParts.Add("--dir=\"" + opts.InstallDir + "\"");
-            argParts.Add("--vst3dir=\"" + opts.Vst3Dir + "\"");
+            argParts.Add("--lang=" + safeLang);
+            argParts.Add("--dir=\"" + normApp + "\"");
+            argParts.Add("--vst3dir=\"" + normVst + "\"");
             argParts.Add("--vst3=" + (opts.InstallVst3 ? "1" : "0"));
             argParts.Add("--standalone=" + (opts.InstallStandalone ? "1" : "0"));
             argParts.Add("--startmenu=" + (opts.CreateStartMenu ? "1" : "0"));
@@ -258,6 +572,20 @@ namespace Md101Installer
             bool pt = opts.Lang == "pt";
             progress(pt ? "Preparando pacotes do Md-101..." : "Preparing Md-101 packages...", 5);
 
+            string normApp, normVst;
+            if (opts.InstallStandalone)
+            {
+                if (!NormalizeAndValidateDirectory(opts.InstallDir, out normApp))
+                    throw new ArgumentException("Invalid installation directory path.");
+                opts.InstallDir = normApp;
+            }
+            if (opts.InstallVst3)
+            {
+                if (!NormalizeAndValidateDirectory(opts.Vst3Dir, out normVst))
+                    throw new ArgumentException("Invalid VST3 directory path.");
+                opts.Vst3Dir = normVst;
+            }
+
             Assembly asm = Assembly.GetExecutingAssembly();
             Stream zipStream = asm.GetManifestResourceStream("Md101Setup.payload.zip");
             if (zipStream == null)
@@ -277,7 +605,7 @@ namespace Md101Installer
                     progress(pt ? ("Instalando VST3 em " + targetVst3Root + "...") : ("Installing VST3 to " + targetVst3Root + "..."), 15);
                     if (Directory.Exists(targetVst3Root))
                     {
-                        try { Directory.Delete(targetVst3Root, true); } catch { }
+                        try { SafeDeleteDirectory(targetVst3Root); } catch { }
                     }
                     Directory.CreateDirectory(targetVst3Root);
                 }
@@ -298,7 +626,7 @@ namespace Md101Installer
                         if (!opts.InstallVst3) continue;
                         string rel = fullName.Substring("VST3/".Length);
                         string destPath = Path.Combine(opts.Vst3Dir, rel.Replace('/', Path.DirectorySeparatorChar));
-                        ExtractEntry(entry, destPath);
+                        ExtractEntry(entry, destPath, Path.Combine(opts.Vst3Dir, "Md-101.vst3"));
                     }
                     else if (fullName.StartsWith("App/", StringComparison.OrdinalIgnoreCase))
                     {
@@ -306,7 +634,7 @@ namespace Md101Installer
                         string rel = fullName.Substring("App/".Length);
                         if (string.IsNullOrEmpty(rel)) continue;
                         string destPath = Path.Combine(opts.InstallDir, rel.Replace('/', Path.DirectorySeparatorChar));
-                        ExtractEntry(entry, destPath);
+                        ExtractEntry(entry, destPath, opts.InstallDir);
                     }
 
                     int pct = 15 + (int)((processed * 65.0) / Math.Max(1, totalEntries));
@@ -321,7 +649,7 @@ namespace Md101Installer
                 {
                     "InstallDir=" + opts.InstallDir,
                     "Vst3Dir=" + opts.Vst3Dir,
-                    "Lang=" + opts.Lang
+                    "Lang=" + (opts.Lang == "pt" ? "pt" : "en")
                 });
 
                 if (opts.CreateStartMenu)
@@ -342,20 +670,27 @@ namespace Md101Installer
             progress(pt ? "Instala\u00E7\u00E3o conclu\u00EDda com sucesso!" : "Installation completed successfully!", 100);
         }
 
-        private static void ExtractEntry(ZipArchiveEntry entry, string destPath)
+        private static void ExtractEntry(ZipArchiveEntry entry, string destPath, string baseRootDir)
         {
+            string fullBase = Path.GetFullPath(baseRootDir).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            string fullDest = Path.GetFullPath(destPath);
+            if (!fullDest.StartsWith(fullBase, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Blocked invalid archive entry path.");
+            }
+
             if (string.IsNullOrEmpty(entry.Name))
             {
-                Directory.CreateDirectory(destPath);
+                Directory.CreateDirectory(fullDest);
                 return;
             }
-            string parentDir = Path.GetDirectoryName(destPath);
+            string parentDir = Path.GetDirectoryName(fullDest);
             if (!string.IsNullOrEmpty(parentDir))
             {
                 Directory.CreateDirectory(parentDir);
             }
             using (Stream inStream = entry.Open())
-            using (FileStream outStream = new FileStream(destPath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (FileStream outStream = new FileStream(fullDest, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 inStream.CopyTo(outStream);
             }
@@ -442,6 +777,7 @@ namespace Md101Installer
                     key.SetValue("Publisher", "LU5");
                     key.SetValue("URLInfoAbout", "https://lu5.art.br");
                     key.SetValue("InstallLocation", opts.InstallDir);
+                    key.SetValue("Vst3InstallDir", opts.Vst3Dir);
                     key.SetValue("DisplayIcon", File.Exists(iconPath) ? iconPath : Path.Combine(opts.InstallDir, "Md-101.exe"));
                     key.SetValue("UninstallString", "\"" + uninstExe + "\"");
                     key.SetValue("QuietUninstallString", "\"" + uninstExe + "\" /S");
@@ -457,18 +793,56 @@ namespace Md101Installer
         {
             try
             {
+                // Prefer protected HKLM registry metadata when present
+                using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Md-101", false))
+                {
+                    if (key != null)
+                    {
+                        string regApp = key.GetValue("InstallLocation") as string;
+                        string regVst = key.GetValue("Vst3InstallDir") as string;
+                        string normRegApp, normRegVst;
+                        if (NormalizeAndValidateDirectory(regApp, out normRegApp))
+                            opts.InstallDir = normRegApp;
+                        if (NormalizeAndValidateDirectory(regVst, out normRegVst))
+                            opts.Vst3Dir = normRegVst;
+                        if (!string.IsNullOrEmpty(regApp))
+                            return;
+                    }
+                }
+
+                // Only read install-manifest.cfg from an actual installed app directory containing Md-101.exe
                 string exeDir = Path.GetDirectoryName(Application.ExecutablePath) ?? "";
-                string manifest = Path.Combine(exeDir, "install-manifest.cfg");
-                if (!File.Exists(manifest))
+                string manifest = null;
+                if (!string.IsNullOrEmpty(exeDir) &&
+                    File.Exists(Path.Combine(exeDir, "Md-101.exe")) &&
+                    File.Exists(Path.Combine(exeDir, "install-manifest.cfg")))
+                {
+                    manifest = Path.Combine(exeDir, "install-manifest.cfg");
+                }
+                else if (File.Exists(Path.Combine(opts.InstallDir, "Md-101.exe")) &&
+                         File.Exists(Path.Combine(opts.InstallDir, "install-manifest.cfg")))
                 {
                     manifest = Path.Combine(opts.InstallDir, "install-manifest.cfg");
                 }
-                if (File.Exists(manifest))
+
+                if (manifest != null && !IsReparsePoint(manifest))
                 {
                     foreach (string line in File.ReadAllLines(manifest))
                     {
-                        if (line.StartsWith("InstallDir=")) opts.InstallDir = line.Substring("InstallDir=".Length).Trim();
-                        else if (line.StartsWith("Vst3Dir=")) opts.Vst3Dir = line.Substring("Vst3Dir=".Length).Trim();
+                        if (line.StartsWith("InstallDir="))
+                        {
+                            string candidate = line.Substring("InstallDir=".Length).Trim();
+                            string norm;
+                            if (NormalizeAndValidateDirectory(candidate, out norm))
+                                opts.InstallDir = norm;
+                        }
+                        else if (line.StartsWith("Vst3Dir="))
+                        {
+                            string candidate = line.Substring("Vst3Dir=".Length).Trim();
+                            string norm;
+                            if (NormalizeAndValidateDirectory(candidate, out norm))
+                                opts.Vst3Dir = norm;
+                        }
                     }
                 }
             }
@@ -481,23 +855,27 @@ namespace Md101Installer
             LoadManifestIfPresent(opts);
 
             progress(pt ? "Removendo plugin VST3..." : "Removing VST3 plugin...", 20);
-            string vst3Bundle = Path.Combine(opts.Vst3Dir, "Md-101.vst3");
-            if (Directory.Exists(vst3Bundle))
+            string normVst;
+            if (NormalizeAndValidateDirectory(opts.Vst3Dir, out normVst))
             {
-                try { Directory.Delete(vst3Bundle, true); } catch { }
+                string vst3Bundle = Path.Combine(normVst, "Md-101.vst3");
+                if (Directory.Exists(vst3Bundle))
+                {
+                    try { SafeDeleteDirectory(vst3Bundle); } catch { }
+                }
             }
 
             progress(pt ? "Removendo atalhos e registros..." : "Removing shortcuts and registry entries...", 50);
             try
             {
                 string commonGroup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonPrograms), "Md-101");
-                if (Directory.Exists(commonGroup)) Directory.Delete(commonGroup, true);
+                if (Directory.Exists(commonGroup)) SafeDeleteDirectory(commonGroup);
             }
             catch { }
             try
             {
                 string userGroup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Md-101");
-                if (Directory.Exists(userGroup)) Directory.Delete(userGroup, true);
+                if (Directory.Exists(userGroup)) SafeDeleteDirectory(userGroup);
             }
             catch { }
             try
@@ -522,30 +900,43 @@ namespace Md101Installer
             catch { }
 
             progress(pt ? "Removendo arquivos do aplicativo..." : "Removing application files...", 80);
-            if (Directory.Exists(opts.InstallDir))
+            if (IsSafeToDeleteInstallDir(opts.InstallDir))
             {
+                string normInstallDir;
+                NormalizeAndValidateDirectory(opts.InstallDir, out normInstallDir);
                 string currentExe = Path.GetFullPath(Application.ExecutablePath);
-                foreach (string file in Directory.GetFiles(opts.InstallDir, "*", SearchOption.AllDirectories))
-                {
-                    if (!string.Equals(Path.GetFullPath(file), currentExe, StringComparison.OrdinalIgnoreCase))
-                    {
-                        try { File.Delete(file); } catch { }
-                    }
-                }
+                DeleteDirectoryContentsExceptSelf(normInstallDir, currentExe);
+
                 try
                 {
-                    Directory.Delete(opts.InstallDir, true);
+                    SafeDeleteDirectory(normInstallDir);
                 }
                 catch
                 {
+                    // Schedule locked self-executable & now-empty directory cleanup without cmd.exe /C
+                    try { MoveFileExW(currentExe, null, MOVEFILE_DELAY_UNTIL_REBOOT); } catch { }
+                    try { MoveFileExW(normInstallDir, null, MOVEFILE_DELAY_UNTIL_REBOOT); } catch { }
+
                     try
                     {
-                        ProcessStartInfo psi = new ProcessStartInfo("cmd.exe",
-                            "/C ping 127.0.0.1 -n 2 > nul & rmdir /s /q \"" + opts.InstallDir + "\"");
-                        psi.WindowStyle = ProcessWindowStyle.Hidden;
-                        psi.CreateNoWindow = true;
-                        psi.UseShellExecute = false;
-                        Process.Start(psi);
+                        string psExe = Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe");
+                        if (File.Exists(psExe))
+                        {
+                            string escFile = currentExe.Replace("'", "''");
+                            string escDir = normInstallDir.Replace("'", "''");
+                            string script =
+                                "Start-Sleep -Seconds 2; " +
+                                "if (Test-Path -LiteralPath '" + escFile + "') { Remove-Item -LiteralPath '" + escFile + "' -Force -ErrorAction SilentlyContinue }; " +
+                                "if ((Test-Path -LiteralPath '" + escDir + "') -and ((Get-ChildItem -LiteralPath '" + escDir + "' -Force -ErrorAction SilentlyContinue).Count -eq 0)) { Remove-Item -LiteralPath '" + escDir + "' -Force -ErrorAction SilentlyContinue }";
+                            string encoded = Convert.ToBase64String(Encoding.Unicode.GetBytes(script));
+
+                            ProcessStartInfo psi = new ProcessStartInfo(psExe,
+                                "-NoProfile -NonInteractive -WindowStyle Hidden -EncodedCommand " + encoded);
+                            psi.WindowStyle = ProcessWindowStyle.Hidden;
+                            psi.CreateNoWindow = true;
+                            psi.UseShellExecute = false;
+                            Process.Start(psi);
+                        }
                     }
                     catch { }
                 }
@@ -874,10 +1265,7 @@ namespace Md101Installer
                 if (_chkLaunchAfter.Visible && _chkLaunchAfter.Checked)
                 {
                     string exePath = Path.Combine(_opts.InstallDir, "Md-101.exe");
-                    if (File.Exists(exePath))
-                    {
-                        try { Process.Start(exePath); } catch { }
-                    }
+                    InstallerEngine.LaunchAsDesktopUser(exePath);
                 }
                 this.Close();
                 return;
@@ -899,6 +1287,32 @@ namespace Md101Installer
                     _opts.Lang == "pt" ? "Selecione pelo menos um componente." : "Please select at least one component.",
                     "Md-101", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
+            }
+
+            string normApp;
+            if (_opts.InstallStandalone)
+            {
+                if (!InstallerEngine.NormalizeAndValidateDirectory(_opts.InstallDir, out normApp))
+                {
+                    MessageBox.Show(this,
+                        _opts.Lang == "pt" ? "Caminho de pasta de instala\u00E7\u00E3o inv\u00E1lido ou protegido." : "Invalid or protected installation directory path.",
+                        "Md-101", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                _opts.InstallDir = normApp;
+            }
+
+            string normVst;
+            if (_opts.InstallVst3)
+            {
+                if (!InstallerEngine.NormalizeAndValidateDirectory(_opts.Vst3Dir, out normVst))
+                {
+                    MessageBox.Show(this,
+                        _opts.Lang == "pt" ? "Caminho de pasta VST3 inv\u00E1lido ou protegido." : "Invalid or protected VST3 directory path.",
+                        "Md-101", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                _opts.Vst3Dir = normVst;
             }
 
             if (InstallerEngine.RequiresElevation(_opts) && !InstallerEngine.IsAdministrator())
@@ -1055,6 +1469,18 @@ namespace Md101Installer
 
         private void StartUninstall()
         {
+            string normApp, normVst;
+            if (!InstallerEngine.NormalizeAndValidateDirectory(_opts.InstallDir, out normApp) ||
+                !InstallerEngine.NormalizeAndValidateDirectory(_opts.Vst3Dir, out normVst))
+            {
+                MessageBox.Show(this,
+                    _opts.Lang == "pt" ? "Caminho de instala\u00E7\u00E3o inv\u00E1lido ou protegido." : "Invalid or protected installation directory path.",
+                    "Md-101", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            _opts.InstallDir = normApp;
+            _opts.Vst3Dir = normVst;
+
             if (InstallerEngine.RequiresElevation(_opts) && !InstallerEngine.IsAdministrator())
             {
                 try

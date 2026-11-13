@@ -2,6 +2,7 @@
 
 #include <juce_core/juce_core.h>
 #include <array>
+#include <atomic>
 #include <unordered_map>
 
 namespace PeriodicSynth
@@ -28,33 +29,33 @@ public:
     static LocalizationManager& getInstance() noexcept;
 
     void setLanguage (Language lang) noexcept;
-    Language getLanguage() const noexcept { return currentLanguage; }
+    Language getLanguage() const noexcept { return currentLanguage.load (std::memory_order_relaxed); }
 
     juce::String getElementName (int atomicNumber, Language lang) const;
-    juce::String getElementName (int atomicNumber) const { return getElementName (atomicNumber, currentLanguage); }
+    juce::String getElementName (int atomicNumber) const { return getElementName (atomicNumber, getLanguage()); }
 
     juce::String getCategoryName (ElementCategory category, Language lang) const;
-    juce::String getCategoryName (ElementCategory category) const { return getCategoryName (category, currentLanguage); }
+    juce::String getCategoryName (ElementCategory category) const { return getCategoryName (category, getLanguage()); }
 
     juce::String getPhaseName (PhysicalPhase phase, Language lang) const;
-    juce::String getPhaseName (PhysicalPhase phase) const { return getPhaseName (phase, currentLanguage); }
+    juce::String getPhaseName (PhysicalPhase phase) const { return getPhaseName (phase, getLanguage()); }
 
     juce::String getEngineDescription (const juce::String& engineKey, Language lang) const;
-    juce::String getEngineDescription (const juce::String& engineKey) const { return getEngineDescription (engineKey, currentLanguage); }
+    juce::String getEngineDescription (const juce::String& engineKey) const { return getEngineDescription (engineKey, getLanguage()); }
 
     juce::String getMeterLabel (const juce::String& meterKey, Language lang) const;
-    juce::String getMeterLabel (const juce::String& meterKey) const { return getMeterLabel (meterKey, currentLanguage); }
+    juce::String getMeterLabel (const juce::String& meterKey) const { return getMeterLabel (meterKey, getLanguage()); }
 
     juce::String getUiString (const juce::String& dotPath, Language lang, const juce::String& fallback = {}) const;
     juce::String getUiString (const juce::String& dotPath, const juce::String& fallback = {}) const
     {
-        return getUiString (dotPath, currentLanguage, fallback);
+        return getUiString (dotPath, getLanguage(), fallback);
     }
 
     juce::String formatMassDisplay (const juce::String& rawMassDisplay, Language lang) const;
     juce::String formatMassDisplay (const juce::String& rawMassDisplay) const
     {
-        return formatMassDisplay (rawMassDisplay, currentLanguage);
+        return formatMassDisplay (rawMassDisplay, getLanguage());
     }
 
     static juce::String categoryToKey (ElementCategory category);
@@ -84,7 +85,7 @@ private:
     void applyJuceMappings (Language lang);
     const LocaleData& getLocaleData (Language lang) const noexcept;
 
-    Language currentLanguage = Language::English;
+    std::atomic<Language> currentLanguage { Language::English };
     LocaleData englishData;
     LocaleData portugueseData;
 

@@ -171,7 +171,8 @@ const ElementInfo& getElementByIndex (int zeroBasedIndex) noexcept
 
 const ElementInfo& getElementByAtomicNumber (int atomicNumber) noexcept
 {
-    return getElementByIndex (atomicNumber - 1);
+    const int clamped = juce::jlimit (1, kNumElements, atomicNumber);
+    return getElementByIndex (clamped - 1);
 }
 
 int findElementAtGrid (int gridRow, int gridCol) noexcept

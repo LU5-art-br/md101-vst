@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -99,10 +99,10 @@ jobs:
           # 2. Pick the first reachable Ubuntu mirror (includes non-ubuntu.com CDN mirrors)
           WORKING_MIRROR=""
           for m in \
-            "http://azure.archive.ubuntu.com/ubuntu" \
-            "http://archive.ubuntu.com/ubuntu" \
             "https://mirrors.edge.kernel.org/ubuntu" \
             "https://mirror.umd.edu/ubuntu" \
+            "http://azure.archive.ubuntu.com/ubuntu" \
+            "http://archive.ubuntu.com/ubuntu" \
             "http://mirrors.ocf.berkeley.edu/ubuntu"; do
             if curl -fsSL --connect-timeout 5 --max-time 10 "${m}/dists/jammy/Release" >/dev/null 2>&1; then
               WORKING_MIRROR="${m}"
@@ -166,6 +166,8 @@ jobs:
     needs: [build-windows, build-linux]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -182,6 +184,11 @@ jobs:
         with:
           name: linux-binaries
           path: release-assets
+
+      - name: Generate SHA-256 Checksums
+        run: |
+          cd release-assets
+          sha256sum * > SHA256SUMS.txt
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

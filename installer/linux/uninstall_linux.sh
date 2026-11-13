@@ -38,7 +38,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         --lang)
-            UI_LANG="${2:-en}"
+            if [[ $# -lt 2 || ( "${2:-}" != "pt" && "${2:-}" != "en" ) ]]; then
+                echo "Error: --lang must be 'pt' or 'en'." >&2
+                exit 1
+            fi
+            UI_LANG="${2}"
             shift 2
             ;;
         -h|--help)
@@ -46,7 +50,9 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
         *)
-            shift
+            echo "Unknown option / Opção desconhecida: $1" >&2
+            echo "Usage: $(basename "$0") [--user | --system | --all] [-y|--yes] [--lang pt|en]" >&2
+            exit 1
             ;;
     esac
 done

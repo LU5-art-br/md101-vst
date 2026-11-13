@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Md-101 — Instalador Windows (VST3 & Standalone)
     Desenvolvido por LU5 (https://lu5.art.br)
@@ -21,7 +21,59 @@ $ProjectRoot = Split-Path -Parent (Split-Path -Parent $ScriptDir)
 if (-not $Lang) {
     $uiCulture = (Get-UICulture).TwoLetterISOLanguageName
     $Lang = if ($uiCulture -eq "pt") { "pt" } else { "en" }
+} elseif ($Lang -ne "pt" -and $Lang -ne "en") {
+    $Lang = "en"
 }
+
+function Resolve-SafeDirectory([string]$TargetPath) {
+    if ([string]::IsNullOrWhiteSpace($TargetPath)) {
+        throw "Directory path cannot be empty."
+    }
+    $trimmed = $TargetPath.Trim()
+    if ($trimmed.IndexOfAny([char[]]@('"', '&', '|', '<', '>', ';', '%', '*', '?', "`r", "`n", [char]0)) -ge 0) {
+        throw "Directory path contains forbidden characters: $trimmed"
+    }
+    if ($trimmed.StartsWith("\\")) {
+        throw "UNC or device paths are not allowed: $trimmed"
+    }
+    if (-not [IO.Path]::IsPathRooted($trimmed)) {
+        throw "Directory path must be absolute: $trimmed"
+    }
+    $full = [IO.Path]::GetFullPath($trimmed).TrimEnd('\', '/')
+    $root = [IO.Path]::GetPathRoot($full).TrimEnd('\', '/')
+    if ($full -ieq $root) {
+        throw "Drive root cannot be used as target directory: $full"
+    }
+    $protected = @(
+        $env:SystemRoot,
+        [Environment]::GetFolderPath("System"),
+        [Environment]::GetFolderPath("ProgramFiles"),
+        [Environment]::GetFolderPath("ProgramFilesX86"),
+        [Environment]::GetFolderPath("CommonProgramFiles"),
+        [Environment]::GetFolderPath("CommonProgramFilesX86"),
+        [Environment]::GetFolderPath("UserProfile"),
+        [Environment]::GetFolderPath("ApplicationData"),
+        [Environment]::GetFolderPath("LocalApplicationData"),
+        [Environment]::GetFolderPath("CommonApplicationData"),
+        (Split-Path -Parent ([Environment]::GetFolderPath("UserProfile")))
+    ) | Where-Object { $_ } | ForEach-Object { [IO.Path]::GetFullPath($_).TrimEnd('\', '/') }
+    foreach ($p in $protected) {
+        if ($full -ieq $p) {
+            throw "Protected system directory cannot be used: $full"
+        }
+    }
+    return $full
+}
+
+function Test-IsReparsePoint([string]$PathToCheck) {
+    if (-not (Test-Path -LiteralPath $PathToCheck)) { return $false }
+    $item = Get-Item -LiteralPath $PathToCheck -Force -ErrorAction SilentlyContinue
+    if (-not $item) { return $false }
+    return (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0)
+}
+
+$InstallDir = Resolve-SafeDirectory $InstallDir
+$Vst3Dir    = Resolve-SafeDirectory $Vst3Dir
 
 function Test-IsAdmin {
     $identity  = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -60,7 +112,8 @@ if (-not (Test-IsAdmin)) {
         if ($StandaloneOnly)    { $argList += "-StandaloneOnly" }
         if ($NoDesktopShortcut) { $argList += "-NoDesktopShortcut" }
         $argList += @("-InstallDir", "`"$InstallDir`"", "-Vst3Dir", "`"$Vst3Dir`"", "-Lang", $Lang)
-        $proc = Start-Process -FilePath "powershell.exe" -ArgumentList $argList -Verb RunAs -Wait -PassThru
+        $psExe = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1.0\powershell.exe"
+        $proc = Start-Process -FilePath $psExe -ArgumentList $argList -Verb RunAs -Wait -PassThru
         exit $proc.ExitCode
     }
 }
@@ -104,8 +157,11 @@ if (-not $StandaloneOnly -and $Vst3Source) {
         Write-Host "==> Installing VST3 Plugin to: $targetVst3" -ForegroundColor Cyan
     }
     New-Item -ItemType Directory -Path $Vst3Dir -Force | Out-Null
-    if (Test-Path $targetVst3) {
-        Remove-Item -Recurse -Force $targetVst3
+    if (Test-Path -LiteralPath $targetVst3) {
+        if (Test-IsReparsePoint $targetVst3) {
+            throw "Refusing to delete reparse point at $targetVst3"
+        }
+        Remove-Item -LiteralPath $targetVst3 -Recurse -Force
     }
     Copy-Item -Recurse -Force $Vst3Source $targetVst3
 }

@@ -1,5 +1,6 @@
 #include "LocalizationManager.h"
 #include "ElementData.h"
+#include <juce_events/juce_events.h>
 
 #if __has_include(<BinaryData.h>)
     #include <BinaryData.h>
@@ -21,13 +22,34 @@ LocalizationManager& LocalizationManager::getInstance() noexcept
 LocalizationManager::LocalizationManager()
 {
     loadAllLocales();
-    applyJuceMappings (currentLanguage);
+    applyJuceMappings (getLanguage());
 }
 
 void LocalizationManager::setLanguage (Language lang) noexcept
 {
-    currentLanguage = lang;
-    applyJuceMappings (lang);
+    currentLanguage.store (lang, std::memory_order_relaxed);
+
+    // juce::LocalisedStrings::setCurrentMappings is not thread-safe; dispatch off-message-thread updates
+    if (auto* mm = juce::MessageManager::getInstanceWithoutCreating())
+    {
+        if (mm->isThisTheMessageThread())
+        {
+            applyJuceMappings (lang);
+        }
+        else
+        {
+            juce::MessageManager::callAsync ([lang]
+            {
+                auto& mgr = LocalizationManager::getInstance();
+                if (mgr.getLanguage() == lang)
+                    mgr.applyJuceMappings (lang);
+            });
+        }
+    }
+    else
+    {
+        applyJuceMappings (lang);
+    }
 }
 
 void LocalizationManager::loadAllLocales()
@@ -43,15 +65,9 @@ void LocalizationManager::loadAllLocales()
         ptJson = juce::String::createStringFromData (BinaryData::ptBR_json, BinaryData::ptBR_jsonSize);
 #endif
 
-    // Fallback or external override check on disk
+    // Fallback anchored strictly to executable directory (never relative to untrusted CWD)
     auto checkFileOnDisk = [] (const juce::String& filename) -> juce::String
     {
-        // Check relative to current working directory (e.g. repo root)
-        juce::File directFile (filename);
-        if (directFile.existsAsFile())
-            return directFile.loadFileAsString();
-
-        // Check relative to executable folder
         auto exeFile = juce::File::getSpecialLocation (juce::File::currentExecutableFile)
                            .getParentDirectory()
                            .getChildFile (filename);
