@@ -15,7 +15,7 @@ extern juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter();
 
 namespace
 {
-    constexpr const char* kMd101Version = "v1.1.1";
+    constexpr const char* kMd101Version = "v1.1.2";
 }
 
 // ==============================================================================

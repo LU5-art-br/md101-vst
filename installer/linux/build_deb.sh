@@ -9,11 +9,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-RAW_VERSION="${1:-1.1.1}"
-# Strip leading 'v' if passed from git tag (e.g., v1.1.1 -> 1.1.1)
+RAW_VERSION="${1:-1.1.2}"
+# Strip leading 'v' if passed from git tag (e.g., v1.1.2 -> 1.1.2)
 DEB_VERSION="${RAW_VERSION#v}"
 if [[ ! "${DEB_VERSION}" =~ ^[0-9] ]]; then
-    DEB_VERSION="1.1.1"
+    DEB_VERSION="1.1.2"
 fi
 
 ARCH="amd64"
@@ -76,6 +76,7 @@ fi
 if [[ -f "${PROJECT_ROOT}/LICENSE" ]]; then
     cp -f "${PROJECT_ROOT}/LICENSE" "${DEB_ROOT}/usr/share/doc/${PKG_NAME}/copyright"
 fi
+chmod -R u+rwX,go+rX,go-w "${DEB_ROOT}/usr/share/doc/${PKG_NAME}"
 
 # Compute installed size in KB
 INSTALLED_SIZE="$(du -sk "${DEB_ROOT}/usr" | awk '{print $1}')"

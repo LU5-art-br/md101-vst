@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
     Md-101 — Master Windows Installer & Package Builder
     Builds:
@@ -15,7 +15,7 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 if (-not $Version) {
-    $Version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.1" }
+    $Version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.2" }
 }
 
 $Vst3Bundle    = Join-Path $ProjectRoot "build\Md101_artefacts\$BuildType\VST3\Md-101.vst3"

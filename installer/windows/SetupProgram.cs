@@ -14,6 +14,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -25,8 +26,8 @@ using Microsoft.Win32;
 [assembly: AssemblyCompany("LU5 (https://lu5.art.br)")]
 [assembly: AssemblyProduct("Md-101")]
 [assembly: AssemblyCopyright("Copyright (c) 2026 LU5")]
-[assembly: AssemblyVersion("1.1.1.0")]
-[assembly: AssemblyFileVersion("1.1.1.0")]
+[assembly: AssemblyVersion("1.1.2.0")]
+[assembly: AssemblyFileVersion("1.1.2.0")]
 
 namespace Md101Installer
 {
@@ -603,17 +604,34 @@ namespace Md101Installer
                 {
                     string targetVst3Root = Path.Combine(opts.Vst3Dir, "Md-101.vst3");
                     progress(pt ? ("Instalando VST3 em " + targetVst3Root + "...") : ("Installing VST3 to " + targetVst3Root + "..."), 15);
+                    if (IsAdministrator())
+                    {
+                        VerifySafePreexistingDirectoryOwner(opts.Vst3Dir);
+                        VerifySafePreexistingDirectoryOwner(targetVst3Root);
+                    }
                     if (Directory.Exists(targetVst3Root))
                     {
                         try { SafeDeleteDirectory(targetVst3Root); } catch { }
                     }
                     Directory.CreateDirectory(targetVst3Root);
+                    if (IsAdministrator())
+                    {
+                        HardenElevatedDirectoryAcl(targetVst3Root);
+                    }
                 }
 
                 if (opts.InstallStandalone)
                 {
                     progress(pt ? ("Instalando Standalone e Manuais em " + opts.InstallDir + "...") : ("Installing Standalone & Manuals to " + opts.InstallDir + "..."), 40);
+                    if (IsAdministrator())
+                    {
+                        VerifySafePreexistingDirectoryOwner(opts.InstallDir);
+                    }
                     Directory.CreateDirectory(opts.InstallDir);
+                    if (IsAdministrator())
+                    {
+                        HardenElevatedDirectoryAcl(opts.InstallDir);
+                    }
                 }
 
                 foreach (ZipArchiveEntry entry in archive.Entries)
@@ -668,6 +686,63 @@ namespace Md101Installer
             }
 
             progress(pt ? "Instala\u00E7\u00E3o conclu\u00EDda com sucesso!" : "Installation completed successfully!", 100);
+        }
+
+        private static void VerifySafePreexistingDirectoryOwner(string dirPath)
+        {
+            if (string.IsNullOrEmpty(dirPath) || !Directory.Exists(dirPath))
+                return;
+
+            string fullPath = Path.GetFullPath(dirPath);
+            if (Path.GetDirectoryName(fullPath) == null)
+                return;
+
+            DirectorySecurity sec = Directory.GetAccessControl(fullPath, AccessControlSections.Owner);
+            SecurityIdentifier owner = sec.GetOwner(typeof(SecurityIdentifier)) as SecurityIdentifier;
+            if (owner == null)
+                throw new UnauthorizedAccessException("Unable to verify owner of existing directory: " + fullPath);
+
+            SecurityIdentifier admins = new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null);
+            SecurityIdentifier system = new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null);
+            SecurityIdentifier trustedInstaller = new SecurityIdentifier("S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464");
+
+            bool ownerTrusted = owner.Equals(admins) || owner.Equals(system) || owner.Equals(trustedInstaller);
+            if (!ownerTrusted)
+            {
+                using (WindowsIdentity current = WindowsIdentity.GetCurrent())
+                {
+                    if (current != null && current.User != null && owner.Equals(current.User))
+                        ownerTrusted = true;
+                }
+            }
+
+            if (!ownerTrusted)
+            {
+                throw new UnauthorizedAccessException(
+                    "Refusing elevated install into pre-existing directory owned by an untrusted account: " + fullPath);
+            }
+        }
+
+        private static void HardenElevatedDirectoryAcl(string dirPath)
+        {
+            if (string.IsNullOrEmpty(dirPath) || !Directory.Exists(dirPath))
+                return;
+
+            DirectorySecurity sec = new DirectorySecurity();
+            sec.SetAccessRuleProtection(true, false);
+
+            InheritanceFlags inherit = InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit;
+            sec.AddAccessRule(new FileSystemAccessRule(
+                new SecurityIdentifier(WellKnownSidType.BuiltinAdministratorsSid, null),
+                FileSystemRights.FullControl, inherit, PropagationFlags.None, AccessControlType.Allow));
+            sec.AddAccessRule(new FileSystemAccessRule(
+                new SecurityIdentifier(WellKnownSidType.LocalSystemSid, null),
+                FileSystemRights.FullControl, inherit, PropagationFlags.None, AccessControlType.Allow));
+            sec.AddAccessRule(new FileSystemAccessRule(
+                new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
+                FileSystemRights.ReadAndExecute | FileSystemRights.Synchronize, inherit, PropagationFlags.None, AccessControlType.Allow));
+
+            Directory.SetAccessControl(dirPath, sec);
         }
 
         private static void ExtractEntry(ZipArchiveEntry entry, string destPath, string baseRootDir)
@@ -773,7 +848,7 @@ namespace Md101Installer
                     string uninstExe = Path.Combine(opts.InstallDir, "Uninstall-Md-101.exe");
                     string iconPath = Path.Combine(opts.InstallDir, "md-101.ico");
                     key.SetValue("DisplayName", "Md-101 - Periodic Table Synthesizer (VST3 & Standalone)");
-                    key.SetValue("DisplayVersion", "1.1.1");
+                    key.SetValue("DisplayVersion", "1.1.2");
                     key.SetValue("Publisher", "LU5");
                     key.SetValue("URLInfoAbout", "https://lu5.art.br");
                     key.SetValue("InstallLocation", opts.InstallDir);
@@ -1035,7 +1110,7 @@ namespace Md101Installer
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
-            this.Text = "Md-101 v1.1.1 \u2014 Setup (LU5)";
+            this.Text = "Md-101 v1.1.2 \u2014 Setup (LU5)";
             this.BackColor = Color.FromArgb(13, 17, 23);
             this.ForeColor = Color.FromArgb(230, 237, 243);
             this.ClientSize = new Size(640, 480);
@@ -1204,8 +1279,8 @@ namespace Md101Installer
         {
             bool pt = _opts.Lang == "pt";
             _lblTitle.Text = pt
-                ? "Md-101 v1.1.1 \u2014 Instalador"
-                : "Md-101 v1.1.1 \u2014 Setup Wizard";
+                ? "Md-101 v1.1.2 \u2014 Instalador"
+                : "Md-101 v1.1.2 \u2014 Setup Wizard";
             _lblSubtitle.Text = pt
                 ? "Sintetizador Polif\u00F4nico VST3 & Standalone da Tabela Peri\u00F3dica \u2022 LU5"
                 : "Periodic Table Polyphonic VST3 & Standalone Synthesizer \u2022 LU5";

@@ -14,7 +14,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
-$AppVersion = "1.1.1"
+$AppVersion = "1.1.2"
 $ScriptDir  = Split-Path -Parent $MyInvocation.MyCommand.Path
 $ProjectRoot = Split-Path -Parent (Split-Path -Parent $ScriptDir)
 
@@ -79,6 +79,64 @@ function Test-IsAdmin {
     $identity  = [Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = New-Object Security.Principal.WindowsPrincipal($identity)
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+}
+
+function Assert-SafeDirectoryOwner([string]$DirPath) {
+    if ([string]::IsNullOrEmpty($DirPath) -or -not (Test-Path -LiteralPath $DirPath)) {
+        return
+    }
+    $full = [IO.Path]::GetFullPath($DirPath)
+    if (-not [IO.Path]::GetDirectoryName($full)) {
+        return
+    }
+    $sec = [IO.Directory]::GetAccessControl($full, [Security.AccessControl.AccessControlSections]::Owner)
+    $owner = $sec.GetOwner([Security.Principal.SecurityIdentifier])
+    if (-not $owner) {
+        throw "Unable to verify owner of existing directory: $full"
+    }
+    $trustedSids = @(
+        (New-Object Security.Principal.SecurityIdentifier([Security.Principal.WellKnownSidType]::BuiltinAdministratorsSid, $null)),
+        (New-Object Security.Principal.SecurityIdentifier([Security.Principal.WellKnownSidType]::LocalSystemSid, $null)),
+        (New-Object Security.Principal.SecurityIdentifier("S-1-5-80-956008885-3418522649-1831038044-1853292631-2271478464"))
+    )
+    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent().User
+    if ($currentUser) {
+        $trustedSids += $currentUser
+    }
+    $isTrusted = $false
+    foreach ($sid in $trustedSids) {
+        if ($owner.Equals($sid)) {
+            $isTrusted = $true
+            break
+        }
+    }
+    if (-not $isTrusted) {
+        throw "Refusing elevated install into pre-existing directory owned by an untrusted account: $full"
+    }
+}
+
+function Set-HardenedDirectoryAcl([string]$DirPath) {
+    if ([string]::IsNullOrEmpty($DirPath) -or -not (Test-Path -LiteralPath $DirPath)) {
+        return
+    }
+    $sec = New-Object Security.AccessControl.DirectorySecurity
+    $sec.SetAccessRuleProtection($true, $false)
+    $inherit = [Security.AccessControl.InheritanceFlags]::ContainerInherit -bor [Security.AccessControl.InheritanceFlags]::ObjectInherit
+    $noneProp = [Security.AccessControl.PropagationFlags]::None
+    $allow = [Security.AccessControl.AccessControlType]::Allow
+
+    $sec.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule(
+        (New-Object Security.Principal.SecurityIdentifier([Security.Principal.WellKnownSidType]::BuiltinAdministratorsSid, $null)),
+        [Security.AccessControl.FileSystemRights]::FullControl, $inherit, $noneProp, $allow)))
+    $sec.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule(
+        (New-Object Security.Principal.SecurityIdentifier([Security.Principal.WellKnownSidType]::LocalSystemSid, $null)),
+        [Security.AccessControl.FileSystemRights]::FullControl, $inherit, $noneProp, $allow)))
+    $sec.AddAccessRule((New-Object Security.AccessControl.FileSystemAccessRule(
+        (New-Object Security.Principal.SecurityIdentifier([Security.Principal.WellKnownSidType]::BuiltinUsersSid, $null)),
+        ([Security.AccessControl.FileSystemRights]::ReadAndExecute -bor [Security.AccessControl.FileSystemRights]::Synchronize),
+        $inherit, $noneProp, $allow)))
+
+    [IO.Directory]::SetAccessControl($DirPath, $sec)
 }
 
 function Test-PathWritable([string]$TargetPath) {
@@ -156,6 +214,10 @@ if (-not $StandaloneOnly -and $Vst3Source) {
     } else {
         Write-Host "==> Installing VST3 Plugin to: $targetVst3" -ForegroundColor Cyan
     }
+    if (Test-IsAdmin) {
+        Assert-SafeDirectoryOwner $Vst3Dir
+        Assert-SafeDirectoryOwner $targetVst3
+    }
     New-Item -ItemType Directory -Path $Vst3Dir -Force | Out-Null
     if (Test-Path -LiteralPath $targetVst3) {
         if (Test-IsReparsePoint $targetVst3) {
@@ -163,7 +225,11 @@ if (-not $StandaloneOnly -and $Vst3Source) {
         }
         Remove-Item -LiteralPath $targetVst3 -Recurse -Force
     }
-    Copy-Item -Recurse -Force $Vst3Source $targetVst3
+    New-Item -ItemType Directory -Path $targetVst3 -Force | Out-Null
+    if (Test-IsAdmin) {
+        Set-HardenedDirectoryAcl $targetVst3
+    }
+    Copy-Item -Recurse -Force "$Vst3Source\*" $targetVst3
 }
 
 # 2. Install Standalone App, Documentation & Uninstaller
@@ -173,7 +239,13 @@ if (-not $Vst3Only -and $ExeSource) {
     } else {
         Write-Host "==> Installing Standalone Application & Manuals to: $InstallDir" -ForegroundColor Cyan
     }
+    if (Test-IsAdmin) {
+        Assert-SafeDirectoryOwner $InstallDir
+    }
     New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
+    if (Test-IsAdmin) {
+        Set-HardenedDirectoryAcl $InstallDir
+    }
     Copy-Item -Force $ExeSource (Join-Path $InstallDir "Md-101.exe")
 
     foreach ($docFile in @("README.md", "README-en.md", "LICENSE")) {

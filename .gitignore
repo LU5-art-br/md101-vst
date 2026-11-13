@@ -110,3 +110,6 @@ $RECYCLE.BIN/
 *~
 .*.swp
 .*.swo
+
+# Notas locais de planejamento / auditoria
+TO-DO.md

@@ -1,6 +1,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "LocalizationManager.h"
+#include <utility>
+#include <vector>
 
 PeriodicSynth::Language PeriodicSynthAudioProcessor::detectInitialLanguage() noexcept
 {
@@ -165,14 +167,228 @@ void PeriodicSynthAudioProcessor::getStateInformation (juce::MemoryBlock& destDa
     }
 }
 
+namespace
+{
+constexpr int kMaxStateSizeBytes = 1024 * 1024; // 1 MiB
+constexpr int kMaxXmlDepth       = 64;
+constexpr int kMaxXmlElements    = 8192;
+constexpr juce::uint32 kJuceMagicXmlNumber = 0x21324356u;
+
+bool isAsciiSpace (unsigned char ch) noexcept
+{
+    return ch == ' ' || ch == '\t' || ch == '\r' || ch == '\n';
+}
+
+bool matchBytesAt (const char* data, int len, int pos, const char* pat, int patLen) noexcept
+{
+    if (pos + patLen > len)
+        return false;
+
+    for (int i = 0; i < patLen; ++i)
+    {
+        if (data[pos + i] != pat[i])
+            return false;
+    }
+
+    return true;
+}
+
+bool isXmlPayloadWithinLimits (const void* data, int sizeInBytes, int maxDepth, int maxElements) noexcept
+{
+    if (data == nullptr || sizeInBytes <= 8)
+        return false;
+
+    if (juce::ByteOrder::littleEndianInt (data) != kJuceMagicXmlNumber)
+        return false;
+
+    const int declaredLen = static_cast<int> (juce::ByteOrder::littleEndianInt (juce::addBytesToPointer (data, 4)));
+    if (declaredLen <= 0)
+        return false;
+
+    const int xmlLen = juce::jmin (sizeInBytes - 8, declaredLen);
+    const char* ptr  = static_cast<const char*> (data) + 8;
+
+    int depth        = 0;
+    int elementCount = 0;
+    int i            = 0;
+
+    while (i < xmlLen && ptr[i] != '\0')
+    {
+        if (ptr[i] != '<')
+        {
+            ++i;
+            continue;
+        }
+
+        if (i + 1 >= xmlLen || ptr[i + 1] == '\0')
+            break;
+
+        const char next = ptr[i + 1];
+
+        if (next == '?')
+        {
+            i += 2;
+            while (i < xmlLen && ptr[i] != '\0')
+            {
+                if (matchBytesAt (ptr, xmlLen, i, "?>", 2))
+                {
+                    i += 2;
+                    break;
+                }
+                ++i;
+            }
+            continue;
+        }
+
+        if (next == '!')
+        {
+            if (matchBytesAt (ptr, xmlLen, i, "<!--", 4))
+            {
+                i += 4;
+                while (i < xmlLen && ptr[i] != '\0')
+                {
+                    if (matchBytesAt (ptr, xmlLen, i, "-->", 3))
+                    {
+                        i += 3;
+                        break;
+                    }
+                    ++i;
+                }
+            }
+            else if (matchBytesAt (ptr, xmlLen, i, "<![CDATA[", 9))
+            {
+                i += 9;
+                while (i < xmlLen && ptr[i] != '\0')
+                {
+                    if (matchBytesAt (ptr, xmlLen, i, "]]>", 3))
+                    {
+                        i += 3;
+                        break;
+                    }
+                    ++i;
+                }
+            }
+            else
+            {
+                i += 2;
+                while (i < xmlLen && ptr[i] != '\0' && ptr[i] != '>')
+                    ++i;
+                if (i < xmlLen && ptr[i] == '>')
+                    ++i;
+            }
+            continue;
+        }
+
+        if (next == '/')
+        {
+            i += 2;
+            while (i < xmlLen && ptr[i] != '\0' && ptr[i] != '>')
+                ++i;
+            if (i < xmlLen && ptr[i] == '>')
+                ++i;
+            if (depth > 0)
+                --depth;
+            continue;
+        }
+
+        // Opening or self-closing tag
+        ++elementCount;
+        if (elementCount > maxElements)
+            return false;
+
+        ++i;
+        char quote       = '\0';
+        char lastNonWs   = '\0';
+
+        while (i < xmlLen && ptr[i] != '\0')
+        {
+            const char ch = ptr[i];
+            if (quote != '\0')
+            {
+                if (ch == quote)
+                    quote = '\0';
+                ++i;
+            }
+            else if (ch == '"' || ch == '\'')
+            {
+                quote     = ch;
+                lastNonWs = ch;
+                ++i;
+            }
+            else if (ch == '>')
+            {
+                ++i;
+                break;
+            }
+            else
+            {
+                if (! isAsciiSpace (static_cast<unsigned char> (ch)))
+                    lastNonWs = ch;
+                ++i;
+            }
+        }
+
+        if (lastNonWs == '/')
+        {
+            if (depth + 1 > maxDepth)
+                return false;
+        }
+        else
+        {
+            ++depth;
+            if (depth > maxDepth)
+                return false;
+        }
+    }
+
+    return true;
+}
+
+bool isXmlTreeWithinLimits (const juce::XmlElement& root, int maxDepth, int maxElements)
+{
+    std::vector<std::pair<const juce::XmlElement*, int>> stack;
+    stack.reserve (64);
+    stack.emplace_back (&root, 1);
+
+    int elementCount = 0;
+
+    while (! stack.empty())
+    {
+        const auto current = stack.back();
+        stack.pop_back();
+
+        if (current.second > maxDepth)
+            return false;
+
+        ++elementCount;
+        if (elementCount > maxElements)
+            return false;
+
+        for (const auto* child = current.first->getFirstChildElement();
+             child != nullptr;
+             child = child->getNextElement())
+        {
+            stack.emplace_back (child, current.second + 1);
+        }
+    }
+
+    return true;
+}
+} // namespace
+
 void PeriodicSynthAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    constexpr int kMaxStateSizeBytes = 1024 * 1024; // 1 MiB
     if (data == nullptr || sizeInBytes <= 0 || sizeInBytes > kMaxStateSizeBytes)
+        return;
+
+    if (! isXmlPayloadWithinLimits (data, sizeInBytes, kMaxXmlDepth, kMaxXmlElements))
         return;
 
     if (auto xml = getXmlFromBinary (data, sizeInBytes))
     {
+        if (! isXmlTreeWithinLimits (*xml, kMaxXmlDepth, kMaxXmlElements))
+            return;
+
         if (xml->hasTagName (apvts.state.getType()))
         {
             if (xml->hasAttribute ("uiLanguage"))

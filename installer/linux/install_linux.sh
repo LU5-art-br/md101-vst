@@ -8,7 +8,7 @@ set -euo pipefail
 
 APP_NAME="Md-101"
 APP_ID="md-101"
-APP_VERSION="1.1.1"
+APP_VERSION="1.1.2"
 VENDOR="LU5"
 WEBSITE="https://lu5.art.br"
 
@@ -201,6 +201,7 @@ fi
 # Configure target paths based on mode
 SUDO_CMD=""
 if [[ "${INSTALL_MODE}" == "system" ]]; then
+    umask 022
     if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
         if command -v sudo >/dev/null 2>&1; then
             SUDO_CMD="sudo"
@@ -311,7 +312,7 @@ if [[ "${INSTALL_VST3}" -eq 1 ]]; then
     ${SUDO_CMD} mkdir -p "${VST3_DIR}"
     ${SUDO_CMD} rm -rf "${VST3_DIR}/Md-101.vst3"
     ${SUDO_CMD} cp -r "${VST3_SRC}" "${VST3_DIR}/Md-101.vst3"
-    ${SUDO_CMD} chmod -R a+rX "${VST3_DIR}/Md-101.vst3"
+    ${SUDO_CMD} chmod -R u+rwX,go+rX,go-w "${VST3_DIR}/Md-101.vst3"
     if [[ -d "${VST3_DIR}/Md-101.vst3/Contents/x86_64-linux" ]]; then
         ${SUDO_CMD} chmod 755 "${VST3_DIR}/Md-101.vst3/Contents/x86_64-linux/"*.so 2>/dev/null || true
     fi
@@ -390,6 +391,7 @@ for docdir in "${SCRIPT_DIR}/docs" "${PROJECT_ROOT}/docs"; do
         break
     fi
 done
+${SUDO_CMD} chmod -R u+rwX,go+rX,go-w "${DOC_DIR}"
 
 # 4. Install Uninstaller Script
 ${SUDO_CMD} mkdir -p "${BIN_DIR}"

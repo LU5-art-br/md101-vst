@@ -14,7 +14,7 @@ endif()
 # (prevents LoadLibraryW ordinal mismatch error 182 on CI and end-user DAWs).
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project(Md101 VERSION 1.1.1 LANGUAGES C CXX)
+project(Md101 VERSION 1.1.2 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,6 +22,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 option(MD101_COPY_AFTER_BUILD "Copy built VST3 plugin to system VST3 folder" OFF)
 option(MD101_BUILD_TESTS "Build automated DSP & UI verification runner" ON)
+option(MD101_BUILD_FUZZER "Build optional libFuzzer harness (requires Clang)" OFF)
 
 # Locate JUCE locally in external/JUCE (offline-friendly) or fetch automatically on fresh machines
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/JUCE/CMakeLists.txt")
@@ -47,7 +48,7 @@ juce_add_binary_data(Md101BinaryData
 juce_add_plugin(Md101
     COMPANY_NAME "LU5"
     COMPANY_WEBSITE "https://lu5.art.br"
-    VERSION "1.1.1"
+    VERSION "1.1.2"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
@@ -120,6 +121,38 @@ if (MD101_BUILD_TESTS)
     target_compile_options(Md101Verify PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/utf-8>)
 
     target_link_libraries(Md101Verify
+        PRIVATE
+            Md101
+    )
+endif()
+
+if (MD101_BUILD_FUZZER)
+    if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+        message(FATAL_ERROR "MD101_BUILD_FUZZER requires Clang with libFuzzer support.")
+    endif()
+
+    target_compile_options(Md101 PRIVATE
+        -fsanitize=fuzzer-no-link,address,undefined
+        -fno-omit-frame-pointer
+    )
+    target_link_options(Md101 PRIVATE
+        -fsanitize=fuzzer-no-link,address,undefined
+    )
+
+    add_executable(Md101Fuzz
+        Tests/FuzzPlugin.cpp
+    )
+
+    target_compile_features(Md101Fuzz PRIVATE cxx_std_17)
+    target_compile_options(Md101Fuzz PRIVATE
+        -fsanitize=fuzzer,address,undefined
+        -fno-omit-frame-pointer
+    )
+    target_link_options(Md101Fuzz PRIVATE
+        -fsanitize=fuzzer,address,undefined
+    )
+
+    target_link_libraries(Md101Fuzz
         PRIVATE
             Md101
     )

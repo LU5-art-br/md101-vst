@@ -8,7 +8,7 @@ set -euo pipefail
 
 APP_NAME="Md-101"
 APP_ID="md-101"
-APP_VERSION="1.1.1"
+APP_VERSION="1.1.2"
 
 if [[ "${LANG:-}" == pt* ]] || [[ "${LC_ALL:-}" == pt* ]]; then
     UI_LANG="pt"

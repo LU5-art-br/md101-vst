@@ -85,28 +85,28 @@ Elementos de um mesmo grupo compartilham a mesma arquitetura de síntese, soando
 ## Instalação Rápida (Instaladores Oficiais)
 
 ### Windows (64-bit)
-- **Instalador Gráfico (`Md-101-v1.1.1-Windows-x64-Setup.exe`)**:
-  1. Execute `Md-101-v1.1.1-Windows-x64-Setup.exe` (interface bilíngue **PT | EN**).
+- **Instalador Gráfico (`Md-101-v1.1.2-Windows-x64-Setup.exe`)**:
+  1. Execute `Md-101-v1.1.2-Windows-x64-Setup.exe` (interface bilíngue **PT | EN**).
   2. O assistente instala automaticamente:
      - **Plugin VST3**: `C:\Program Files\Common Files\VST3\Md-101.vst3`
      - **Aplicativo Standalone & Manuais**: `C:\Program Files\LU5\Md-101\Md-101.exe`
      - **Atalhos no Menu Iniciar / Área de Trabalho** e **Desinstalador no Windows**.
-  3. Também suporta instalação silenciosa via terminal: `Md-101-v1.1.1-Windows-x64-Setup.exe /S`.
-- **Pacote Portátil (`Md-101-v1.1.1-Windows-x64.zip`)**:
+  3. Também suporta instalação silenciosa via terminal: `Md-101-v1.1.2-Windows-x64-Setup.exe /S`.
+- **Pacote Portátil (`Md-101-v1.1.2-Windows-x64.zip`)**:
   - Extraia o `.zip` e dê dois cliques em `Install-Md-101.bat` (ou copie `Md-101.vst3` manualmente).
 
 ### Linux (64-bit — Ubuntu, Debian, Fedora, Arch, etc.)
 - **Instalador Universal Autoextraível (`.run` — Qualquer Distribuição)**:
   ```bash
-  chmod +x Md-101-v1.1.1-Linux-x64-Installer.run
-  ./Md-101-v1.1.1-Linux-x64-Installer.run
+  chmod +x Md-101-v1.1.2-Linux-x64-Installer.run
+  ./Md-101-v1.1.2-Linux-x64-Installer.run
   ```
   - Modo usuário (padrão, sem `sudo`): instala em `~/.vst3/Md-101.vst3`, `~/.local/bin/Md-101` e cria atalho no menu de aplicativos (`~/.local/share/applications/md-101.desktop`).
-  - Modo sistema (global): `./Md-101-v1.1.1-Linux-x64-Installer.run --system` (instala em `/usr/lib/vst3/Md-101.vst3` e `/usr/local/bin/Md-101`).
+  - Modo sistema (global): `./Md-101-v1.1.2-Linux-x64-Installer.run --system` (instala em `/usr/lib/vst3/Md-101.vst3` e `/usr/local/bin/Md-101`).
   - Para remover: `~/.local/bin/md-101-uninstall` (ou `sudo /usr/local/bin/md-101-uninstall`).
-- **Pacote Debian / Ubuntu (`md-101_1.1.1_amd64.deb`)**:
+- **Pacote Debian / Ubuntu (`md-101_1.1.2_amd64.deb`)**:
   ```bash
-  sudo apt install ./md-101_1.1.1_amd64.deb
+  sudo apt install ./md-101_1.1.2_amd64.deb
   ```
 
 ---
@@ -124,8 +124,8 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\build_installer_windows.ps
 ```
 
 Artefatos gerados:
-- **Instalador Windows**: `dist\Md-101-v1.1.1-Windows-x64-Setup.exe`
-- **Pacote ZIP com Scripts**: `dist\Md-101-v1.1.1-Windows-x64.zip`
+- **Instalador Windows**: `dist\Md-101-v1.1.2-Windows-x64-Setup.exe`
+- **Pacote ZIP com Scripts**: `dist\Md-101-v1.1.2-Windows-x64.zip`
 - **Plugin VST3**: `build\Md101_artefacts\Release\VST3\Md-101.vst3`
 - **Standalone**: `build\Md101_artefacts\Release\Standalone\Md-101.exe`
 
@@ -146,7 +146,7 @@ chmod +x build_linux.sh build_installer_linux.sh installer/linux/*.sh
 ./installer/linux/install_linux.sh
 
 # Ou gerar todos os instaladores de distribuição (.run, .deb e .tar.gz) em dist/:
-./build_installer_linux.sh Release v1.1.1
+./build_installer_linux.sh Release v1.1.2
 ```
 Em seguida, reescaneie os plugins VST3 na sua DAW (Reaper, Bitwig, Ardour, Waveform, Carla, etc.) e insira **Md-101** como instrumento virtual em uma pista MIDI!
 

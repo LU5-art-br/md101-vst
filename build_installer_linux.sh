@@ -11,7 +11,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_TYPE="${1:-Release}"
-VERSION="${2:-${GITHUB_REF_NAME:-v1.1.1}}"
+VERSION="${2:-${GITHUB_REF_NAME:-v1.1.2}}"
 
 VST3_PATH="${SCRIPT_DIR}/build/Md101_artefacts/${BUILD_TYPE}/VST3/Md-101.vst3"
 STANDALONE_PATH="${SCRIPT_DIR}/build/Md101_artefacts/${BUILD_TYPE}/Standalone/Md-101"

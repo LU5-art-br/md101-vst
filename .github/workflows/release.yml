@@ -50,13 +50,13 @@ jobs:
       - name: Build Windows Installer (.exe) & Portable Package (.zip)
         shell: powershell
         run: |
-          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.1" }
+          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.2" }
           .\build_installer_windows.ps1 -BuildType Release -Version $version
 
       - name: Verify Silent Windows Installer & Uninstaller
         shell: pwsh
         run: |
-          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.1" }
+          $version = if ($env:GITHUB_REF_NAME) { $env:GITHUB_REF_NAME } else { "v1.1.2" }
           $setupExe = "$PWD/dist/Md-101-$version-Windows-x64-Setup.exe"
           $testAppDir = "$env:RUNNER_TEMP\md101-app"
           $testVstDir = "$env:RUNNER_TEMP\md101-vst3"
@@ -137,14 +137,14 @@ jobs:
 
       - name: Build Linux Installers (.run, .deb, .tar.gz)
         run: |
-          VERSION="${GITHUB_REF_NAME:-v1.1.1}"
+          VERSION="${GITHUB_REF_NAME:-v1.1.2}"
           sed -i 's/\r$//' build_installer_linux.sh installer/linux/*.sh
           chmod +x build_installer_linux.sh installer/linux/*.sh
           ./build_installer_linux.sh Release "${VERSION}"
 
       - name: Verify Linux .run Installer & .deb Package
         run: |
-          VERSION="${GITHUB_REF_NAME:-v1.1.1}"
+          VERSION="${GITHUB_REF_NAME:-v1.1.2}"
           ./dist/Md-101-${VERSION}-Linux-x64-Installer.run --user --yes
           test -d "${HOME}/.vst3/Md-101.vst3"
           test -x "${HOME}/.local/bin/Md-101"
@@ -185,8 +185,18 @@ jobs:
           name: linux-binaries
           path: release-assets
 
-      - name: Generate SHA-256 Checksums
+      - name: Generate CycloneDX SBOM
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: md-101-sbom.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Include SBOM and Generate SHA-256 Checksums
         run: |
+          mv -f md-101-sbom.cdx.json release-assets/
           cd release-assets
           sha256sum * > SHA256SUMS.txt
 
